@@ -1,249 +1,138 @@
 app_name = "hospital_portal"
 app_title = "Hospital Portal"
-app_publisher = "Swetha"
-app_description = "Complete Hospital Management System"
-app_email = "sshunchan487@gmail.com"
-app_license = "mit"
+app_publisher = "Your Organization"
+app_description = "Complete Hospital Management System — 8 Departments"
+app_email = "admin@hospital.com"
+app_license = "MIT"
+app_version = "1.0.0"
 
-# Apps
-# ------------------
+# ─────────────────────────────────────────
+# PORTAL MENU (visible per role on website)
+# ─────────────────────────────────────────
+standard_portal_menu_items = [
+    {"title": "Hospital Dashboard", "route": "/hospital-dashboard", "role": "Hospital Head",      "idx": 1},
+    {"title": "Registration Desk",  "route": "/registration-portal","role": "Registration Staff", "idx": 2},
+    {"title": "Nursing Station",    "route": "/nurse-portal",        "role": "Nurse",              "idx": 3},
+    {"title": "Doctor Console",     "route": "/doctor-portal",       "role": "Doctor",             "idx": 4},
+    {"title": "Laboratory",         "route": "/lab-portal",          "role": "Lab Technician",     "idx": 5},
+    {"title": "Radiology",          "route": "/radiology-portal",    "role": "Radiographer",       "idx": 6},
+    {"title": "Pharmacy",           "route": "/pharmacy-portal",     "role": "Pharmacist",         "idx": 7},
+    {"title": "IPD Ward",           "route": "/ipd-portal",          "role": "Ward Nurse",         "idx": 8},
+    {"title": "ICU",                "route": "/icu-portal",          "role": "ICU Nurse",          "idx": 9},
+]
 
-# required_apps = []
+# ─────────────────────────────────────────
+# FIXTURES
+# ─────────────────────────────────────────
+fixtures = [
+    "Role",
+    {"dt": "Custom Field", "filters": [["module", "=", "Hospital Portal"]]},
+    "Workflow",
+    "Workflow State",
+    "Workflow Action Master",
+    "Print Format",
+]
 
-# Each item in the list will be shown as an app in the apps page
-# add_to_apps_screen = [
-# 	{
-# 		"name": "hospital_portal",
-# 		"logo": "/assets/hospital_portal/logo.png",
-# 		"title": "Hospital Portal",
-# 		"route": "/hospital_portal",
-# 		"has_permission": "hospital_portal.api.permission.has_app_permission"
-# 	}
-# ]
+# ─────────────────────────────────────────
+# INSTALL / UNINSTALL
+# ─────────────────────────────────────────
+after_install  = "hospital_portal.setup.install.after_install"
+after_migrate  = "hospital_portal.setup.install.after_migrate"
+before_uninstall = "hospital_portal.setup.install.before_uninstall"
 
-# Includes in <head>
-# ------------------
+# ─────────────────────────────────────────
+# PERMISSION QUERY (row-level security)
+# ─────────────────────────────────────────
+permission_query_conditions = {
+    "Consultation":       "hospital_portal.permissions.get_doctor_conditions",
+    "Lab Request":        "hospital_portal.permissions.get_lab_conditions",
+    "Radiology Request":  "hospital_portal.permissions.get_radiology_conditions",
+    "Pharmacy Dispensing":"hospital_portal.permissions.get_pharmacy_conditions",
+    "ICU Monitoring":     "hospital_portal.permissions.get_icu_conditions",
+}
 
-# include js, css files in header of desk.html
-# app_include_css = "/assets/hospital_portal/css/hospital_portal.css"
-# app_include_js = "/assets/hospital_portal/js/hospital_portal.js"
+# ─────────────────────────────────────────
+# DOCUMENT EVENTS (auto-actions)
+# ─────────────────────────────────────────
+doc_events = {
+    "Prescription": {
+        "on_submit": [
+            "hospital_portal.events.prescription.forward_to_pharmacy",
+            "hospital_portal.events.prescription.forward_to_nursing",
+        ]
+    },
+    "Lab Request": {
+        "on_submit": "hospital_portal.events.lab.notify_lab_technician",
+    },
+    "Radiology Request": {
+        "on_submit": "hospital_portal.events.radiology.notify_radiographer",
+    },
+    "Appointment": {
+        "after_insert": "hospital_portal.events.appointment.generate_token",
+    },
+    "Patient Registration": {
+        "after_insert": "hospital_portal.events.patient.generate_patient_id",
+    },
+    "IPD Admission": {
+        "on_submit": "hospital_portal.events.ipd.allocate_bed",
+        "on_cancel": "hospital_portal.events.ipd.release_bed",
+    },
+}
 
-# include js, css files in header of web template
-# web_include_css = "/assets/hospital_portal/css/hospital_portal.css"
-# web_include_js = "/assets/hospital_portal/js/hospital_portal.js"
+# ─────────────────────────────────────────
+# SCHEDULED TASKS
+# ─────────────────────────────────────────
+scheduler_events = {
+    "daily": [
+        "hospital_portal.tasks.check_medicine_expiry",
+        "hospital_portal.tasks.check_low_stock",
+    ],
+    "hourly": [
+        "hospital_portal.tasks.send_icu_monitoring_reminders",
+    ],
+    "cron": {
+        "0 8 * * *": ["hospital_portal.tasks.daily_appointment_summary"],
+    }
+}
 
-# include custom scss in every website theme (without file extension ".scss")
-# website_theme_scss = "hospital_portal/public/scss/website"
+# ─────────────────────────────────────────
+# WEBSITE / PORTAL
+# ─────────────────────────────────────────
+website_context = {
+    "splash_image": "/assets/hospital_portal/images/hospital-logo.png",
+    "favicon": "/assets/hospital_portal/images/favicon.ico",
+}
 
-# include js, css files in header of web form
-# webform_include_js = {"doctype": "public/js/doctype.js"}
-# webform_include_css = {"doctype": "public/css/doctype.css"}
+website_route_rules = [
+    {"from_route": "/patient/<patient_id>", "to_route": "patient-file"},
+]
 
-# include js in page
-# page_js = {"page" : "public/js/file.js"}
+# ─────────────────────────────────────────
+# JINJA METHODS (available in HTML templates)
+# ─────────────────────────────────────────
+jinja = {
+    "methods": [
+        "hospital_portal.utils.get_patient_journey",
+        "hospital_portal.utils.get_department_stats",
+        "hospital_portal.utils.get_bed_occupancy",
+    ]
+}
 
-# include js in doctype views
-# doctype_js = {"doctype" : "public/js/doctype.js"}
-# doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
-# doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
-# doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
+# ─────────────────────────────────────────
+# OVERRIDE FORMS (custom JS per doctype)
+# ─────────────────────────────────────────
+doctype_js = {
+    "Patient Registration": "public/js/patient_registration.js",
+    "Appointment":          "public/js/appointment.js",
+    "Consultation":         "public/js/consultation.js",
+    "Prescription":         "public/js/prescription.js",
+    "Lab Request":          "public/js/lab_request.js",
+    "Radiology Request":    "public/js/radiology_request.js",
+    "Pharmacy Dispensing":  "public/js/pharmacy_dispensing.js",
+    "ICU Monitoring":       "public/js/icu_monitoring.js",
+}
 
-# Svg Icons
-# ------------------
-# include app icons in desk
-# app_include_icons = "hospital_portal/public/icons.svg"
-
-# Home Pages
-# ----------
-
-# application home page (will override Website Settings)
-# home_page = "login"
-
-# website user home page (by Role)
-# role_home_page = {
-# 	"Role": "home_page"
-# }
-
-# Generators
-# ----------
-
-# automatically create page for each record of this doctype
-# website_generators = ["Web Page"]
-
-# Jinja
-# ----------
-
-# add methods and filters to jinja environment
-# jinja = {
-# 	"methods": "hospital_portal.utils.jinja_methods",
-# 	"filters": "hospital_portal.utils.jinja_filters"
-# }
-
-# Installation
-# ------------
-
-# before_install = "hospital_portal.install.before_install"
-# after_install = "hospital_portal.install.after_install"
-
-# Uninstallation
-# ------------
-
-# before_uninstall = "hospital_portal.uninstall.before_uninstall"
-# after_uninstall = "hospital_portal.uninstall.after_uninstall"
-
-# Integration Setup
-# ------------------
-# To set up dependencies/integrations with other apps
-# Name of the app being installed is passed as an argument
-
-# before_app_install = "hospital_portal.utils.before_app_install"
-# after_app_install = "hospital_portal.utils.after_app_install"
-
-# Integration Cleanup
-# -------------------
-# To clean up dependencies/integrations with other apps
-# Name of the app being uninstalled is passed as an argument
-
-# before_app_uninstall = "hospital_portal.utils.before_app_uninstall"
-# after_app_uninstall = "hospital_portal.utils.after_app_uninstall"
-
-# Desk Notifications
-# ------------------
-# See frappe.core.notifications.get_notification_config
-
-# notification_config = "hospital_portal.notifications.get_notification_config"
-
-# Permissions
-# -----------
-# Permissions evaluated in scripted ways
-
-# permission_query_conditions = {
-# 	"Event": "frappe.desk.doctype.event.event.get_permission_query_conditions",
-# }
-#
-# has_permission = {
-# 	"Event": "frappe.desk.doctype.event.event.has_permission",
-# }
-
-# DocType Class
-# ---------------
-# Override standard doctype classes
-
-# override_doctype_class = {
-# 	"ToDo": "custom_app.overrides.CustomToDo"
-# }
-
-# Document Events
-# ---------------
-# Hook on document methods and events
-
-# doc_events = {
-# 	"*": {
-# 		"on_update": "method",
-# 		"on_cancel": "method",
-# 		"on_trash": "method"
-# 	}
-# }
-
-# Scheduled Tasks
-# ---------------
-
-# scheduler_events = {
-# 	"all": [
-# 		"hospital_portal.tasks.all"
-# 	],
-# 	"daily": [
-# 		"hospital_portal.tasks.daily"
-# 	],
-# 	"hourly": [
-# 		"hospital_portal.tasks.hourly"
-# 	],
-# 	"weekly": [
-# 		"hospital_portal.tasks.weekly"
-# 	],
-# 	"monthly": [
-# 		"hospital_portal.tasks.monthly"
-# 	],
-# }
-
-# Testing
-# -------
-
-# before_tests = "hospital_portal.install.before_tests"
-
-# Overriding Methods
-# ------------------------------
-#
-# override_whitelisted_methods = {
-# 	"frappe.desk.doctype.event.event.get_events": "hospital_portal.event.get_events"
-# }
-#
-# each overriding function accepts a `data` argument;
-# generated from the base implementation of the doctype dashboard,
-# along with any modifications made in other Frappe apps
-# override_doctype_dashboards = {
-# 	"Task": "hospital_portal.task.get_dashboard_data"
-# }
-
-# exempt linked doctypes from being automatically cancelled
-#
-# auto_cancel_exempted_doctypes = ["Auto Repeat"]
-
-# Ignore links to specified DocTypes when deleting documents
-# -----------------------------------------------------------
-
-# ignore_links_on_delete = ["Communication", "ToDo"]
-
-# Request Events
-# ----------------
-# before_request = ["hospital_portal.utils.before_request"]
-# after_request = ["hospital_portal.utils.after_request"]
-
-# Job Events
-# ----------
-# before_job = ["hospital_portal.utils.before_job"]
-# after_job = ["hospital_portal.utils.after_job"]
-
-# User Data Protection
-# --------------------
-
-# user_data_fields = [
-# 	{
-# 		"doctype": "{doctype_1}",
-# 		"filter_by": "{filter_by}",
-# 		"redact_fields": ["{field_1}", "{field_2}"],
-# 		"partial": 1,
-# 	},
-# 	{
-# 		"doctype": "{doctype_2}",
-# 		"filter_by": "{filter_by}",
-# 		"partial": 1,
-# 	},
-# 	{
-# 		"doctype": "{doctype_3}",
-# 		"strict": False,
-# 	},
-# 	{
-# 		"doctype": "{doctype_4}"
-# 	}
-# ]
-
-# Authentication and authorization
-# --------------------------------
-
-# auth_hooks = [
-# 	"hospital_portal.auth.validate"
-# ]
-
-# Automatically update python controller files with type annotations for this app.
-# export_python_type_annotations = True
-
-# default_log_clearing_doctypes = {
-# 	"Logging DocType Name": 30  # days to retain logs
-# }
-
-# Translation
-# ------------
-# List of apps whose translatable strings should be excluded from this app's translations.
-# ignore_translatable_strings_from = []
-
+# ─────────────────────────────────────────
+# NOTIFICATIONS
+# ─────────────────────────────────────────
+notification_config = "hospital_portal.notifications.get_notification_config"

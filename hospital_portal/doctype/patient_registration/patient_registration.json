@@ -1,0 +1,185 @@
+{
+  "name": "Patient Registration",
+  "doctype": "DocType",
+  "module": "Hospital Portal",
+  "naming_rule": "Expression",
+  "autoname": "format:PAT-{YYYY}-{#####}",
+  "title_field": "full_name",
+  "search_fields": "full_name,phone,patient_id",
+  "track_changes": 1,
+  "is_submittable": 0,
+  "fields": [
+    {
+      "fieldname": "section_basic",
+      "fieldtype": "Section Break",
+      "label": "Patient Information"
+    },
+    {
+      "fieldname": "patient_id",
+      "fieldtype": "Data",
+      "label": "Patient ID",
+      "read_only": 1,
+      "bold": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "full_name",
+      "fieldtype": "Data",
+      "label": "Full Name",
+      "reqd": 1,
+      "in_list_view": 1,
+      "bold": 1
+    },
+    {
+      "fieldname": "col1",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "date_of_birth",
+      "fieldtype": "Date",
+      "label": "Date of Birth"
+    },
+    {
+      "fieldname": "gender",
+      "fieldtype": "Select",
+      "label": "Gender",
+      "options": "\nMale\nFemale\nOther",
+      "reqd": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "blood_group",
+      "fieldtype": "Select",
+      "label": "Blood Group",
+      "options": "\nA+\nA-\nB+\nB-\nO+\nO-\nAB+\nAB-"
+    },
+    {
+      "fieldname": "section_contact",
+      "fieldtype": "Section Break",
+      "label": "Contact Details"
+    },
+    {
+      "fieldname": "phone",
+      "fieldtype": "Phone",
+      "label": "Phone Number",
+      "reqd": 1
+    },
+    {
+      "fieldname": "email",
+      "fieldtype": "Data",
+      "options": "Email",
+      "label": "Email"
+    },
+    {
+      "fieldname": "col2",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "address",
+      "fieldtype": "Text",
+      "label": "Address"
+    },
+    {
+      "fieldname": "emergency_contact_name",
+      "fieldtype": "Data",
+      "label": "Emergency Contact Name"
+    },
+    {
+      "fieldname": "emergency_contact_phone",
+      "fieldtype": "Phone",
+      "label": "Emergency Contact Phone"
+    },
+    {
+      "fieldname": "section_visit",
+      "fieldtype": "Section Break",
+      "label": "Visit Details"
+    },
+    {
+      "fieldname": "visit_type",
+      "fieldtype": "Select",
+      "label": "Visit Type",
+      "options": "OPD\nIPD\nEmergency\nDaycare",
+      "reqd": 1,
+      "default": "OPD",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "chief_complaint",
+      "fieldtype": "Text",
+      "label": "Chief Complaint / Reason for Visit",
+      "reqd": 1,
+      "description": "Patient's main problem or reason for visiting"
+    },
+    {
+      "fieldname": "col3",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "referred_department",
+      "fieldtype": "Select",
+      "label": "Referred Department",
+      "options": "Consultation / OPD\nEmergency\nLaboratory\nRadiology\nPharmacy\nIPD / Ward\nICU",
+      "reqd": 1
+    },
+    {
+      "fieldname": "registration_date",
+      "fieldtype": "Datetime",
+      "label": "Registration Date",
+      "default": "now",
+      "read_only": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "registered_by",
+      "fieldtype": "Link",
+      "options": "User",
+      "label": "Registered By",
+      "default": "__user",
+      "read_only": 1
+    },
+    {
+      "fieldname": "status",
+      "fieldtype": "Select",
+      "label": "Status",
+      "options": "Registered\nWaiting\nVitals Recorded\nIn Consultation\nIn Lab\nIn Radiology\nIn Pharmacy\nAdmitted\nDischarged",
+      "default": "Registered",
+      "in_list_view": 1,
+      "bold": 1
+    },
+    {
+      "fieldname": "section_insurance",
+      "fieldtype": "Section Break",
+      "label": "Insurance / Payment"
+    },
+    {
+      "fieldname": "payment_type",
+      "fieldtype": "Select",
+      "label": "Payment Type",
+      "options": "Cash\nInsurance\nPanel\nGovernment Scheme\nFree",
+      "default": "Cash"
+    },
+    {
+      "fieldname": "insurance_provider",
+      "fieldtype": "Data",
+      "label": "Insurance Provider",
+      "depends_on": "eval:doc.payment_type == 'Insurance'"
+    },
+    {
+      "fieldname": "insurance_id",
+      "fieldtype": "Data",
+      "label": "Insurance ID / Policy No",
+      "depends_on": "eval:doc.payment_type == 'Insurance'"
+    }
+  ],
+  "permissions": [
+    {"role": "Hospital Head",      "read": 1, "write": 1, "create": 1, "delete": 1, "print": 1, "report": 1},
+    {"role": "Registration Staff", "read": 1, "write": 1, "create": 1, "print": 1},
+    {"role": "Nurse",              "read": 1, "write": 1},
+    {"role": "Doctor",             "read": 1},
+    {"role": "Lab Technician",     "read": 1},
+    {"role": "Radiographer",       "read": 1},
+    {"role": "Pharmacist",         "read": 1},
+    {"role": "Ward Nurse",         "read": 1},
+    {"role": "ICU Nurse",          "read": 1}
+  ]
+}

@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Registration Desk Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:#f0f4ff; --white:#fff; --navy:#0a1628; --blue:#1565d8;
+      --cyan:#00c4cc; --green:#00c46a; --red:#e74c3c; --gray:#64748b;
+      --border:#e2e8f0; --shadow:0 4px 24px rgba(0,0,0,.08);
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Outfit',sans-serif; background:var(--bg); color:var(--navy); min-height:100vh; }
+
+    .topbar {
+      background:var(--navy); color:#fff;
+      padding:.875rem 2rem; display:flex; align-items:center; gap:1rem;
+    }
+    .topbar h1 { font-size:1rem; font-weight:700; }
+    .topbar-badge {
+      margin-left:auto; background:rgba(255,255,255,.1);
+      padding:.25rem .75rem; border-radius:20px; font-size:.75rem;
+    }
+
+    .layout { display:grid; grid-template-columns:1fr 380px; gap:1.5rem; padding:1.5rem 2rem; max-width:1300px; margin:0 auto; }
+    @media(max-width:900px){ .layout{ grid-template-columns:1fr; } }
+
+    /* FORM PANEL */
+    .panel { background:var(--white); border-radius:20px; box-shadow:var(--shadow); overflow:hidden; }
+    .panel-header {
+      padding:1.25rem 1.5rem; border-bottom:1px solid var(--border);
+      display:flex; align-items:center; gap:.75rem;
+    }
+    .panel-icon { font-size:1.25rem; }
+    .panel-title { font-size:1rem; font-weight:700; }
+    .panel-body { padding:1.5rem; }
+
+    .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+    .form-full { grid-column:1/-1; }
+    label { display:block; font-size:.8rem; font-weight:600; color:var(--gray); margin-bottom:.375rem; }
+    input, select, textarea {
+      width:100%; padding:.65rem .9rem; border:1.5px solid var(--border);
+      border-radius:10px; font-family:inherit; font-size:.9rem; color:var(--navy);
+      transition:.2s; background:#fff;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline:none; border-color:var(--blue); box-shadow:0 0 0 3px rgba(21,101,216,.1);
+    }
+    textarea { resize:vertical; min-height:80px; }
+
+    .btn {
+      padding:.75rem 1.5rem; border:none; border-radius:12px;
+      font-family:inherit; font-weight:600; font-size:.9rem; cursor:pointer; transition:.2s;
+    }
+    .btn-primary {
+      background:linear-gradient(135deg,var(--blue),var(--cyan));
+      color:#fff; width:100%; margin-top:1rem;
+    }
+    .btn-primary:hover { opacity:.9; transform:translateY(-1px); }
+    .btn-secondary { background:var(--border); color:var(--navy); }
+
+    /* QUEUE / TOKEN PANEL */
+    .queue-list { display:flex; flex-direction:column; gap:.6rem; }
+    .queue-item {
+      display:flex; align-items:center; gap:.875rem;
+      padding:.875rem; border-radius:12px;
+      border:1.5px solid var(--border); transition:.2s;
+    }
+    .queue-item:hover { border-color:var(--blue); background:#f8fbff; }
+    .token-badge {
+      background:var(--navy); color:#fff;
+      width:40px; height:40px; border-radius:10px;
+      display:grid; place-items:center;
+      font-family:'JetBrains Mono',monospace; font-weight:600; font-size:.85rem;
+      flex-shrink:0;
+    }
+    .queue-info { flex:1; }
+    .queue-name { font-weight:600; font-size:.875rem; }
+    .queue-dept { font-size:.75rem; color:var(--gray); }
+    .status-pill {
+      font-size:.65rem; font-weight:700; padding:.2rem .6rem;
+      border-radius:20px; letter-spacing:.03em; text-transform:uppercase;
+    }
+    .s-waiting  { background:#fff3cd; color:#856404; }
+    .s-called   { background:#cff4fc; color:#0c5460; }
+    .s-done     { background:#d1e7dd; color:#0a3622; }
+
+    /* TOKEN RECEIPT MODAL */
+    .modal-bg {
+      display:none; position:fixed; inset:0;
+      background:rgba(0,0,0,.5); z-index:200;
+      place-items:center;
+    }
+    .modal-bg.show { display:grid; }
+    .receipt {
+      background:#fff; border-radius:20px; padding:2rem;
+      width:320px; text-align:center; box-shadow:0 24px 80px rgba(0,0,0,.3);
+    }
+    .receipt-hospital { font-weight:800; font-size:1.1rem; margin-bottom:.25rem; }
+    .receipt-title { color:var(--gray); font-size:.8rem; margin-bottom:1.5rem; }
+    .receipt-token {
+      font-size:3rem; font-weight:800; font-family:'JetBrains Mono',monospace;
+      color:var(--blue); margin:.5rem 0;
+    }
+    .receipt-row { display:flex; justify-content:space-between; padding:.4rem 0; border-bottom:1px dashed var(--border); font-size:.85rem; }
+    .receipt-row:last-of-type { border:none; }
+    .receipt-actions { display:flex; gap:.75rem; margin-top:1.25rem; }
+    .receipt-actions .btn { flex:1; }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <span>📋</span>
+  <h1>Registration Desk Portal</h1>
+  <div class="topbar-badge" id="reg-count">0 registered today</div>
+</div>
+
+<div class="layout">
+  <!-- LEFT: REGISTRATION FORM -->
+  <div>
+    <div class="panel" style="margin-bottom:1.5rem;">
+      <div class="panel-header">
+        <span class="panel-icon">👤</span>
+        <span class="panel-title">New Patient Registration</span>
+      </div>
+      <div class="panel-body">
+        <div class="form-grid">
+          <div>
+            <label>Full Name *</label>
+            <input type="text" id="fname" placeholder="Patient full name"/>
+          </div>
+          <div>
+            <label>Phone Number *</label>
+            <input type="tel" id="phone" placeholder="+91 XXXXXXXXXX"/>
+          </div>
+          <div>
+            <label>Date of Birth</label>
+            <input type="date" id="dob"/>
+          </div>
+          <div>
+            <label>Gender *</label>
+            <select id="gender">
+              <option value="">-- Select --</option>
+              <option>Male</option><option>Female</option><option>Other</option>
+            </select>
+          </div>
+          <div>
+            <label>Blood Group</label>
+            <select id="blood">
+              <option value="">-- Select --</option>
+              <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+              <option>O+</option><option>O-</option><option>AB+</option><option>AB-</option>
+            </select>
+          </div>
+          <div>
+            <label>Visit Type *</label>
+            <select id="visit">
+              <option>OPD</option><option>Emergency</option><option>IPD</option><option>Daycare</option>
+            </select>
+          </div>
+          <div class="form-full">
+            <label>Chief Complaint / Problem *</label>
+            <textarea id="complaint" placeholder="Describe the patient's main problem or reason for visit..."></textarea>
+          </div>
+          <div>
+            <label>Department to Send *</label>
+            <select id="dept">
+              <option>Consultation / OPD</option>
+              <option>Emergency</option>
+              <option>Laboratory</option>
+              <option>Radiology</option>
+            </select>
+          </div>
+          <div>
+            <label>Payment Type</label>
+            <select id="payment">
+              <option>Cash</option><option>Insurance</option><option>Panel</option>
+              <option>Government Scheme</option><option>Free</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="registerPatient()">📋 Register Patient & Generate Token</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: TODAY'S QUEUE -->
+  <div>
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-icon">🎟️</span>
+        <span class="panel-title">Today's Queue</span>
+      </div>
+      <div class="panel-body">
+        <div class="queue-list" id="queue-list">
+          <!-- Demo items -->
+          <div class="queue-item">
+            <div class="token-badge">T01</div>
+            <div class="queue-info">
+              <div class="queue-name">Rajesh Kumar</div>
+              <div class="queue-dept">Consultation / Dr. Sharma</div>
+            </div>
+            <span class="status-pill s-called">Called</span>
+          </div>
+          <div class="queue-item">
+            <div class="token-badge">T02</div>
+            <div class="queue-info">
+              <div class="queue-name">Meena Devi</div>
+              <div class="queue-dept">Consultation / Dr. Sharma</div>
+            </div>
+            <span class="status-pill s-waiting">Waiting</span>
+          </div>
+          <div class="queue-item">
+            <div class="token-badge">T03</div>
+            <div class="queue-info">
+              <div class="queue-name">Arjun Singh</div>
+              <div class="queue-dept">Emergency</div>
+            </div>
+            <span class="status-pill s-waiting">Waiting</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOKEN RECEIPT MODAL -->
+<div class="modal-bg" id="modal">
+  <div class="receipt">
+    <div class="receipt-hospital">🏥 HOSPITAL NAME</div>
+    <div class="receipt-title">APPOINTMENT RECEIPT</div>
+    <div style="font-size:.75rem;color:#64748b;">Patient ID</div>
+    <div style="font-weight:700;font-size:1rem;margin-bottom:.5rem;" id="r-pid">---</div>
+    <div style="font-size:.75rem;color:#64748b;">Token Number</div>
+    <div class="receipt-token" id="r-token">--</div>
+    <div class="receipt-row"><span>Patient</span><span id="r-name">--</span></div>
+    <div class="receipt-row"><span>Department</span><span id="r-dept">--</span></div>
+    <div class="receipt-row"><span>Date & Time</span><span id="r-time">--</span></div>
+    <div class="receipt-row"><span>Visit Type</span><span id="r-visit">--</span></div>
+    <div class="receipt-actions">
+      <button class="btn btn-secondary" onclick="closeModal()">Close</button>
+      <button class="btn btn-primary" onclick="printReceipt()">🖨️ Print</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let tokenCounter = 3; // starts after demo
+let regCount = 3;
+
+function registerPatient() {
+  const fname = document.getElementById('fname').value.trim();
+  const phone = document.getElementById('phone').value.trim();
+  const complaint = document.getElementById('complaint').value.trim();
+  const dept = document.getElementById('dept').value;
+  const visit = document.getElementById('visit').value;
+
+  if (!fname || !phone || !complaint) {
+    alert('Please fill Name, Phone, and Chief Complaint');
+    return;
+  }
+
+  tokenCounter++;
+  regCount++;
+
+  const now = new Date();
+  const patientId = `PAT-${now.getFullYear()}-${String(Math.floor(Math.random()*90000)+10000)}`;
+  const tokenStr = `T${String(tokenCounter).padStart(2,'0')}`;
+
+  // Show receipt modal
+  document.getElementById('r-pid').textContent = patientId;
+  document.getElementById('r-token').textContent = tokenStr;
+  document.getElementById('r-name').textContent = fname;
+  document.getElementById('r-dept').textContent = dept;
+  document.getElementById('r-time').textContent = now.toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit'});
+  document.getElementById('r-visit').textContent = visit;
+  document.getElementById('modal').classList.add('show');
+
+  // Add to queue
+  const queueHtml = `
+    <div class="queue-item">
+      <div class="token-badge">${tokenStr}</div>
+      <div class="queue-info">
+        <div class="queue-name">${fname}</div>
+        <div class="queue-dept">${dept}</div>
+      </div>
+      <span class="status-pill s-waiting">Waiting</span>
+    </div>`;
+  document.getElementById('queue-list').insertAdjacentHTML('beforeend', queueHtml);
+  document.getElementById('reg-count').textContent = regCount + ' registered today';
+
+  // Clear form
+  ['fname','phone','complaint'].forEach(id => document.getElementById(id).value = '');
+
+  // In real Frappe: frappe.call({ method: 'hospital_portal.api.registration.register_patient', args: {...} })
+}
+
+function closeModal() { document.getElementById('modal').classList.remove('show'); }
+function printReceipt() { window.print(); }
+</script>
+</body>
+</html>
