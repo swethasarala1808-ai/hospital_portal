@@ -1,551 +1,504 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Hospital Head Dashboard</title>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
-  <style>
-    :root {
-      --navy:   #0a1628;
-      --navy2:  #0f2044;
-      --blue:   #1565d8;
-      --cyan:   #00c4cc;
-      --green:  #00d68f;
-      --orange: #ff8c42;
-      --red:    #ff4757;
-      --yellow: #ffd43b;
-      --white:  #ffffff;
-      --gray:   #8899aa;
-      --card-bg:#0d1f3c;
-      --border: rgba(255,255,255,0.07);
-    }
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body {
-      font-family: 'Outfit', sans-serif;
-      background: var(--navy);
-      color: var(--white);
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hospital Dashboard — Admin</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap');
+  :root {
+    --bg: #0d1117; --surface: #161b22; --border: #21262d;
+    --text: #e6edf3; --muted: #8b949e; --accent: #4f8ef7;
+    --green: #3fb950; --yellow: #d29922; --red: #f85149;
+    --purple: #a371f7; --orange: #f0883e;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
 
-    /* ── TOP BAR ── */
-    .topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 2rem;
-      height: 64px;
-      background: var(--navy2);
-      border-bottom: 1px solid var(--border);
-      position: sticky; top:0; z-index:100;
-    }
-    .logo { display:flex; align-items:center; gap:.75rem; }
-    .logo-icon {
-      width:38px; height:38px; border-radius:10px;
-      background: linear-gradient(135deg, var(--blue), var(--cyan));
-      display:grid; place-items:center; font-size:1.2rem;
-    }
-    .logo-text { font-size:1.1rem; font-weight:700; letter-spacing:-.02em; }
-    .logo-sub  { font-size:.7rem; color:var(--gray); font-weight:400; }
-    .topbar-right { display:flex; align-items:center; gap:1rem; }
-    .datetime { font-family:'JetBrains Mono',monospace; font-size:.75rem; color:var(--gray); }
-    .badge-live {
-      display:flex; align-items:center; gap:.4rem;
-      font-size:.7rem; color:var(--green); font-weight:600;
-    }
-    .pulse {
-      width:8px; height:8px; border-radius:50%;
-      background:var(--green);
-      animation: pulse 1.5s ease-in-out infinite;
-    }
-    @keyframes pulse {
-      0%,100% { opacity:1; transform:scale(1); }
-      50% { opacity:.4; transform:scale(1.4); }
-    }
+  /* Topbar */
+  .topbar {
+    background:var(--surface); border-bottom:1px solid var(--border);
+    padding:0 24px; height:56px; display:flex; align-items:center; justify-content:space-between;
+    position:sticky; top:0; z-index:100;
+  }
+  .topbar-left { display:flex; align-items:center; gap:12px; }
+  .topbar-logo { font-size:1.1rem; font-weight:700; color:var(--text); }
+  .topbar-logo span { color:var(--accent); }
+  .topbar-badge {
+    background:rgba(79,142,247,0.15); color:var(--accent);
+    font-size:0.7rem; padding:2px 8px; border-radius:20px; font-weight:600;
+    border:1px solid rgba(79,142,247,0.3);
+  }
+  .topbar-right { display:flex; align-items:center; gap:16px; }
+  .user-info { font-size:0.85rem; color:var(--muted); }
+  .user-info strong { color:var(--text); }
+  .btn-logout {
+    background:rgba(248,81,73,0.1); border:1px solid rgba(248,81,73,0.3);
+    color:#f85149; padding:6px 14px; border-radius:8px; font-size:0.8rem;
+    cursor:pointer; font-family:'DM Sans',sans-serif; font-weight:500;
+    transition:all 0.2s;
+  }
+  .btn-logout:hover { background:rgba(248,81,73,0.2); }
 
-    /* ── LAYOUT ── */
-    .container { max-width:1400px; margin:0 auto; padding:2rem; }
+  /* Layout */
+  .main { padding:24px; max-width:1400px; margin:0 auto; }
 
-    .page-title {
-      font-size:1.8rem; font-weight:800; letter-spacing:-.03em;
-      margin-bottom:.25rem;
-    }
-    .page-sub { color:var(--gray); font-size:.875rem; margin-bottom:2rem; }
+  /* Page header */
+  .page-header { margin-bottom:24px; }
+  .page-header h1 { font-size:1.5rem; font-weight:700; }
+  .page-header p { color:var(--muted); font-size:0.9rem; margin-top:2px; }
 
-    /* ── STATS ROW ── */
-    .stats-row {
-      display:grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap:1rem;
-      margin-bottom:2rem;
-    }
-    .stat-card {
-      background: var(--card-bg);
-      border:1px solid var(--border);
-      border-radius:16px;
-      padding:1.25rem;
-      position:relative;
-      overflow:hidden;
-      transition: transform .2s, box-shadow .2s;
-    }
-    .stat-card:hover { transform:translateY(-3px); box-shadow:0 8px 32px rgba(0,0,0,.4); }
-    .stat-card::before {
-      content:''; position:absolute; top:0; right:0;
-      width:80px; height:80px; border-radius:0 16px 0 80px;
-      opacity:.1;
-    }
-    .stat-card.blue::before { background:var(--blue); }
-    .stat-card.green::before { background:var(--green); }
-    .stat-card.orange::before { background:var(--orange); }
-    .stat-card.red::before { background:var(--red); }
-    .stat-card.cyan::before { background:var(--cyan); }
-    .stat-icon { font-size:1.5rem; margin-bottom:.5rem; }
-    .stat-value { font-size:2rem; font-weight:800; font-family:'JetBrains Mono',monospace; }
-    .stat-label { color:var(--gray); font-size:.75rem; margin-top:.2rem; }
-    .stat-change {
-      font-size:.7rem; margin-top:.4rem; font-weight:600;
-    }
-    .stat-change.up   { color:var(--green); }
-    .stat-change.down { color:var(--red); }
+  /* Stats row */
+  .stats-row { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:24px; }
+  .stat-card {
+    background:var(--surface); border:1px solid var(--border); border-radius:12px;
+    padding:16px 20px;
+  }
+  .stat-card .label { font-size:0.75rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px; }
+  .stat-card .value { font-size:2rem; font-weight:700; margin-top:4px; }
+  .stat-card .sub { font-size:0.78rem; color:var(--muted); margin-top:2px; }
+  .stat-card.green .value { color:var(--green); }
+  .stat-card.blue .value { color:var(--accent); }
+  .stat-card.yellow .value { color:var(--yellow); }
+  .stat-card.red .value { color:var(--red); }
 
-    /* ── DEPARTMENT GRID ── */
-    .section-title {
-      font-size:1rem; font-weight:700; letter-spacing:.05em; text-transform:uppercase;
-      color:var(--gray); margin-bottom:1rem; margin-top:2rem;
-    }
-    .dept-grid {
-      display:grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap:1.25rem;
-    }
-    .dept-card {
-      background: var(--card-bg);
-      border:1px solid var(--border);
-      border-radius:20px;
-      padding:1.5rem;
-      cursor:pointer;
-      transition: all .25s;
-      position:relative;
-      overflow:hidden;
-      text-decoration:none;
-      color:inherit;
-      display:block;
-    }
-    .dept-card:hover {
-      border-color: rgba(255,255,255,.2);
-      transform:translateY(-4px);
-      box-shadow:0 16px 48px rgba(0,0,0,.5);
-    }
-    .dept-card::after {
-      content:'';
-      position:absolute; bottom:0; left:0; right:0; height:3px;
-      border-radius:0 0 20px 20px;
-    }
-    .dept-card.d1::after { background: linear-gradient(90deg, #1565d8, #00c4cc); }
-    .dept-card.d2::after { background: linear-gradient(90deg, #00d68f, #1565d8); }
-    .dept-card.d3::after { background: linear-gradient(90deg, #9b59b6, #1565d8); }
-    .dept-card.d4::after { background: linear-gradient(90deg, #f39c12, #e74c3c); }
-    .dept-card.d5::after { background: linear-gradient(90deg, #00c4cc, #9b59b6); }
-    .dept-card.d6::after { background: linear-gradient(90deg, #00d68f, #f39c12); }
-    .dept-card.d7::after { background: linear-gradient(90deg, #3498db, #2ecc71); }
-    .dept-card.d8::after { background: linear-gradient(90deg, #e74c3c, #ff8c42); }
+  /* Section header */
+  .section-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+  .section-header h2 { font-size:1rem; font-weight:600; }
+  .section-header span { font-size:0.78rem; color:var(--muted); }
 
-    .dept-header {
-      display:flex; align-items:flex-start; justify-content:space-between;
-      margin-bottom:1rem;
-    }
-    .dept-icon {
-      width:48px; height:48px; border-radius:14px;
-      display:grid; place-items:center; font-size:1.4rem;
-      flex-shrink:0;
-    }
-    .d1 .dept-icon { background: rgba(21,101,216,.2); }
-    .d2 .dept-icon { background: rgba(0,214,143,.2); }
-    .d3 .dept-icon { background: rgba(155,89,182,.2); }
-    .d4 .dept-icon { background: rgba(243,156,18,.2); }
-    .d5 .dept-icon { background: rgba(0,196,204,.2); }
-    .d6 .dept-icon { background: rgba(0,214,143,.2); }
-    .d7 .dept-icon { background: rgba(52,152,219,.2); }
-    .d8 .dept-icon { background: rgba(231,76,60,.2); }
+  /* Department grid */
+  .dept-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:24px; }
 
-    .dept-status {
-      font-size:.65rem; font-weight:700; padding:.2rem .6rem;
-      border-radius:20px; letter-spacing:.03em; text-transform:uppercase;
-    }
-    .status-active { background:rgba(0,214,143,.15); color:var(--green); }
-    .status-busy   { background:rgba(255,140,66,.15);  color:var(--orange); }
-    .status-critical{background:rgba(255,71,87,.15);  color:var(--red); }
+  .dept-card {
+    background:var(--surface); border:1px solid var(--border); border-radius:14px;
+    padding:20px; cursor:pointer; transition:all 0.2s; position:relative; overflow:hidden;
+    text-decoration:none; display:block;
+  }
+  .dept-card::before {
+    content:''; position:absolute; top:0; left:0; right:0; height:3px;
+    background:var(--dept-color);
+  }
+  .dept-card:hover { border-color:var(--dept-color); transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,0,0,0.3); }
 
-    .dept-name { font-size:1rem; font-weight:700; margin-bottom:.25rem; }
-    .dept-sub  { font-size:.75rem; color:var(--gray); margin-bottom:1rem; }
+  .dept-head { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:14px; }
+  .dept-icon { font-size:1.8rem; }
+  .dept-status {
+    font-size:0.7rem; padding:3px 8px; border-radius:20px; font-weight:600;
+    background:rgba(63,185,80,0.15); color:var(--green); border:1px solid rgba(63,185,80,0.3);
+  }
+  .dept-status.busy { background:rgba(210,153,34,0.15); color:var(--yellow); border-color:rgba(210,153,34,0.3); }
+  .dept-status.critical { background:rgba(248,81,73,0.15); color:var(--red); border-color:rgba(248,81,73,0.3); }
 
-    .dept-metrics {
-      display:grid; grid-template-columns:1fr 1fr; gap:.5rem;
-    }
-    .metric {
-      background: rgba(255,255,255,.04);
-      border-radius:10px;
-      padding:.5rem .75rem;
-    }
-    .metric-val { font-size:1.25rem; font-weight:700; font-family:'JetBrains Mono',monospace; }
-    .metric-lbl { font-size:.65rem; color:var(--gray); }
+  .dept-name { font-size:0.95rem; font-weight:600; margin-bottom:2px; }
+  .dept-desc { font-size:0.78rem; color:var(--muted); margin-bottom:14px; }
 
-    .dept-arrow {
-      position:absolute; right:1.5rem; bottom:1.5rem;
-      color:var(--gray); font-size:1rem; transition:.2s;
-    }
-    .dept-card:hover .dept-arrow { color:var(--white); transform:translateX(4px); }
+  .dept-stats { display:flex; gap:16px; }
+  .dept-stat .num { font-size:1.3rem; font-weight:700; color:var(--dept-color); }
+  .dept-stat .lbl { font-size:0.7rem; color:var(--muted); }
 
-    /* ── BED OCCUPANCY ── */
-    .bed-row {
-      display:flex; gap:1rem; flex-wrap:wrap; margin-top:1rem;
-    }
-    .bed-ward {
-      background:var(--card-bg); border:1px solid var(--border);
-      border-radius:14px; padding:1rem 1.25rem; flex:1; min-width:140px;
-    }
-    .bed-ward-name { font-size:.75rem; color:var(--gray); margin-bottom:.5rem; }
-    .bed-bar-bg { height:6px; background:rgba(255,255,255,.1); border-radius:3px; }
-    .bed-bar-fill { height:6px; border-radius:3px; }
-    .bed-fraction { font-size:.8rem; font-weight:600; margin-top:.4rem; font-family:'JetBrains Mono',monospace; }
+  .dept-arrow {
+    position:absolute; bottom:16px; right:16px;
+    color:var(--muted); font-size:1rem; transition:all 0.2s;
+  }
+  .dept-card:hover .dept-arrow { color:var(--dept-color); transform:translateX(3px); }
 
-    /* ── ALERT STRIP ── */
-    .alerts { margin-top:2rem; }
-    .alert-item {
-      display:flex; align-items:center; gap:1rem;
-      background:var(--card-bg); border:1px solid var(--border);
-      border-radius:12px; padding:.875rem 1.25rem;
-      margin-bottom:.6rem;
-      border-left:3px solid var(--orange);
-    }
-    .alert-item.critical { border-left-color:var(--red); }
-    .alert-icon { font-size:1.1rem; flex-shrink:0; }
-    .alert-text { font-size:.85rem; flex:1; }
-    .alert-time { font-size:.7rem; color:var(--gray); font-family:'JetBrains Mono',monospace; }
+  /* Recent activity */
+  .activity-section { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:20px; }
+  .activity-list { }
+  .activity-item {
+    display:flex; align-items:center; gap:12px; padding:10px 0;
+    border-bottom:1px solid var(--border); font-size:0.85rem;
+  }
+  .activity-item:last-child { border-bottom:none; }
+  .activity-icon {
+    width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:0.9rem; flex-shrink:0;
+  }
+  .activity-text { flex:1; color:var(--text); }
+  .activity-text span { color:var(--muted); }
+  .activity-time { font-size:0.75rem; color:var(--muted); }
+  .token-badge {
+    background:rgba(79,142,247,0.1); color:var(--accent); padding:2px 7px; border-radius:6px; font-size:0.75rem; font-weight:600;
+  }
 
-    /* ── RESPONSIVE ── */
-    @media(max-width:700px) {
-      .stats-row { grid-template-columns:repeat(2,1fr); }
-      .dept-grid { grid-template-columns:1fr; }
-    }
-  </style>
+  .loading { color:var(--muted); font-size:0.85rem; padding:16px; text-align:center; }
+
+  @media (max-width:900px) {
+    .dept-grid { grid-template-columns:1fr 1fr; }
+    .stats-row { grid-template-columns:1fr 1fr; }
+  }
+  @media (max-width:600px) {
+    .dept-grid { grid-template-columns:1fr; }
+    .stats-row { grid-template-columns:1fr 1fr; }
+  }
+</style>
 </head>
 <body>
 
-<!-- TOP BAR -->
 <div class="topbar">
-  <div class="logo">
-    <div class="logo-icon">🏥</div>
-    <div>
-      <div class="logo-text">Hospital Portal</div>
-      <div class="logo-sub">Hospital Head Dashboard</div>
-    </div>
+  <div class="topbar-left">
+    <div class="topbar-logo">🏥 <span>Medicare</span> Hospital</div>
+    <div class="topbar-badge">Admin Dashboard</div>
   </div>
   <div class="topbar-right">
-    <div class="badge-live"><span class="pulse"></span>LIVE</div>
-    <div class="datetime" id="clock">--:--:--</div>
+    <div class="user-info">Logged in as <strong id="adminName">Administrator</strong></div>
+    <button class="btn-logout" onclick="doLogout()">Sign Out</button>
   </div>
 </div>
 
-<div class="container">
+<div class="main">
+  <div class="page-header">
+    <h1>Hospital Overview</h1>
+    <p>All departments · <span id="liveTime"></span></p>
+  </div>
 
-  <div class="page-title">Good morning, Dr. Head 👋</div>
-  <div class="page-sub" id="today-date">Loading...</div>
-
-  <!-- STATS ROW -->
+  <!-- Stats Row -->
   <div class="stats-row">
     <div class="stat-card blue">
-      <div class="stat-icon">👥</div>
-      <div class="stat-value" id="stat-opd">--</div>
-      <div class="stat-label">OPD Today</div>
-      <div class="stat-change up" id="stat-opd-change">↑ Loading...</div>
+      <div class="label">Patients Today</div>
+      <div class="value" id="statTotal">—</div>
+      <div class="sub">Registrations</div>
     </div>
     <div class="stat-card green">
-      <div class="stat-icon">🛏️</div>
-      <div class="stat-value" id="stat-beds">--</div>
-      <div class="stat-label">Beds Occupied</div>
-      <div class="stat-change" id="stat-bed-pct">of -- total</div>
+      <div class="label">Completed</div>
+      <div class="value" id="statDone">—</div>
+      <div class="sub">Full journey done</div>
     </div>
-    <div class="stat-card orange">
-      <div class="stat-icon">⏳</div>
-      <div class="stat-value" id="stat-pending">--</div>
-      <div class="stat-label">Pending Orders</div>
-      <div class="stat-change down">Lab + Radiology</div>
+    <div class="stat-card yellow">
+      <div class="label">In Progress</div>
+      <div class="value" id="statProgress">—</div>
+      <div class="sub">Active queue</div>
     </div>
     <div class="stat-card red">
-      <div class="stat-icon">🚨</div>
-      <div class="stat-value" id="stat-icu">--</div>
-      <div class="stat-label">ICU Patients</div>
-      <div class="stat-change" id="stat-icu-sub">Critical care</div>
-    </div>
-    <div class="stat-card cyan">
-      <div class="stat-icon">💊</div>
-      <div class="stat-value" id="stat-rx">--</div>
-      <div class="stat-label">Prescriptions</div>
-      <div class="stat-change up">Today</div>
+      <div class="label">ICU / Critical</div>
+      <div class="value" id="statICU">—</div>
+      <div class="sub">Needs attention</div>
     </div>
   </div>
 
-  <!-- DEPARTMENTS -->
-  <div class="section-title">All Departments</div>
+  <!-- Department Grid -->
+  <div class="section-header">
+    <h2>Departments</h2>
+    <span>Click any department to open its portal</span>
+  </div>
+
   <div class="dept-grid">
 
-    <!-- 1. REGISTRATION -->
-    <a class="dept-card d1" href="/registration-portal">
-      <div class="dept-header">
+    <a class="dept-card" href="/registration-portal" style="--dept-color:#4f8ef7">
+      <div class="dept-head">
         <div class="dept-icon">📋</div>
-        <span class="dept-status status-active">Active</span>
+        <div class="dept-status" id="status-reg">Active</div>
       </div>
       <div class="dept-name">Registration / Front Office</div>
-      <div class="dept-sub">Patient intake, appointments, token generation</div>
-      <div class="dept-metrics">
-        <div class="metric">
-          <div class="metric-val" id="reg-today">24</div>
-          <div class="metric-lbl">Registered Today</div>
-        </div>
-        <div class="metric">
-          <div class="metric-val" id="reg-waiting">7</div>
-          <div class="metric-lbl">Waiting</div>
-        </div>
+      <div class="dept-desc">Patient intake, token generation, appointments</div>
+      <div class="dept-stats">
+        <div class="dept-stat"><div class="num" id="d-reg-today">—</div><div class="lbl">Today</div></div>
+        <div class="dept-stat"><div class="num" id="d-reg-wait">—</div><div class="lbl">Waiting</div></div>
       </div>
-      <span class="dept-arrow">→</span>
+      <div class="dept-arrow">→</div>
     </a>
 
-    <!-- 2. NURSING -->
-    <a class="dept-card d2" href="/nurse-portal">
-      <div class="dept-header">
+    <a class="dept-card" href="/nurse-portal" style="--dept-color:#3fb950">
+      <div class="dept-head">
         <div class="dept-icon">🩺</div>
-        <span class="dept-status status-busy">Busy</span>
+        <div class="dept-status busy" id="status-nurse">Busy</div>
       </div>
       <div class="dept-name">Nursing / Triage</div>
-      <div class="dept-sub">Vital signs, triage, nursing tasks, injections</div>
-      <div class="dept-metrics">
-        <div class="metric">
-          <div class="metric-val">18</div>
-          <div class="metric-lbl">Vitals Recorded</div>
-        </div>
-        <div class="metric">
-          <div class="metric-val">5</div>
-          <div class="metric-lbl">Tasks Pending</div>
-        </div>
+      <div class="dept-desc">Vital signs, triage assessment, nursing tasks</div>
+      <div class="dept-stats">
+        <div class="dept-stat"><div class="num" id="d-nurse-vitals">—</div><div class="lbl">Vitals Done</div></div>
+        <div class="dept-stat"><div class="num" id="d-nurse-pend">—</div><div class="lbl">Pending</div></div>
       </div>
-      <span class="dept-arrow">→</span>
+      <div class="dept-arrow">→</div>
     </a>
 
-    <!-- 3. CONSULTATION -->
-    <a class="dept-card d3" href="/doctor-portal">
-      <div class="dept-header">
+    <a class="dept-card" href="/doctor-portal" style="--dept-color:#a371f7">
+      <div class="dept-head">
         <div class="dept-icon">👨‍⚕️</div>
-        <span class="dept-status status-busy">Busy</span>
+        <div class="dept-status busy" id="status-doc">Busy</div>
       </div>
-      <div class="dept-name">Consultation / Doctor</div>
-      <div class="dept-sub">OPD consultation, diagnosis, orders</div>
-      <div class="dept-metrics">
-        <div class="metric">
-          <div class="metric-val">12</div>
-          <div class="metric-lbl">Consultations</div>
-        </div>
-        <div class="metric">
-          <div class="metric-val">4</div>
-          <div class="metric-lbl">In Queue</div>
-        </div>
+      <div class="dept-name">Doctor / OPD</div>
+      <div class="dept-desc">Consultation, diagnosis, orders, prescriptions</div>
+      <div class="dept-stats">
+        <div class="dept-stat"><div class="num" id="d-doc-cons">—</div><div class="lbl">Consultations</div></div>
+        <div class="dept-stat"><div class="num" id="d-doc-queue">—</div><div class="lbl">In Queue</div></div>
       </div>
-      <span class="dept-arrow">→</span>
+      <div class="dept-arrow">→</div>
     </a>
 
-    <!-- 4. LAB -->
-    <a class="dept-card d4" href="/lab-portal">
-      <div class="dept-header">
+    <a class="dept-card" href="/lab-portal" style="--dept-color:#f0883e">
+      <div class="dept-head">
         <div class="dept-icon">🔬</div>
-        <span class="dept-status status-active">Active</span>
+        <div class="dept-status" id="status-lab">Active</div>
       </div>
       <div class="dept-name">Laboratory</div>
-      <div class="dept-sub">Blood tests, sample collection, reports</div>
-      <div class="dept-metrics">
-        <div class="metric">
-          <div class="metric-val">9</div>
-          <div class="metric-lbl">Requests Pending</div>
-        </div>
-        <div class="metric">
-          <div class="metric-val">15</div>
-          <div class="metric-lbl">Reports Ready</div>
-        </div>
+      <div class="dept-desc">Blood tests, sample collection, reports</div>
+      <div class="dept-stats">
+        <div class="dept-stat"><div class="num" id="d-lab-pend">—</div><div class="lbl">Pending</div></div>
+        <div class="dept-stat"><div class="num" id="d-lab-done">—</div><div class="lbl">Reports Ready</div></div>
       </div>
-      <span class="dept-arrow">→</span>
+      <div class="dept-arrow">→</div>
     </a>
 
-    <!-- 5. RADIOLOGY -->
-    <a class="dept-card d5" href="/radiology-portal">
-      <div class="dept-header">
+    <a class="dept-card" href="/radiology-portal" style="--dept-color:#79c0ff">
+      <div class="dept-head">
         <div class="dept-icon">📡</div>
-        <span class="dept-status status-active">Active</span>
+        <div class="dept-status" id="status-rad">Active</div>
       </div>
       <div class="dept-name">Radiology</div>
-      <div class="dept-sub">X-Ray, ECG, Echo, CT, MRI</div>
-      <div class="dept-metrics">
-        <div class="metric">
-          <div class="metric-val">6</div>
-          <div class="metric-lbl">Scans Pending</div>
-        </div>
-        <div class="metric">
-          <div class="metric-val">8</div>
-          <div class="metric-lbl">Reports Done</div>
-        </div>
+      <div class="dept-desc">X-Ray, ECG, Echo, CT, MRI scans</div>
+      <div class="dept-stats">
+        <div class="dept-stat"><div class="num" id="d-rad-pend">—</div><div class="lbl">Scans Pending</div></div>
+        <div class="dept-stat"><div class="num" id="d-rad-done">—</div><div class="lbl">Reports Done</div></div>
       </div>
-      <span class="dept-arrow">→</span>
+      <div class="dept-arrow">→</div>
     </a>
 
-    <!-- 6. PHARMACY -->
-    <a class="dept-card d6" href="/pharmacy-portal">
-      <div class="dept-header">
+    <a class="dept-card" href="/pharmacy-portal" style="--dept-color:#56d364">
+      <div class="dept-head">
         <div class="dept-icon">💊</div>
-        <span class="dept-status status-active">Active</span>
+        <div class="dept-status busy" id="status-pharm">Busy</div>
       </div>
       <div class="dept-name">Pharmacy</div>
-      <div class="dept-sub">Medicine dispensing, stock, expiry tracking</div>
-      <div class="dept-metrics">
-        <div class="metric">
-          <div class="metric-val">11</div>
-          <div class="metric-lbl">Prescriptions Due</div>
-        </div>
-        <div class="metric">
-          <div class="metric-val">3</div>
-          <div class="metric-lbl">Low Stock Alerts</div>
-        </div>
+      <div class="dept-desc">Medicine dispensing, billing, stock tracking</div>
+      <div class="dept-stats">
+        <div class="dept-stat"><div class="num" id="d-pharm-rx">—</div><div class="lbl">Prescriptions</div></div>
+        <div class="dept-stat"><div class="num" id="d-pharm-low">—</div><div class="lbl">Low Stock</div></div>
       </div>
-      <span class="dept-arrow">→</span>
+      <div class="dept-arrow">→</div>
     </a>
 
-    <!-- 7. IPD -->
-    <a class="dept-card d7" href="/ipd-portal">
-      <div class="dept-header">
+    <a class="dept-card" href="/ipd-portal" style="--dept-color:#d29922">
+      <div class="dept-head">
         <div class="dept-icon">🛏️</div>
-        <span class="dept-status status-busy">Busy</span>
+        <div class="dept-status busy" id="status-ipd">Busy</div>
       </div>
       <div class="dept-name">IPD / Inpatient Ward</div>
-      <div class="dept-sub">Bed allocation, admitted patients, daily rounds</div>
-      <div class="dept-metrics">
-        <div class="metric">
-          <div class="metric-val">28</div>
-          <div class="metric-lbl">Admitted</div>
-        </div>
-        <div class="metric">
-          <div class="metric-val">7</div>
-          <div class="metric-lbl">Beds Free</div>
-        </div>
+      <div class="dept-desc">Bed allocation, admitted patients, daily rounds</div>
+      <div class="dept-stats">
+        <div class="dept-stat"><div class="num" id="d-ipd-admit">—</div><div class="lbl">Admitted</div></div>
+        <div class="dept-stat"><div class="num" id="d-ipd-free">—</div><div class="lbl">Beds Free</div></div>
       </div>
-      <span class="dept-arrow">→</span>
+      <div class="dept-arrow">→</div>
     </a>
 
-    <!-- 8. ICU -->
-    <a class="dept-card d8" href="/icu-portal">
-      <div class="dept-header">
+    <a class="dept-card" href="/icu-portal" style="--dept-color:#f85149">
+      <div class="dept-head">
         <div class="dept-icon">🚨</div>
-        <span class="dept-status status-critical">Critical</span>
+        <div class="dept-status critical" id="status-icu">Critical</div>
       </div>
       <div class="dept-name">ICU</div>
-      <div class="dept-sub">Critical care, ventilator support, monitoring</div>
-      <div class="dept-metrics">
-        <div class="metric">
-          <div class="metric-val">4</div>
-          <div class="metric-lbl">Critical Patients</div>
-        </div>
-        <div class="metric">
-          <div class="metric-val">2</div>
-          <div class="metric-lbl">On Ventilator</div>
-        </div>
+      <div class="dept-desc">Critical care, ventilator support, monitoring</div>
+      <div class="dept-stats">
+        <div class="dept-stat"><div class="num" id="d-icu-crit">—</div><div class="lbl">Critical</div></div>
+        <div class="dept-stat"><div class="num" id="d-icu-vent">—</div><div class="lbl">On Ventilator</div></div>
       </div>
-      <span class="dept-arrow">→</span>
+      <div class="dept-arrow">→</div>
+    </a>
+
+    <a class="dept-card" href="/patient-portal" style="--dept-color:#58a6ff">
+      <div class="dept-head">
+        <div class="dept-icon">👤</div>
+        <div class="dept-status" id="status-pt">Active</div>
+      </div>
+      <div class="dept-name">Patient Portal</div>
+      <div class="dept-desc">Patient self-service, reports, appointments</div>
+      <div class="dept-stats">
+        <div class="dept-stat"><div class="num" id="d-pt-total">—</div><div class="lbl">Total Patients</div></div>
+        <div class="dept-stat"><div class="num" id="d-pt-invoices">—</div><div class="lbl">Invoices</div></div>
+      </div>
+      <div class="dept-arrow">→</div>
     </a>
 
   </div>
 
-  <!-- BED OCCUPANCY -->
-  <div class="section-title">Bed Occupancy</div>
-  <div class="bed-row">
-    <div class="bed-ward">
-      <div class="bed-ward-name">General Ward</div>
-      <div class="bed-bar-bg"><div class="bed-bar-fill" style="width:75%;background:var(--blue);"></div></div>
-      <div class="bed-fraction">15 / 20</div>
+  <!-- Activity -->
+  <div class="activity-section">
+    <div class="section-header">
+      <h2>Recent Patient Activity</h2>
+      <span id="activityTime">Loading...</span>
     </div>
-    <div class="bed-ward">
-      <div class="bed-ward-name">Semi-Private</div>
-      <div class="bed-bar-bg"><div class="bed-bar-fill" style="width:80%;background:var(--cyan);"></div></div>
-      <div class="bed-fraction">8 / 10</div>
-    </div>
-    <div class="bed-ward">
-      <div class="bed-ward-name">Private Ward</div>
-      <div class="bed-bar-bg"><div class="bed-bar-fill" style="width:60%;background:var(--green);"></div></div>
-      <div class="bed-fraction">3 / 5</div>
-    </div>
-    <div class="bed-ward">
-      <div class="bed-ward-name">ICU</div>
-      <div class="bed-bar-bg"><div class="bed-bar-fill" style="width:66%;background:var(--red);"></div></div>
-      <div class="bed-fraction">4 / 6</div>
-    </div>
-    <div class="bed-ward">
-      <div class="bed-ward-name">Isolation</div>
-      <div class="bed-bar-bg"><div class="bed-bar-fill" style="width:50%;background:var(--orange);"></div></div>
-      <div class="bed-fraction">1 / 2</div>
+    <div class="activity-list" id="activityList">
+      <div class="loading">Loading recent activity...</div>
     </div>
   </div>
-
-  <!-- ALERTS -->
-  <div class="alerts">
-    <div class="section-title">Live Alerts</div>
-    <div class="alert-item critical">
-      <div class="alert-icon">🔴</div>
-      <div class="alert-text">ICU Patient PAT-2025-00034 — SpO₂ dropped to 88%. Immediate attention required.</div>
-      <div class="alert-time">2 min ago</div>
-    </div>
-    <div class="alert-item">
-      <div class="alert-icon">🟠</div>
-      <div class="alert-text">Pharmacy: Paracetamol IV stock low — only 12 units remaining.</div>
-      <div class="alert-time">18 min ago</div>
-    </div>
-    <div class="alert-item">
-      <div class="alert-icon">🟡</div>
-      <div class="alert-text">Lab: 3 urgent test results pending for over 2 hours — PAT-2025-00041, 00042, 00043.</div>
-      <div class="alert-time">35 min ago</div>
-    </div>
-  </div>
-
 </div>
 
 <script>
-  // Clock
-  function updateClock() {
-    const now = new Date();
-    document.getElementById('clock').textContent = now.toLocaleTimeString('en-IN', {hour12:false});
-    document.getElementById('today-date').textContent =
-      now.toLocaleDateString('en-IN', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
+// Live clock
+function updateClock() {
+  const now = new Date();
+  document.getElementById('liveTime').textContent = now.toLocaleTimeString('en-IN', {hour:'2-digit',minute:'2-digit',second:'2-digit'}) + ' · ' + now.toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// Get CSRF token
+function getCsrf() {
+  const match = document.cookie.split(';').map(c=>c.trim().split('=')).find(c=>c[0]==='csrf_token');
+  return match ? match[1] : '';
+}
+
+// Redirect if not admin
+async function checkAuth() {
+  try {
+    const res = await fetch('/api/method/frappe.auth.get_logged_user', {credentials:'include'});
+    const data = await res.json();
+    const user = data.message;
+    if (!user || user === 'Guest') { window.location.href = '/login'; return; }
+
+    document.getElementById('adminName').textContent = user;
+
+    // Check role
+    const roleRes = await fetch(`/api/resource/User/${encodeURIComponent(user)}?fields=["roles"]`, {credentials:'include'});
+    const roleData = await roleRes.json();
+    const roles = (roleData.data?.roles || []).map(r=>r.role);
+    const isAdmin = roles.includes('Administrator') || roles.includes('System Manager');
+    if (!isAdmin) {
+      // redirect to own dept portal — non-admin can't see this page
+      alert('Access denied. You are not an administrator.');
+      window.location.href = '/login';
+    }
+  } catch(e) {
+    window.location.href = '/login';
   }
-  updateClock();
-  setInterval(updateClock, 1000);
+}
 
-  // In real Frappe app, these load from API:
-  // frappe.call({ method: 'hospital_portal.api.dashboard.get_stats' })
-  // For now, demo values are shown above in HTML.
-  // Replace with frappe.call() when deployed.
+async function doLogout() {
+  await fetch('/api/method/logout', {method:'GET', credentials:'include'});
+  window.location.href = '/login';
+}
 
-  // Example frappe API call structure (use in Frappe deployment):
-  /*
-  frappe.ready(() => {
-    frappe.call({
-      method: 'hospital_portal.api.dashboard.get_live_stats',
-      callback: (r) => {
-        if (r.message) {
-          document.getElementById('stat-opd').textContent = r.message.opd_today;
-          document.getElementById('stat-beds').textContent = r.message.beds_occupied;
-          document.getElementById('stat-pending').textContent = r.message.pending_orders;
-          document.getElementById('stat-icu').textContent = r.message.icu_patients;
-          document.getElementById('stat-rx').textContent = r.message.prescriptions_today;
-        }
-      }
-    });
-  });
-  */
+// Load dashboard stats
+async function loadStats() {
+  try {
+    // Today's date range
+    const today = new Date().toISOString().split('T')[0];
+
+    // Registration count today
+    const regRes = await fetch(`/api/resource/Patient Registration?fields=["name","triage_status","token_number"]&filters=[["creation",">=","${today} 00:00:00"]]&limit=500`, {credentials:'include'});
+    const regData = await regRes.json();
+    const allReg = regData.data || [];
+
+    document.getElementById('statTotal').textContent = allReg.length;
+    document.getElementById('d-reg-today').textContent = allReg.length;
+    document.getElementById('d-reg-wait').textContent = allReg.filter(r=>r.triage_status==='Pending').length;
+    document.getElementById('statProgress').textContent = allReg.filter(r=>['Vitals Recorded','Doctor Seen'].includes(r.triage_status)).length;
+    document.getElementById('statDone').textContent = allReg.filter(r=>r.triage_status==='Completed').length;
+
+    // Nurse queue
+    const vsRes = await fetch(`/api/resource/Vital Signs?fields=["name","status"]&filters=[["creation",">=","${today} 00:00:00"]]&limit=500`, {credentials:'include'});
+    const vsData = await vsRes.json();
+    const vsAll = vsData.data || [];
+    document.getElementById('d-nurse-vitals').textContent = vsAll.length;
+    document.getElementById('d-nurse-pend').textContent = allReg.filter(r=>r.triage_status==='Pending').length;
+
+    // Doctor
+    const conRes = await fetch(`/api/resource/Consultation?fields=["name"]&filters=[["creation",">=","${today} 00:00:00"]]&limit=500`, {credentials:'include'});
+    const conData = await conRes.json();
+    document.getElementById('d-doc-cons').textContent = (conData.data||[]).length;
+    document.getElementById('d-doc-queue').textContent = allReg.filter(r=>r.triage_status==='Vitals Recorded').length;
+
+    // Lab
+    const lrRes = await fetch(`/api/resource/Lab Request?fields=["name","status"]&limit=500`, {credentials:'include'});
+    const lrData = await lrRes.json();
+    const lrAll = lrData.data || [];
+    document.getElementById('d-lab-pend').textContent = lrAll.filter(r=>r.status==='Pending').length;
+    document.getElementById('d-lab-done').textContent = lrAll.filter(r=>r.status==='Completed').length;
+
+    // Radiology
+    const rrRes = await fetch(`/api/resource/Radiology Request?fields=["name","status"]&limit=500`, {credentials:'include'});
+    const rrData = await rrRes.json();
+    const rrAll = rrData.data || [];
+    document.getElementById('d-rad-pend').textContent = rrAll.filter(r=>r.status==='Pending').length;
+    document.getElementById('d-rad-done').textContent = rrAll.filter(r=>r.status==='Completed').length;
+
+    // Pharmacy
+    const rxRes = await fetch(`/api/resource/Prescription?fields=["name","status"]&limit=500`, {credentials:'include'});
+    const rxData = await rxRes.json();
+    const rxAll = rxData.data || [];
+    document.getElementById('d-pharm-rx').textContent = rxAll.filter(r=>r.status==='Pending').length;
+    document.getElementById('d-pharm-low').textContent = '—';
+
+    // IPD
+    const ipdRes = await fetch(`/api/resource/IPD Admission?fields=["name","status"]&limit=500`, {credentials:'include'});
+    const ipdData = await ipdRes.json();
+    const ipdAll = ipdData.data || [];
+    const admitted = ipdAll.filter(r=>r.status==='Admitted').length;
+    document.getElementById('d-ipd-admit').textContent = admitted;
+    document.getElementById('d-ipd-free').textContent = Math.max(0, 30 - admitted);
+
+    // ICU
+    const icuRes = await fetch(`/api/resource/ICU Monitoring?fields=["name","ventilator_support"]&limit=500`, {credentials:'include'});
+    const icuData = await icuRes.json();
+    const icuAll = icuData.data || [];
+    document.getElementById('d-icu-crit').textContent = icuAll.length;
+    document.getElementById('statICU').textContent = icuAll.length;
+    document.getElementById('d-icu-vent').textContent = icuAll.filter(r=>r.ventilator_support).length;
+
+    // Patient portal stats
+    const ptRes = await fetch(`/api/resource/Patient Registration?fields=["name"]&limit=1&limit_page_length=1`, {credentials:'include'});
+    document.getElementById('d-pt-total').textContent = allReg.length;
+
+    // Invoices
+    const invRes = await fetch(`/api/resource/Sales Invoice?fields=["name"]&filters=[["creation",">=","${today} 00:00:00"]]&limit=500`, {credentials:'include'});
+    const invData = await invRes.json();
+    document.getElementById('d-pt-invoices').textContent = (invData.data||[]).length;
+
+  } catch(e) {
+    console.error('Stats error:', e);
+  }
+}
+
+// Recent activity
+async function loadActivity() {
+  try {
+    const today = new Date().toISOString().split('T')[0];
+    const res = await fetch(`/api/resource/Patient Registration?fields=["name","patient_name","token_number","triage_status","creation"]&filters=[["creation",">=","${today} 00:00:00"]]&order_by=creation desc&limit=10`, {credentials:'include'});
+    const data = await res.json();
+    const list = data.data || [];
+
+    const statusColors = {
+      'Pending': '#4f8ef7', 'Vitals Recorded': '#3fb950',
+      'Doctor Seen': '#a371f7', 'Completed': '#56d364'
+    };
+    const statusIcons = {
+      'Pending': '📋', 'Vitals Recorded': '🩺',
+      'Doctor Seen': '👨‍⚕️', 'Completed': '✅'
+    };
+
+    if (list.length === 0) {
+      document.getElementById('activityList').innerHTML = '<div class="loading">No patient activity today yet.</div>';
+      return;
+    }
+
+    document.getElementById('activityList').innerHTML = list.map(p => {
+      const color = statusColors[p.triage_status] || '#8b949e';
+      const icon = statusIcons[p.triage_status] || '📋';
+      const time = new Date(p.creation).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+      return `
+        <div class="activity-item">
+          <div class="activity-icon" style="background:${color}22; color:${color}">${icon}</div>
+          <div class="activity-text">
+            <strong>${p.patient_name || 'Unknown'}</strong>
+            <span> — ${p.triage_status || 'Registered'}</span>
+            <span class="token-badge" style="margin-left:8px">${p.token_number || p.name}</span>
+          </div>
+          <div class="activity-time">${time}</div>
+        </div>
+      `;
+    }).join('');
+
+    document.getElementById('activityTime').textContent = 'Updated just now';
+  } catch(e) {
+    document.getElementById('activityList').innerHTML = '<div class="loading">Could not load activity.</div>';
+  }
+}
+
+checkAuth();
+loadStats();
+loadActivity();
+setInterval(() => { loadStats(); loadActivity(); }, 30000); // refresh every 30s
 </script>
 </body>
 </html>

@@ -3,734 +3,324 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nursing & Triage | Hospital Portal</title>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<title>Nursing / Triage Portal</title>
 <style>
-:root {
-  --bg: #f0f4f8;
-  --surface: #ffffff;
-  --surface2: #e8eef5;
-  --border: #d0dae6;
-  --text: #1a2332;
-  --text2: #5a6a7e;
-  --text3: #8a98a8;
-  --triage-red: #e53e3e;
-  --triage-orange: #dd6b20;
-  --triage-yellow: #d69e2e;
-  --triage-green: #38a169;
-  --accent: #2b6cb0;
-  --accent-light: #ebf4ff;
-  --success: #38a169;
-  --warning: #d69e2e;
-  --danger: #e53e3e;
-}
-* { margin:0; padding:0; box-sizing:border-box; }
-body {
-  font-family: 'IBM Plex Sans', sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-}
-/* HEADER */
-header {
-  background: var(--accent);
-  color: white;
-  padding: 0 2rem;
-  height: 60px;
-  display: flex; align-items: center; justify-content: space-between;
-  box-shadow: 0 2px 12px rgba(43,108,176,0.3);
-}
-.header-left { display: flex; align-items: center; gap: 12px; }
-.dept-badge {
-  background: rgba(255,255,255,0.2);
-  padding: 4px 12px; border-radius: 4px;
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 0.75rem; letter-spacing: 0.08em;
-}
-.header-title { font-size: 1.1rem; font-weight: 600; }
-.header-right { display: flex; align-items: center; gap: 1rem; }
-.nurse-name { font-size: 0.85rem; opacity: 0.85; }
-.back-btn {
-  background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3);
-  color: white; padding: 6px 14px; border-radius: 6px;
-  cursor: pointer; font-size: 0.82rem; font-family: inherit;
-  text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
-  transition: background 0.2s;
-}
-.back-btn:hover { background: rgba(255,255,255,0.25); }
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap');
+  :root { --bg:#0d1117; --surface:#161b22; --border:#21262d; --text:#e6edf3; --muted:#8b949e; --accent:#3fb950; --blue:#4f8ef7; --red:#f85149; --yellow:#d29922; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
 
-/* LAYOUT */
-.container { max-width: 1400px; margin: 0 auto; padding: 1.5rem 2rem; }
+  .topbar { background:var(--surface); border-bottom:1px solid var(--border); padding:0 24px; height:56px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; }
+  .topbar-left { display:flex; align-items:center; gap:10px; }
+  .topbar-title { font-weight:600; }
+  .dept-badge { background:rgba(63,185,80,0.15); color:var(--accent); border:1px solid rgba(63,185,80,0.3); padding:2px 10px; border-radius:20px; font-size:0.72rem; font-weight:600; }
+  .topbar-right { display:flex; align-items:center; gap:12px; font-size:0.85rem; color:var(--muted); }
+  .btn-sm { background:rgba(248,81,73,0.1); border:1px solid rgba(248,81,73,0.3); color:#f85149; padding:5px 12px; border-radius:7px; cursor:pointer; font-family:inherit; font-size:0.78rem; }
 
-/* TOP STATS */
-.stats-row {
-  display: grid; grid-template-columns: repeat(4, 1fr);
-  gap: 1rem; margin-bottom: 1.5rem;
-}
-.stat-box {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 10px; padding: 1.1rem 1.4rem;
-  border-left: 4px solid transparent;
-}
-.stat-box.red { border-left-color: var(--triage-red); }
-.stat-box.orange { border-left-color: var(--triage-orange); }
-.stat-box.yellow { border-left-color: var(--triage-yellow); }
-.stat-box.green { border-left-color: var(--triage-green); }
-.stat-num { font-size: 2rem; font-weight: 700; font-family: 'IBM Plex Mono', monospace; line-height:1; }
-.stat-num.red { color: var(--triage-red); }
-.stat-num.orange { color: var(--triage-orange); }
-.stat-num.yellow { color: var(--triage-yellow); }
-.stat-num.green { color: var(--triage-green); }
-.stat-label { font-size: 0.78rem; color: var(--text2); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .main { display:grid; grid-template-columns:320px 1fr; gap:20px; padding:24px; max-width:1300px; margin:0 auto; }
 
-/* TWO COLUMN LAYOUT */
-.two-col { display: grid; grid-template-columns: 1fr 380px; gap: 1.5rem; }
+  /* Queue list */
+  .queue-panel { background:var(--surface); border:1px solid var(--border); border-radius:14px; overflow:hidden; }
+  .panel-header { padding:14px 18px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+  .panel-header h2 { font-size:0.9rem; font-weight:600; }
+  .count-badge { background:rgba(63,185,80,0.15); color:var(--accent); padding:2px 8px; border-radius:20px; font-size:0.75rem; font-weight:600; }
+  .patient-list { overflow-y:auto; max-height:calc(100vh - 160px); }
+  .patient-item {
+    padding:14px 18px; border-bottom:1px solid var(--border); cursor:pointer; transition:background 0.15s;
+    display:flex; align-items:center; gap:12px;
+  }
+  .patient-item:hover { background:rgba(255,255,255,0.03); }
+  .patient-item.active { background:rgba(63,185,80,0.08); border-left:3px solid var(--accent); }
+  .p-token { font-size:1.2rem; font-weight:700; color:var(--accent); min-width:40px; }
+  .p-info { flex:1; }
+  .p-name { font-weight:500; font-size:0.9rem; }
+  .p-detail { font-size:0.75rem; color:var(--muted); }
+  .p-status { font-size:0.68rem; padding:2px 6px; border-radius:10px; background:rgba(79,142,247,0.15); color:var(--blue); }
 
-/* PATIENT QUEUE */
-.panel {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px; overflow: hidden;
-}
-.panel-header {
-  padding: 1rem 1.4rem;
-  border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: space-between;
-}
-.panel-title {
-  font-size: 0.9rem; font-weight: 600;
-  display: flex; align-items: center; gap: 8px;
-}
-.panel-title .icon { font-size: 1rem; }
-.search-bar {
-  display: flex; align-items: center; gap: 8px;
-  background: var(--surface2); border: 1px solid var(--border);
-  border-radius: 8px; padding: 6px 12px;
-}
-.search-bar input {
-  border: none; background: none; outline: none;
-  font-family: inherit; font-size: 0.85rem; color: var(--text);
-  width: 200px;
-}
-.search-bar input::placeholder { color: var(--text3); }
+  /* Vitals form */
+  .vitals-panel { background:var(--surface); border:1px solid var(--border); border-radius:14px; overflow:hidden; }
+  .empty-state { display:flex; flex-direction:column; align-items:center; justify-content:center; height:300px; color:var(--muted); }
+  .empty-state .icon { font-size:3rem; margin-bottom:12px; }
 
-/* QUEUE TABLE */
-.queue-table { width: 100%; border-collapse: collapse; }
-.queue-table th {
-  padding: 10px 14px; text-align: left;
-  font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em;
-  color: var(--text2); background: var(--surface2);
-  border-bottom: 1px solid var(--border);
-}
-.queue-table td {
-  padding: 12px 14px; border-bottom: 1px solid var(--border);
-  font-size: 0.85rem;
-}
-.queue-table tr:last-child td { border-bottom: none; }
-.queue-table tr:hover td { background: #f7faff; }
-.patient-id { font-family: 'IBM Plex Mono', monospace; font-size: 0.8rem; color: var(--accent); }
-.patient-name { font-weight: 600; }
-.patient-age { color: var(--text2); font-size: 0.8rem; }
-.wait-time { font-size: 0.8rem; color: var(--text2); }
-.triage-badge {
-  display: inline-block; padding: 3px 10px; border-radius: 12px;
-  font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;
-}
-.triage-badge.red { background: #fff5f5; color: var(--triage-red); border: 1px solid #fed7d7; }
-.triage-badge.orange { background: #fffaf0; color: var(--triage-orange); border: 1px solid #fbd38d; }
-.triage-badge.yellow { background: #fffff0; color: var(--triage-yellow); border: 1px solid #faf089; }
-.triage-badge.green { background: #f0fff4; color: var(--triage-green); border: 1px solid #9ae6b4; }
-.triage-badge.none { background: #f7fafc; color: var(--text3); border: 1px solid var(--border); }
-.status-dot {
-  display: inline-block; width: 8px; height: 8px; border-radius: 50%;
-  margin-right: 6px;
-}
-.status-dot.waiting { background: var(--warning); }
-.status-dot.in-progress { background: var(--accent); }
-.status-dot.done { background: var(--success); }
-.action-btn {
-  background: var(--accent); color: white;
-  border: none; border-radius: 6px; padding: 5px 12px;
-  font-size: 0.78rem; font-family: inherit; cursor: pointer;
-  transition: background 0.2s;
-}
-.action-btn:hover { background: #1a4e8a; }
-.action-btn.secondary {
-  background: var(--surface2); color: var(--text);
-  border: 1px solid var(--border);
-}
-.action-btn.secondary:hover { background: var(--border); }
+  .patient-header { padding:18px 24px; border-bottom:1px solid var(--border); background:rgba(63,185,80,0.05); }
+  .patient-header h2 { font-size:1.1rem; font-weight:600; }
+  .patient-meta { display:flex; gap:16px; margin-top:6px; font-size:0.8rem; color:var(--muted); }
+  .patient-meta span { display:flex; align-items:center; gap:4px; }
 
-/* VITALS FORM */
-.right-panel { display: flex; flex-direction: column; gap: 1rem; }
-.form-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; }
-.form-panel .panel-header { background: var(--accent); }
-.form-panel .panel-title { color: white; }
-.form-body { padding: 1.2rem; }
-.selected-patient-info {
-  background: var(--accent-light); border: 1px solid #bee3f8;
-  border-radius: 8px; padding: 10px 14px; margin-bottom: 1rem;
-  display: flex; align-items: center; gap: 10px;
-}
-.selected-patient-info .pat-id { font-family: 'IBM Plex Mono', monospace; font-size: 0.85rem; color: var(--accent); font-weight: 600; }
-.selected-patient-info .pat-name { font-size: 0.9rem; font-weight: 600; }
-.no-selection {
-  text-align: center; padding: 2rem 1rem; color: var(--text3);
-  font-size: 0.85rem;
-}
-.no-selection .icon { font-size: 2rem; margin-bottom: 8px; display: block; }
-.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.form-group { display: flex; flex-direction: column; gap: 4px; }
-.form-group.full { grid-column: 1 / -1; }
-label { font-size: 0.75rem; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.04em; }
-input, select, textarea {
-  border: 1px solid var(--border); border-radius: 7px;
-  padding: 8px 11px; font-size: 0.87rem; font-family: inherit;
-  color: var(--text); background: var(--surface);
-  transition: border-color 0.2s, box-shadow 0.2s; outline: none;
-}
-input:focus, select:focus, textarea:focus {
-  border-color: var(--accent); box-shadow: 0 0 0 3px rgba(43,108,176,0.1);
-}
-.input-with-unit { position: relative; }
-.input-with-unit input { padding-right: 44px; }
-.unit-label {
-  position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
-  font-size: 0.72rem; color: var(--text3); font-weight: 600; pointer-events: none;
-}
+  .vitals-body { padding:24px; }
+  .vitals-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:20px; }
+  .field label { display:block; font-size:0.73rem; color:var(--muted); margin-bottom:5px; text-transform:uppercase; letter-spacing:0.4px; font-weight:500; }
+  .field input, .field select, .field textarea {
+    width:100%; background:rgba(255,255,255,0.04); border:1px solid var(--border);
+    border-radius:9px; padding:10px 13px; color:var(--text); font-family:inherit;
+    font-size:0.9rem; outline:none; transition:all 0.2s;
+  }
+  .field input:focus, .field select:focus { border-color:var(--accent); background:rgba(63,185,80,0.05); }
+  .field textarea { resize:vertical; min-height:60px; }
 
-/* TRIAGE SELECTOR */
-.triage-selector { display: grid; grid-template-columns: repeat(4,1fr); gap: 6px; margin: 8px 0; }
-.triage-opt {
-  padding: 8px 4px; border-radius: 8px; text-align: center;
-  border: 2px solid var(--border); cursor: pointer;
-  font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
-  letter-spacing: 0.04em; transition: all 0.15s;
-}
-.triage-opt.red { color: var(--triage-red); }
-.triage-opt.orange { color: var(--triage-orange); }
-.triage-opt.yellow { color: var(--triage-yellow); }
-.triage-opt.green { color: var(--triage-green); }
-.triage-opt.red.active { background: var(--triage-red); color: white; border-color: var(--triage-red); }
-.triage-opt.orange.active { background: var(--triage-orange); color: white; border-color: var(--triage-orange); }
-.triage-opt.yellow.active { background: var(--triage-yellow); color: white; border-color: var(--triage-yellow); }
-.triage-opt.green.active { background: var(--triage-green); color: white; border-color: var(--triage-green); }
-.submit-btn {
-  width: 100%; padding: 11px; background: var(--accent); color: white;
-  border: none; border-radius: 8px; font-size: 0.9rem; font-weight: 600;
-  font-family: inherit; cursor: pointer; margin-top: 12px;
-  transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px;
-}
-.submit-btn:hover { background: #1a4e8a; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(43,108,176,0.3); }
-.submit-btn:disabled { background: var(--text3); cursor: not-allowed; transform: none; box-shadow: none; }
+  .vital-card {
+    background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:10px;
+    padding:14px; text-align:center; position:relative;
+  }
+  .vital-card label { font-size:0.7rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:6px; }
+  .vital-card input {
+    background:transparent; border:none; border-bottom:1px solid var(--border); border-radius:0;
+    padding:4px 0; text-align:center; font-size:1.2rem; font-weight:600; color:var(--text);
+    width:100%;
+  }
+  .vital-card input:focus { border-bottom-color:var(--accent); outline:none; }
+  .vital-card .unit { font-size:0.7rem; color:var(--muted); margin-top:4px; }
 
-/* TASKS PANEL */
-.task-list { padding: 0; }
-.task-item {
-  padding: 12px 14px; border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; gap: 10px;
-}
-.task-item:last-child { border-bottom: none; }
-.task-icon {
-  width: 34px; height: 34px; border-radius: 8px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 0.9rem; flex-shrink: 0;
-}
-.task-icon.injection { background: #fff5f5; }
-.task-icon.iv { background: #ebf4ff; }
-.task-icon.dressing { background: #f0fff4; }
-.task-icon.medication { background: #fffff0; }
-.task-info { flex: 1; }
-.task-name { font-size: 0.85rem; font-weight: 600; }
-.task-patient { font-size: 0.75rem; color: var(--text2); margin-top: 2px; }
-.task-time { font-size: 0.72rem; color: var(--text3); font-family: 'IBM Plex Mono', monospace; }
-.task-complete {
-  width: 26px; height: 26px; border-radius: 6px;
-  background: var(--surface2); border: 1.5px solid var(--border);
-  cursor: pointer; display: flex; align-items: center; justify-content: center;
-  font-size: 0.8rem; transition: all 0.2s; flex-shrink: 0;
-}
-.task-complete:hover { background: var(--success); border-color: var(--success); color: white; }
-.task-complete.done { background: var(--success); border-color: var(--success); color: white; }
+  .section-title { font-size:0.8rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:12px; padding-bottom:6px; border-bottom:1px solid var(--border); }
 
-/* TOAST */
-.toast {
-  position: fixed; bottom: 2rem; right: 2rem; z-index: 999;
-  background: #2d3748; color: white; padding: 12px 20px;
-  border-radius: 10px; font-size: 0.88rem;
-  display: flex; align-items: center; gap: 10px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
-  transform: translateY(100px); opacity: 0;
-  transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
-}
-.toast.show { transform: translateY(0); opacity: 1; }
-.toast.success { border-left: 4px solid var(--success); }
-.toast.error { border-left: 4px solid var(--danger); }
+  .triage-levels { display:flex; gap:8px; margin-bottom:20px; }
+  .triage-btn { flex:1; padding:10px; border:1px solid var(--border); border-radius:9px; cursor:pointer; font-family:inherit; font-size:0.8rem; font-weight:600; background:transparent; color:var(--muted); transition:all 0.2s; }
+  .triage-btn:hover { border-color:currentColor; }
+  .triage-btn.selected { color:white; }
+  .triage-btn[data-level="1"] { --c:#f85149; }
+  .triage-btn[data-level="2"] { --c:#f0883e; }
+  .triage-btn[data-level="3"] { --c:#d29922; }
+  .triage-btn[data-level="4"] { --c:#3fb950; }
+  .triage-btn[data-level="5"] { --c:#4f8ef7; }
+  .triage-btn.selected { background:var(--c); border-color:var(--c); color:white; }
 
-/* LOADING */
-.loading { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.4); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
+  .btn-primary { background:linear-gradient(135deg,#3fb950,#16a34a); border:none; border-radius:10px; color:white; padding:12px 24px; font-family:inherit; font-size:0.95rem; font-weight:600; cursor:pointer; transition:all 0.2s; box-shadow:0 4px 14px rgba(63,185,80,0.25); width:100%; margin-top:4px; }
+  .btn-primary:hover { transform:translateY(-1px); }
+  .btn-primary:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
 
-@media (max-width: 1100px) {
-  .two-col { grid-template-columns: 1fr; }
-  .stats-row { grid-template-columns: repeat(2,1fr); }
-}
+  .msg { padding:10px 14px; border-radius:9px; font-size:0.85rem; margin-top:10px; display:none; }
+  .msg.error { background:rgba(248,81,73,0.1); border:1px solid rgba(248,81,73,0.3); color:#fca5a5; }
+  .msg.success { background:rgba(63,185,80,0.1); border:1px solid rgba(63,185,80,0.3); color:#86efac; }
+
+  @media(max-width:900px) { .main { grid-template-columns:1fr; } }
 </style>
 </head>
 <body>
 
-<header>
-  <div class="header-left">
-    <div class="dept-badge">DEPT-02</div>
-    <span class="header-title">🩺 Nursing & Triage Station</span>
+<div class="topbar">
+  <div class="topbar-left">
+    <span style="font-size:1.2rem">🩺</span>
+    <span class="topbar-title">Nursing / Triage</span>
+    <span class="dept-badge">Nurse</span>
   </div>
-  <div class="header-right">
-    <span class="nurse-name" id="nurseName">Loading...</span>
-    <a href="/hospital-dashboard" class="back-btn">← Dashboard</a>
+  <div class="topbar-right">
+    <span id="staffName">Loading...</span>
+    <button class="btn-sm" onclick="doLogout()">Sign Out</button>
   </div>
-</header>
+</div>
 
-<div class="container">
-  <!-- STATS -->
-  <div class="stats-row">
-    <div class="stat-box red">
-      <div class="stat-num red" id="countRed">0</div>
-      <div class="stat-label">🔴 Critical / Immediate</div>
+<div class="main">
+  <!-- Patient queue -->
+  <div class="queue-panel">
+    <div class="panel-header">
+      <h2>Pending Patients</h2>
+      <span class="count-badge" id="queueCount">0</span>
     </div>
-    <div class="stat-box orange">
-      <div class="stat-num orange" id="countOrange">0</div>
-      <div class="stat-label">🟠 Urgent</div>
-    </div>
-    <div class="stat-box yellow">
-      <div class="stat-num yellow" id="countYellow">0</div>
-      <div class="stat-label">🟡 Semi-Urgent</div>
-    </div>
-    <div class="stat-box green">
-      <div class="stat-num green" id="countGreen">0</div>
-      <div class="stat-label">🟢 Non-Urgent</div>
+    <div class="patient-list" id="patientList">
+      <div style="padding:20px;text-align:center;color:var(--muted);font-size:0.85rem">Loading queue...</div>
     </div>
   </div>
 
-  <div class="two-col">
-    <!-- QUEUE -->
-    <div>
-      <div class="panel">
-        <div class="panel-header">
-          <div class="panel-title"><span class="icon">👥</span> Patient Queue — Awaiting Vitals</div>
-          <div class="search-bar">
-            <span>🔍</span>
-            <input type="text" id="searchInput" placeholder="Search patient ID or name..." oninput="filterQueue()">
-          </div>
-        </div>
-        <div style="overflow-x:auto;">
-          <table class="queue-table">
-            <thead>
-              <tr>
-                <th>Token</th>
-                <th>Patient ID</th>
-                <th>Name</th>
-                <th>Age/Sex</th>
-                <th>Wait Time</th>
-                <th>Triage</th>
-                <th>Status</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody id="queueBody">
-              <tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text3);">Loading patients...</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- RIGHT PANEL -->
-    <div class="right-panel">
-      <!-- VITALS FORM -->
-      <div class="form-panel panel">
-        <div class="panel-header">
-          <div class="panel-title">📋 Record Vitals</div>
-        </div>
-        <div class="form-body">
-          <div id="noSelectionMsg" class="no-selection">
-            <span class="icon">👆</span>
-            Select a patient from the queue to record vitals
-          </div>
-          <div id="vitalsFormContent" style="display:none;">
-            <div class="selected-patient-info" id="selectedPatientInfo"></div>
-            <form id="vitalsForm">
-              <div class="form-grid">
-                <div class="form-group">
-                  <label>Temperature</label>
-                  <div class="input-with-unit">
-                    <input type="number" id="temperature" step="0.1" min="35" max="42" placeholder="37.0">
-                    <span class="unit-label">°C</span>
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label>Pulse Rate</label>
-                  <div class="input-with-unit">
-                    <input type="number" id="pulse" min="40" max="200" placeholder="72">
-                    <span class="unit-label">bpm</span>
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label>BP Systolic</label>
-                  <div class="input-with-unit">
-                    <input type="number" id="bp_systolic" min="60" max="220" placeholder="120">
-                    <span class="unit-label">mmHg</span>
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label>BP Diastolic</label>
-                  <div class="input-with-unit">
-                    <input type="number" id="bp_diastolic" min="40" max="140" placeholder="80">
-                    <span class="unit-label">mmHg</span>
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label>SpO2</label>
-                  <div class="input-with-unit">
-                    <input type="number" id="spo2" min="70" max="100" placeholder="98">
-                    <span class="unit-label">%</span>
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label>Respiratory Rate</label>
-                  <div class="input-with-unit">
-                    <input type="number" id="resp_rate" min="8" max="40" placeholder="16">
-                    <span class="unit-label">/min</span>
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label>Weight</label>
-                  <div class="input-with-unit">
-                    <input type="number" id="weight" step="0.1" min="1" max="300" placeholder="70">
-                    <span class="unit-label">kg</span>
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label>Height</label>
-                  <div class="input-with-unit">
-                    <input type="number" id="height" min="50" max="250" placeholder="170">
-                    <span class="unit-label">cm</span>
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label>Pain Score (0-10)</label>
-                  <input type="number" id="pain_score" min="0" max="10" placeholder="0">
-                </div>
-                <div class="form-group">
-                  <label>Blood Sugar</label>
-                  <div class="input-with-unit">
-                    <input type="number" id="blood_sugar" min="30" max="600" placeholder="100">
-                    <span class="unit-label">mg/dL</span>
-                  </div>
-                </div>
-                <div class="form-group full">
-                  <label>Triage Level</label>
-                  <div class="triage-selector">
-                    <div class="triage-opt red" onclick="selectTriage('Red','Immediate')">🔴 Red<br><small>Immediate</small></div>
-                    <div class="triage-opt orange" onclick="selectTriage('Orange','Urgent')">🟠 Orange<br><small>Urgent</small></div>
-                    <div class="triage-opt yellow" onclick="selectTriage('Yellow','Semi-Urgent')">🟡 Yellow<br><small>Semi-Urgent</small></div>
-                    <div class="triage-opt green" onclick="selectTriage('Green','Non-Urgent')">🟢 Green<br><small>Non-Urgent</small></div>
-                  </div>
-                  <input type="hidden" id="triage_level" required>
-                </div>
-                <div class="form-group full">
-                  <label>Chief Complaint / Notes</label>
-                  <textarea id="chief_complaint" rows="2" placeholder="Patient's main complaint..."></textarea>
-                </div>
-              </div>
-              <button type="button" class="submit-btn" onclick="submitVitals()" id="submitVitalsBtn">
-                💾 Save Vitals to Frappe
-              </button>
-            </form>
-          </div>
-        </div>
-      </div>
-
-      <!-- NURSING TASKS -->
-      <div class="panel">
-        <div class="panel-header">
-          <div class="panel-title"><span class="icon">📝</span> Pending Nursing Tasks</div>
-          <span style="font-size:0.78rem;color:var(--text2);" id="taskCount">0 pending</span>
-        </div>
-        <div class="task-list" id="taskList">
-          <div style="text-align:center;padding:1.5rem;color:var(--text3);font-size:0.85rem;">No pending tasks</div>
-        </div>
-      </div>
+  <!-- Vitals form -->
+  <div class="vitals-panel" id="vitalsPanel">
+    <div class="empty-state">
+      <div class="icon">🩺</div>
+      <div>Select a patient from the queue to record vitals</div>
     </div>
   </div>
 </div>
 
-<div class="toast" id="toast"></div>
-
 <script>
-const FRAPPE_URL = window.location.origin;
 let selectedPatient = null;
-let selectedTriageLevel = null;
-let allPatients = [];
+let selectedTriage = null;
 
-// ─── INIT ───────────────────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
-  loadCurrentUser();
-  loadPatientQueue();
-  loadNursingTasks();
-  setInterval(loadPatientQueue, 30000);
-  setInterval(loadNursingTasks, 20000);
-  updateClock();
-  setInterval(updateClock, 60000);
-});
-
-function updateClock() {
-  const now = new Date();
-  document.getElementById('nurseName').textContent =
-    now.toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit'}) + ' | Nurse Station';
-}
-
-// ─── LOAD USER ──────────────────────────────────────────────────────────
-async function loadCurrentUser() {
+async function checkAuth() {
   try {
-    const res = await frappe_call('frappe.client.get_value', {
-      doctype: 'User', fieldname: ['full_name'], filters: { name: frappe.session?.user || 'Guest' }
-    });
-    if (res?.message?.full_name) {
-      document.getElementById('nurseName').textContent = res.message.full_name;
+    const res = await fetch('/api/method/frappe.auth.get_logged_user', {credentials:'include'});
+    const data = await res.json();
+    const user = data.message;
+    if (!user||user==='Guest') { window.location.href='/login'; return; }
+    document.getElementById('staffName').textContent = user;
+    const roleRes = await fetch(`/api/resource/User/${encodeURIComponent(user)}?fields=["roles"]`, {credentials:'include'});
+    const roleData = await roleRes.json();
+    const roles = (roleData.data?.roles||[]).map(r=>r.role);
+    if (!roles.some(r=>['Nurse','System Manager','Administrator'].includes(r))) {
+      alert('Access denied.'); window.location.href='/login';
     }
-  } catch(e) {}
+  } catch(e) { window.location.href='/login'; }
 }
 
-// ─── LOAD QUEUE (Registered patients pending vitals) ────────────────────
-async function loadPatientQueue() {
+function getCsrf() {
+  const m = document.cookie.split(';').map(c=>c.trim().split('=')).find(c=>c[0]==='csrf_token');
+  return m?m[1]:'';
+}
+function doLogout() { fetch('/api/method/logout',{credentials:'include'}).then(()=>{ window.location.href='/login'; }); }
+
+async function loadQueue() {
   try {
-    const res = await frappe_get_list('Patient Registration', {
-      fields: ['name','patient_name','age','gender','token_number','registration_time','triage_level'],
-      filters: [['triage_status','=','Pending']],
-      order_by: 'registration_time asc',
-      limit: 50
-    });
-    allPatients = res?.message || [];
-    renderQueue(allPatients);
-    updateTriageCounts(allPatients);
-  } catch(e) {
-    console.error('Queue load error:', e);
-    renderQueue([]);
-  }
-}
+    const today = new Date().toISOString().split('T')[0];
+    const res = await fetch(`/api/resource/Patient Registration?fields=["name","patient_name","token_number","triage_status","visit_type","chief_complaint","date_of_birth","gender","phone"]&filters=[["creation",">=","${today} 00:00:00"],["triage_status","in","Pending,Vitals Recorded"]]&order_by=token_number asc&limit=50`, {credentials:'include'});
+    const data = await res.json();
+    const list = data.data || [];
+    const pending = list.filter(p=>p.triage_status==='Pending');
+    document.getElementById('queueCount').textContent = pending.length;
 
-function renderQueue(patients) {
-  const tbody = document.getElementById('queueBody');
-  if (!patients.length) {
-    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text3);">No patients waiting for vitals</td></tr>';
-    return;
-  }
-  tbody.innerHTML = patients.map(p => {
-    const waitMins = p.registration_time ? Math.floor((Date.now() - new Date(p.registration_time)) / 60000) : 0;
-    const triage = p.triage_level || 'Pending';
-    const triageClass = triage === 'Red' ? 'red' : triage === 'Orange' ? 'orange' : triage === 'Yellow' ? 'yellow' : triage === 'Green' ? 'green' : 'none';
-    return `
-    <tr onclick="selectPatient('${p.name}','${p.patient_name}','${p.age || ''}','${p.gender || ''}','${p.token_number || ''}')" style="cursor:pointer;">
-      <td><span style="font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:0.88rem;">${p.token_number || '—'}</span></td>
-      <td><span class="patient-id">${p.name}</span></td>
-      <td><span class="patient-name">${p.patient_name}</span></td>
-      <td><span class="patient-age">${p.age || '—'} / ${p.gender ? p.gender[0] : '?'}</span></td>
-      <td><span class="wait-time">${waitMins} min</span></td>
-      <td><span class="triage-badge ${triageClass}">${triage}</span></td>
-      <td><span class="status-dot waiting"></span>Waiting</td>
-      <td><button class="action-btn" onclick="event.stopPropagation();selectPatient('${p.name}','${p.patient_name}','${p.age || ''}','${p.gender || ''}','${p.token_number || ''}')">Record Vitals</button></td>
-    </tr>`;
-  }).join('');
-}
-
-function updateTriageCounts(patients) {
-  document.getElementById('countRed').textContent = patients.filter(p=>p.triage_level==='Red').length;
-  document.getElementById('countOrange').textContent = patients.filter(p=>p.triage_level==='Orange').length;
-  document.getElementById('countYellow').textContent = patients.filter(p=>p.triage_level==='Yellow').length;
-  document.getElementById('countGreen').textContent = patients.filter(p=>p.triage_level==='Green').length;
-}
-
-function filterQueue() {
-  const q = document.getElementById('searchInput').value.toLowerCase();
-  const filtered = allPatients.filter(p =>
-    p.name.toLowerCase().includes(q) || p.patient_name.toLowerCase().includes(q)
-  );
-  renderQueue(filtered);
-}
-
-// ─── SELECT PATIENT ─────────────────────────────────────────────────────
-function selectPatient(id, name, age, gender, token) {
-  selectedPatient = { id, name, age, gender, token };
-  document.getElementById('noSelectionMsg').style.display = 'none';
-  document.getElementById('vitalsFormContent').style.display = 'block';
-  document.getElementById('selectedPatientInfo').innerHTML = `
-    <div>
-      <div class="pat-id">${id} · Token: ${token || 'N/A'}</div>
-      <div class="pat-name">${name} &nbsp;·&nbsp; ${age || '—'} yrs &nbsp;·&nbsp; ${gender || '—'}</div>
-    </div>`;
-  document.getElementById('vitalsForm').reset();
-  document.querySelectorAll('.triage-opt').forEach(el => el.classList.remove('active'));
-  selectedTriageLevel = null;
-  document.getElementById('triage_level').value = '';
-}
-
-// ─── TRIAGE SELECT ───────────────────────────────────────────────────────
-function selectTriage(level, label) {
-  selectedTriageLevel = level;
-  document.getElementById('triage_level').value = level;
-  document.querySelectorAll('.triage-opt').forEach(el => el.classList.remove('active'));
-  event.target.closest('.triage-opt').classList.add('active');
-}
-
-// ─── SUBMIT VITALS → FRAPPE ──────────────────────────────────────────────
-async function submitVitals() {
-  if (!selectedPatient) return showToast('Please select a patient first', 'error');
-  if (!document.getElementById('triage_level').value) return showToast('Please select triage level', 'error');
-
-  const btn = document.getElementById('submitVitalsBtn');
-  btn.disabled = true;
-  btn.innerHTML = '<span class="loading"></span> Saving...';
-
-  const data = {
-    doctype: 'Vital Signs',
-    patient: selectedPatient.id,
-    patient_name: selectedPatient.name,
-    temperature: parseFloat(document.getElementById('temperature').value) || null,
-    pulse: parseInt(document.getElementById('pulse').value) || null,
-    bp_systolic: parseInt(document.getElementById('bp_systolic').value) || null,
-    bp_diastolic: parseInt(document.getElementById('bp_diastolic').value) || null,
-    spo2: parseFloat(document.getElementById('spo2').value) || null,
-    respiratory_rate: parseInt(document.getElementById('resp_rate').value) || null,
-    weight: parseFloat(document.getElementById('weight').value) || null,
-    height: parseFloat(document.getElementById('height').value) || null,
-    pain_score: parseInt(document.getElementById('pain_score').value) || 0,
-    blood_sugar: parseFloat(document.getElementById('blood_sugar').value) || null,
-    triage_level: document.getElementById('triage_level').value,
-    chief_complaint: document.getElementById('chief_complaint').value,
-    recorded_time: new Date().toISOString()
-  };
-
-  try {
-    // 1. Save Vital Signs doctype
-    const vsRes = await fetch(`${FRAPPE_URL}/api/resource/Vital Signs`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-Frappe-CSRF-Token': getCsrfToken() },
-      body: JSON.stringify(data)
-    });
-    const vsData = await vsRes.json();
-    if (!vsRes.ok) throw new Error(vsData?.exc_type || 'Failed to save vitals');
-
-    // 2. Update Patient Registration triage_status → Vitals Recorded
-    await fetch(`${FRAPPE_URL}/api/resource/Patient Registration/${selectedPatient.id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json', 'X-Frappe-CSRF-Token': getCsrfToken() },
-      body: JSON.stringify({ triage_status: 'Vitals Recorded', triage_level: data.triage_level })
-    });
-
-    showToast(`✅ Vitals saved — ${vsData.data?.name}`, 'success');
-    selectedPatient = null;
-    document.getElementById('noSelectionMsg').style.display = 'block';
-    document.getElementById('vitalsFormContent').style.display = 'none';
-    loadPatientQueue();
-  } catch(err) {
-    showToast(`❌ Error: ${err.message}`, 'error');
-  } finally {
-    btn.disabled = false;
-    btn.innerHTML = '💾 Save Vitals to Frappe';
-  }
-}
-
-// ─── NURSING TASKS ───────────────────────────────────────────────────────
-async function loadNursingTasks() {
-  try {
-    const res = await frappe_get_list('Nursing Task', {
-      fields: ['name','patient','patient_name','task_type','scheduled_time','status'],
-      filters: [['status','=','Pending']],
-      order_by: 'scheduled_time asc',
-      limit: 10
-    });
-    const tasks = res?.message || [];
-    document.getElementById('taskCount').textContent = `${tasks.length} pending`;
-    const taskIconMap = { 'Injection':'💉', 'IV Fluid':'🩺', 'Dressing':'🩹', 'Medication':'💊', 'default':'📋' };
-    const taskClassMap = { 'Injection':'injection', 'IV Fluid':'iv', 'Dressing':'dressing', 'Medication':'medication', 'default':'medication' };
-
-    if (!tasks.length) {
-      document.getElementById('taskList').innerHTML = '<div style="text-align:center;padding:1.5rem;color:var(--text3);font-size:0.85rem;">No pending tasks 🎉</div>';
+    if (!list.length) {
+      document.getElementById('patientList').innerHTML = '<div style="padding:20px;text-align:center;color:var(--muted);font-size:0.85rem">Queue is empty ✓</div>';
       return;
     }
-    document.getElementById('taskList').innerHTML = tasks.map(t => {
-      const icon = taskIconMap[t.task_type] || taskIconMap['default'];
-      const cls = taskClassMap[t.task_type] || taskClassMap['default'];
-      const time = t.scheduled_time ? new Date(t.scheduled_time).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}) : '—';
-      return `
-      <div class="task-item" id="task-${t.name}">
-        <div class="task-icon ${cls}">${icon}</div>
-        <div class="task-info">
-          <div class="task-name">${t.task_type || 'Task'}</div>
-          <div class="task-patient">${t.patient_name} · ${t.patient}</div>
+
+    document.getElementById('patientList').innerHTML = list.map(p=>`
+      <div class="patient-item ${selectedPatient?.name===p.name?'active':''}" onclick="selectPatient(${JSON.stringify(p).replace(/"/g,'&quot;')})">
+        <div class="p-token">${p.token_number||'—'}</div>
+        <div class="p-info">
+          <div class="p-name">${p.patient_name}</div>
+          <div class="p-detail">${p.visit_type||'OPD'} · ${(p.chief_complaint||'').substring(0,28)}</div>
         </div>
-        <span class="task-time">${time}</span>
-        <div class="task-complete" onclick="completeTask('${t.name}', this)" title="Mark complete">✓</div>
-      </div>`;
-    }).join('');
-  } catch(e) {
-    console.error('Tasks error:', e);
-  }
+        <span class="p-status">${p.triage_status==='Pending'?'Waiting':'Done'}</span>
+      </div>
+    `).join('');
+  } catch(e) { console.error(e); }
 }
 
-async function completeTask(taskId, el) {
-  el.classList.add('done');
+function selectPatient(p) {
+  selectedPatient = p;
+  selectedTriage = null;
+  loadQueue();
+
+  // Calculate age
+  const age = p.date_of_birth ? Math.floor((Date.now()-new Date(p.date_of_birth))/(365.25*24*3600*1000)) : '—';
+
+  document.getElementById('vitalsPanel').innerHTML = `
+    <div class="patient-header">
+      <h2>${p.patient_name} <span style="font-size:0.8rem;color:var(--muted);font-weight:400">(Token: ${p.token_number||p.name})</span></h2>
+      <div class="patient-meta">
+        <span>🪪 ${p.name}</span>
+        <span>🎂 ${age} yrs</span>
+        <span>⚧ ${p.gender||'—'}</span>
+        <span>📞 ${p.phone||'—'}</span>
+        <span>🏥 ${p.visit_type||'OPD'}</span>
+      </div>
+    </div>
+    <div class="vitals-body">
+
+      <div class="section-title">Vital Signs</div>
+      <div class="vitals-grid">
+        <div class="vital-card"><label>Temperature</label><input type="number" id="v-temp" placeholder="98.6" step="0.1"><div class="unit">°F</div></div>
+        <div class="vital-card"><label>BP Systolic</label><input type="number" id="v-bps" placeholder="120"><div class="unit">mmHg</div></div>
+        <div class="vital-card"><label>BP Diastolic</label><input type="number" id="v-bpd" placeholder="80"><div class="unit">mmHg</div></div>
+        <div class="vital-card"><label>Pulse Rate</label><input type="number" id="v-pulse" placeholder="72"><div class="unit">bpm</div></div>
+        <div class="vital-card"><label>SpO2</label><input type="number" id="v-spo2" placeholder="98"><div class="unit">%</div></div>
+        <div class="vital-card"><label>Resp. Rate</label><input type="number" id="v-resp" placeholder="16"><div class="unit">breaths/min</div></div>
+        <div class="vital-card"><label>Weight</label><input type="number" id="v-wt" placeholder="70" step="0.1"><div class="unit">kg</div></div>
+        <div class="vital-card"><label>Height</label><input type="number" id="v-ht" placeholder="170"><div class="unit">cm</div></div>
+        <div class="vital-card"><label>Blood Sugar</label><input type="number" id="v-sugar" placeholder="90"><div class="unit">mg/dL</div></div>
+      </div>
+
+      <div class="section-title">Triage Level</div>
+      <div class="triage-levels">
+        <button class="triage-btn" data-level="1" onclick="setTriage(1)">🔴 1<br>Critical</button>
+        <button class="triage-btn" data-level="2" onclick="setTriage(2)">🟠 2<br>Emergent</button>
+        <button class="triage-btn" data-level="3" onclick="setTriage(3)">🟡 3<br>Urgent</button>
+        <button class="triage-btn" data-level="4" onclick="setTriage(4)">🟢 4<br>Less Urgent</button>
+        <button class="triage-btn" data-level="5" onclick="setTriage(5)">🔵 5<br>Non-Urgent</button>
+      </div>
+
+      <div class="section-title">Nursing Notes</div>
+      <div class="field" style="margin-bottom:16px">
+        <label>Observations / Chief Complaint</label>
+        <textarea id="v-notes" placeholder="Patient complaints, initial observations...">${p.chief_complaint||''}</textarea>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+        <div class="field">
+          <label>Pain Scale (0–10)</label>
+          <input type="number" id="v-pain" min="0" max="10" placeholder="0–10">
+        </div>
+        <div class="field">
+          <label>Allergy</label>
+          <input type="text" id="v-allergy" placeholder="Known allergies">
+        </div>
+      </div>
+
+      <button class="btn-primary" id="saveVitalsBtn" onclick="saveVitals()">Save Vitals &amp; Send to Doctor Queue</button>
+      <div class="msg error" id="v-err"></div>
+      <div class="msg success" id="v-succ"></div>
+    </div>
+  `;
+}
+
+function setTriage(level) {
+  selectedTriage = level;
+  document.querySelectorAll('.triage-btn').forEach(b=>{
+    b.classList.toggle('selected', parseInt(b.dataset.level)===level);
+  });
+}
+
+async function saveVitals() {
+  if (!selectedPatient) return;
+  const btn = document.getElementById('saveVitalsBtn');
+  const err = document.getElementById('v-err');
+  const succ = document.getElementById('v-succ');
+  err.style.display='none'; succ.style.display='none';
+
+  const temp = document.getElementById('v-temp').value;
+  const pulse = document.getElementById('v-pulse').value;
+  if (!temp||!pulse) { err.textContent='Temperature and Pulse are required.'; err.style.display='block'; return; }
+  if (!selectedTriage) { err.textContent='Please assign a triage level.'; err.style.display='block'; return; }
+
+  btn.disabled=true; btn.textContent='Saving...';
   try {
-    await fetch(`${FRAPPE_URL}/api/resource/Nursing Task/${taskId}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json', 'X-Frappe-CSRF-Token': getCsrfToken() },
-      body: JSON.stringify({ status: 'Completed', completed_time: new Date().toISOString() })
+    // Save Vital Signs doctype
+    const vsRes = await fetch('/api/resource/Vital Signs', {
+      method:'POST',
+      headers:{'Content-Type':'application/json','X-Frappe-CSRF-Token':getCsrf()},
+      credentials:'include',
+      body: JSON.stringify({
+        doctype:'Vital Signs',
+        patient: selectedPatient.name,
+        patient_name: selectedPatient.patient_name,
+        token_number: selectedPatient.token_number,
+        temperature: temp,
+        bp_systolic: document.getElementById('v-bps').value,
+        bp_diastolic: document.getElementById('v-bpd').value,
+        pulse_rate: pulse,
+        spo2: document.getElementById('v-spo2').value,
+        respiratory_rate: document.getElementById('v-resp').value,
+        weight: document.getElementById('v-wt').value,
+        height: document.getElementById('v-ht').value,
+        blood_sugar: document.getElementById('v-sugar').value,
+        triage_level: selectedTriage,
+        nursing_notes: document.getElementById('v-notes').value,
+        pain_scale: document.getElementById('v-pain').value,
+        allergy: document.getElementById('v-allergy').value,
+        recorded_at: new Date().toISOString(),
+      })
     });
-    setTimeout(() => {
-      document.getElementById(`task-${taskId}`)?.remove();
-      showToast('Task marked complete ✓', 'success');
-    }, 400);
+    if (!vsRes.ok) { const d=await vsRes.json(); throw new Error(d.exc||'Failed to save vitals'); }
+
+    // Update Patient Registration triage_status
+    const upd = await fetch(`/api/resource/Patient Registration/${selectedPatient.name}`, {
+      method:'PUT',
+      headers:{'Content-Type':'application/json','X-Frappe-CSRF-Token':getCsrf()},
+      credentials:'include',
+      body: JSON.stringify({ triage_status:'Vitals Recorded', triage_level: selectedTriage })
+    });
+    if (!upd.ok) throw new Error('Failed to update patient status');
+
+    succ.textContent = `✅ Vitals saved! ${selectedPatient.patient_name} moved to Doctor queue.`;
+    succ.style.display='block';
+    selectedPatient = null;
+    setTimeout(()=>{ loadQueue(); document.getElementById('vitalsPanel').innerHTML='<div class="empty-state"><div class="icon">🩺</div><div>Select a patient from the queue to record vitals</div></div>'; }, 1500);
   } catch(e) {
-    el.classList.remove('done');
-    showToast('Failed to update task', 'error');
+    err.textContent='Error: '+(e.message||String(e)); err.style.display='block'; console.error(e);
+  } finally {
+    btn.disabled=false; btn.textContent='Save Vitals & Send to Doctor Queue';
   }
 }
 
-// ─── HELPERS ─────────────────────────────────────────────────────────────
-function getCsrfToken() {
-  return document.cookie.split(';').map(c=>c.trim().split('=')).find(c=>c[0]==='csrf_token')?.[1] ||
-         window.frappe?.csrf_token || '';
-}
-
-async function frappe_get_list(doctype, params) {
-  const qs = new URLSearchParams({
-    fields: JSON.stringify(params.fields || ['name']),
-    filters: JSON.stringify(params.filters || []),
-    order_by: params.order_by || 'creation desc',
-    limit_page_length: params.limit || 20
-  });
-  const res = await fetch(`${FRAPPE_URL}/api/resource/${doctype}?${qs}`, {
-    headers: { 'Accept': 'application/json' }
-  });
-  return res.json();
-}
-
-async function frappe_call(method, args) {
-  const res = await fetch(`${FRAPPE_URL}/api/method/${method}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'X-Frappe-CSRF-Token': getCsrfToken() },
-    body: JSON.stringify(args)
-  });
-  return res.json();
-}
-
-function showToast(msg, type = 'success') {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = `toast ${type} show`;
-  setTimeout(() => t.classList.remove('show'), 3500);
-}
+checkAuth();
+loadQueue();
+setInterval(loadQueue, 15000);
 </script>
 </body>
 </html>

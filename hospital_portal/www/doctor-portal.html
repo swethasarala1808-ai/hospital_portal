@@ -3,734 +3,445 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Doctor Consultation | Hospital Portal</title>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<title>Doctor / OPD Portal</title>
 <style>
-:root {
-  --bg: #fafbfc;
-  --surface: #fff;
-  --surface2: #f4f6f9;
-  --border: #e2e8f0;
-  --text: #1a202c;
-  --text2: #4a5568;
-  --text3: #a0aec0;
-  --accent: #553c9a;
-  --accent2: #6b46c1;
-  --accent-light: #faf5ff;
-  --green: #38a169;
-  --red: #e53e3e;
-  --yellow: #d69e2e;
-  --blue: #3182ce;
-}
-* { margin:0; padding:0; box-sizing:border-box; }
-body { font-family: 'Lato', sans-serif; background: var(--bg); color: var(--text); }
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap');
+  :root { --bg:#0d1117; --surface:#161b22; --border:#21262d; --text:#e6edf3; --muted:#8b949e; --accent:#a371f7; --blue:#4f8ef7; --green:#3fb950; --red:#f85149; --yellow:#d29922; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
 
-header {
-  background: var(--surface);
-  border-bottom: 3px solid var(--accent);
-  padding: 0 2rem; height: 62px;
-  display: flex; align-items: center; justify-content: space-between;
-  box-shadow: 0 1px 8px rgba(85,60,154,0.08);
-}
-.header-brand { display: flex; align-items: center; gap: 10px; }
-.brand-tag {
-  font-family: 'Fraunces', serif; font-size: 1.15rem; font-weight: 700;
-  color: var(--accent);
-}
-.brand-sub { font-size: 0.78rem; color: var(--text3); }
-.header-right { display: flex; align-items: center; gap: 12px; }
-.doctor-badge {
-  background: var(--accent-light); color: var(--accent);
-  border: 1px solid #d6bcfa; padding: 5px 14px;
-  border-radius: 20px; font-size: 0.82rem; font-weight: 700;
-}
-.back-btn {
-  background: var(--surface2); border: 1px solid var(--border);
-  color: var(--text2); padding: 6px 14px; border-radius: 7px;
-  cursor: pointer; font-size: 0.82rem; font-family: inherit;
-  text-decoration: none; display: inline-flex; align-items: center; gap: 5px;
-  transition: all 0.2s;
-}
-.back-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .topbar { background:var(--surface); border-bottom:1px solid var(--border); padding:0 24px; height:56px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; }
+  .topbar-left { display:flex; align-items:center; gap:10px; }
+  .topbar-title { font-weight:600; }
+  .dept-badge { background:rgba(163,113,247,0.15); color:var(--accent); border:1px solid rgba(163,113,247,0.3); padding:2px 10px; border-radius:20px; font-size:0.72rem; font-weight:600; }
+  .topbar-right { display:flex; align-items:center; gap:12px; font-size:0.85rem; color:var(--muted); }
+  .btn-sm { background:rgba(248,81,73,0.1); border:1px solid rgba(248,81,73,0.3); color:#f85149; padding:5px 12px; border-radius:7px; cursor:pointer; font-family:inherit; font-size:0.78rem; }
 
-.container { max-width: 1500px; margin: 0 auto; padding: 1.5rem 2rem; }
+  .main { display:grid; grid-template-columns:300px 1fr; gap:20px; padding:24px; max-width:1400px; margin:0 auto; }
 
-/* QUEUE STATS */
-.queue-stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 1rem; margin-bottom: 1.5rem; }
-.qstat {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: 10px; padding: 1rem 1.4rem;
-  display: flex; align-items: center; gap: 12px;
-}
-.qstat-icon { font-size: 1.6rem; }
-.qstat-num { font-family: 'Fraunces', serif; font-size: 2rem; font-weight: 700; line-height:1; }
-.qstat-label { font-size: 0.75rem; color: var(--text2); }
+  /* Queue */
+  .queue-panel { background:var(--surface); border:1px solid var(--border); border-radius:14px; overflow:hidden; height:fit-content; position:sticky; top:76px; }
+  .panel-header { padding:14px 18px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+  .panel-header h2 { font-size:0.9rem; font-weight:600; }
+  .count-badge { background:rgba(163,113,247,0.15); color:var(--accent); padding:2px 8px; border-radius:20px; font-size:0.75rem; font-weight:600; }
+  .patient-list { overflow-y:auto; max-height:500px; }
+  .patient-item { padding:12px 16px; border-bottom:1px solid var(--border); cursor:pointer; transition:background 0.15s; }
+  .patient-item:hover { background:rgba(255,255,255,0.03); }
+  .patient-item.active { background:rgba(163,113,247,0.08); border-left:3px solid var(--accent); }
+  .p-token { font-size:0.8rem; font-weight:700; color:var(--accent); }
+  .p-name { font-weight:500; font-size:0.9rem; margin-top:2px; }
+  .p-detail { font-size:0.73rem; color:var(--muted); }
+  .triage-dot { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:4px; }
 
-/* THREE COLUMN LAYOUT */
-.three-col { display: grid; grid-template-columns: 280px 1fr 320px; gap: 1.2rem; }
+  /* Consultation form */
+  .consult-panel { background:var(--surface); border:1px solid var(--border); border-radius:14px; overflow:hidden; }
+  .empty-state { display:flex; flex-direction:column; align-items:center; justify-content:center; height:300px; color:var(--muted); }
 
-/* LEFT: PATIENT LIST */
-.panel { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
-.panel-header {
-  padding: 0.9rem 1.2rem; border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: space-between;
-}
-.panel-title { font-size: 0.85rem; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 7px; }
-.patient-list { max-height: 620px; overflow-y: auto; }
-.patient-card {
-  padding: 12px 14px; border-bottom: 1px solid var(--border);
-  cursor: pointer; transition: background 0.15s;
-  display: flex; flex-direction: column; gap: 4px;
-}
-.patient-card:hover { background: var(--accent-light); }
-.patient-card.active { background: var(--accent-light); border-left: 3px solid var(--accent); }
-.pc-id { font-size: 0.72rem; color: var(--accent); font-weight: 700; }
-.pc-name { font-size: 0.88rem; font-weight: 700; }
-.pc-meta { font-size: 0.75rem; color: var(--text2); display: flex; gap: 8px; align-items: center; }
-.triage-dot {
-  width: 9px; height: 9px; border-radius: 50%; display: inline-block;
-}
-.triage-dot.Red { background: #e53e3e; }
-.triage-dot.Orange { background: #dd6b20; }
-.triage-dot.Yellow { background: #d69e2e; }
-.triage-dot.Green { background: #38a169; }
+  .patient-header { padding:18px 24px; border-bottom:1px solid var(--border); }
+  .patient-header h2 { font-size:1.1rem; font-weight:600; }
+  .patient-meta { display:flex; flex-wrap:wrap; gap:12px; margin-top:8px; font-size:0.8rem; color:var(--muted); }
+  .meta-tag { background:rgba(255,255,255,0.05); border:1px solid var(--border); padding:3px 10px; border-radius:20px; }
 
-/* CENTER: CONSULTATION FORM */
-.consult-area { display: flex; flex-direction: column; gap: 1rem; }
-.vitals-strip {
-  background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
-  padding: 1rem 1.4rem;
-}
-.vitals-grid { display: grid; grid-template-columns: repeat(6,1fr); gap: 8px; margin-top: 10px; }
-.vital-item {
-  background: var(--surface2); border-radius: 8px; padding: 10px 8px; text-align: center;
-}
-.vital-val { font-family: 'Fraunces', serif; font-size: 1.2rem; font-weight: 700; }
-.vital-val.warn { color: var(--yellow); }
-.vital-val.danger { color: var(--red); }
-.vital-name { font-size: 0.67rem; color: var(--text3); text-transform: uppercase; letter-spacing: 0.04em; margin-top: 2px; }
+  /* Vitals summary */
+  .vitals-summary { display:grid; grid-template-columns:repeat(5,1fr); gap:8px; padding:16px 24px; background:rgba(163,113,247,0.04); border-bottom:1px solid var(--border); }
+  .vs-item { text-align:center; }
+  .vs-val { font-size:1.1rem; font-weight:700; color:var(--accent); }
+  .vs-label { font-size:0.65rem; color:var(--muted); margin-top:2px; }
 
-.consult-form { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; }
-.section-tabs { display: flex; border-bottom: 1px solid var(--border); overflow-x: auto; }
-.tab-btn {
-  padding: 10px 18px; font-size: 0.82rem; font-weight: 700;
-  border: none; background: none; cursor: pointer; font-family: inherit;
-  color: var(--text2); border-bottom: 2px solid transparent; transition: all 0.2s;
-  white-space: nowrap;
-}
-.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
-.tab-content { padding: 1.2rem; display: none; }
-.tab-content.active { display: block; }
-.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
-.form-row.full { grid-template-columns: 1fr; }
-.form-row.three { grid-template-columns: 1fr 1fr 1fr; }
-.form-group { display: flex; flex-direction: column; gap: 4px; }
-label { font-size: 0.73rem; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: 0.05em; }
-input, select, textarea {
-  border: 1px solid var(--border); border-radius: 7px;
-  padding: 8px 11px; font-size: 0.87rem; font-family: inherit;
-  color: var(--text); background: var(--surface); outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-input:focus, select:focus, textarea:focus {
-  border-color: var(--accent2); box-shadow: 0 0 0 3px rgba(107,70,193,0.1);
-}
-textarea { resize: vertical; }
-.icd-hint { font-size: 0.72rem; color: var(--text3); margin-top: 3px; }
+  .consult-body { padding:24px; }
+  .section-title { font-size:0.78rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:12px; padding-bottom:6px; border-bottom:1px solid var(--border); }
+  .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:20px; }
+  .form-grid .full { grid-column:1/-1; }
+  .field label { display:block; font-size:0.72rem; color:var(--muted); margin-bottom:5px; text-transform:uppercase; letter-spacing:0.4px; font-weight:500; }
+  .field input,.field select,.field textarea { width:100%; background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:9px; padding:10px 13px; color:var(--text); font-family:inherit; font-size:0.88rem; outline:none; transition:all 0.2s; }
+  .field input:focus,.field select:focus,.field textarea:focus { border-color:var(--accent); background:rgba(163,113,247,0.05); }
+  .field textarea { resize:vertical; min-height:70px; }
+  .field select option { background:#1a1f2e; }
 
-/* ORDERS PANEL (right) */
-.orders-panel { display: flex; flex-direction: column; gap: 1rem; }
-.order-form {
-  background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden;
-}
-.order-header {
-  padding: 0.8rem 1.1rem; font-size: 0.82rem; font-weight: 700;
-  display: flex; align-items: center; gap: 7px;
-  border-bottom: 1px solid var(--border);
-}
-.order-header.lab { background: #ebf8ff; color: #2b6cb0; }
-.order-header.rad { background: #faf5ff; color: var(--accent); }
-.order-header.rx { background: #f0fff4; color: var(--green); }
-.order-header.admit { background: #fff5f5; color: var(--red); }
-.order-body { padding: 1rem; }
-.order-body .form-group { margin-bottom: 8px; }
-.mini-btn {
-  width: 100%; padding: 8px; font-size: 0.82rem; font-weight: 700;
-  border: none; border-radius: 7px; cursor: pointer; font-family: inherit;
-  transition: all 0.15s;
-}
-.mini-btn.lab { background: #ebf8ff; color: #2b6cb0; }
-.mini-btn.lab:hover { background: #2b6cb0; color: white; }
-.mini-btn.rad { background: var(--accent-light); color: var(--accent); }
-.mini-btn.rad:hover { background: var(--accent); color: white; }
-.mini-btn.rx { background: #f0fff4; color: var(--green); }
-.mini-btn.rx:hover { background: var(--green); color: white; }
-.mini-btn.admit { background: #fff5f5; color: var(--red); }
-.mini-btn.admit:hover { background: var(--red); color: white; }
+  /* Medicine table */
+  .rx-table { width:100%; border-collapse:collapse; margin-bottom:10px; }
+  .rx-table th { font-size:0.72rem; color:var(--muted); text-align:left; padding:6px 10px; border-bottom:1px solid var(--border); }
+  .rx-table td { padding:6px; border-bottom:1px solid rgba(33,38,45,0.5); }
+  .rx-table input,.rx-table select { background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:7px; padding:6px 9px; color:var(--text); font-family:inherit; font-size:0.82rem; outline:none; width:100%; }
+  .rx-table input:focus,.rx-table select:focus { border-color:var(--accent); }
+  .btn-add-row { background:rgba(163,113,247,0.1); border:1px solid rgba(163,113,247,0.3); color:var(--accent); padding:7px 14px; border-radius:8px; cursor:pointer; font-family:inherit; font-size:0.8rem; margin-top:4px; }
+  .btn-del { background:rgba(248,81,73,0.1); border:1px solid rgba(248,81,73,0.2); color:#f85149; padding:4px 8px; border-radius:6px; cursor:pointer; font-family:inherit; font-size:0.75rem; }
 
-.main-save-btn {
-  width: 100%; padding: 12px; background: var(--accent); color: white;
-  border: none; border-radius: 8px; font-size: 0.95rem; font-weight: 700;
-  font-family: inherit; cursor: pointer; display: flex; align-items: center;
-  justify-content: center; gap: 8px; transition: all 0.2s;
-}
-.main-save-btn:hover { background: var(--accent2); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(85,60,154,0.35); }
+  /* Lab / Radiology orders */
+  .order-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px; }
+  .order-item { display:flex; align-items:center; gap:8px; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:8px; padding:8px 12px; cursor:pointer; transition:all 0.2s; }
+  .order-item:hover { border-color:var(--accent); }
+  .order-item input[type=checkbox] { accent-color:var(--accent); width:15px; height:15px; }
+  .order-item label { font-size:0.84rem; cursor:pointer; }
 
-.no-patient-msg {
-  display: flex; flex-direction: column; align-items: center;
-  justify-content: center; min-height: 300px; color: var(--text3);
-  font-size: 0.88rem; gap: 12px;
-}
-.no-patient-msg .big-icon { font-size: 3rem; }
+  .btn-primary { background:linear-gradient(135deg,#a371f7,#7c3aed); border:none; border-radius:10px; color:white; padding:12px 24px; font-family:inherit; font-size:0.95rem; font-weight:600; cursor:pointer; transition:all 0.2s; box-shadow:0 4px 14px rgba(163,113,247,0.25); width:100%; margin-top:4px; }
+  .btn-primary:hover { transform:translateY(-1px); }
+  .btn-primary:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
 
-/* RECENT ORDERS HISTORY */
-.order-history { padding: 0; }
-.order-item {
-  padding: 10px 12px; border-bottom: 1px solid var(--border);
-  font-size: 0.8rem;
-}
-.order-item:last-child { border-bottom: none; }
-.order-item-type { font-weight: 700; font-size: 0.75rem; color: var(--text2); text-transform: uppercase; }
-.order-item-detail { margin-top: 2px; color: var(--text); }
+  .msg { padding:10px 14px; border-radius:9px; font-size:0.85rem; margin-top:10px; display:none; }
+  .msg.error { background:rgba(248,81,73,0.1); border:1px solid rgba(248,81,73,0.3); color:#fca5a5; }
+  .msg.success { background:rgba(63,185,80,0.1); border:1px solid rgba(63,185,80,0.3); color:#86efac; }
 
-/* TAG CHIP */
-.chip {
-  display: inline-block; padding: 2px 10px; border-radius: 12px;
-  font-size: 0.72rem; font-weight: 700; margin: 2px;
-}
-.chip.lab { background: #ebf8ff; color: #2b6cb0; }
-.chip.rad { background: var(--accent-light); color: var(--accent); }
-.chip.rx { background: #f0fff4; color: var(--green); }
-
-/* TOAST */
-.toast {
-  position: fixed; bottom: 2rem; right: 2rem; z-index: 999;
-  background: #2d3748; color: white; padding: 12px 20px;
-  border-radius: 10px; font-size: 0.88rem;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
-  transform: translateY(80px); opacity: 0;
-  transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
-}
-.toast.show { transform: translateY(0); opacity: 1; }
-.toast.success { border-left: 4px solid var(--green); }
-.toast.error { border-left: 4px solid var(--red); }
-.loading { display:inline-block; width:13px; height:13px; border:2px solid rgba(255,255,255,0.4); border-top-color:white; border-radius:50%; animation:spin 0.7s linear infinite; }
-@keyframes spin { to { transform:rotate(360deg); } }
+  /* Invoice preview */
+  .invoice-preview { background:rgba(63,185,80,0.05); border:1px solid rgba(63,185,80,0.2); border-radius:10px; padding:14px; margin-top:12px; display:none; }
+  .invoice-preview h4 { font-size:0.85rem; font-weight:600; color:var(--green); margin-bottom:10px; }
+  .inv-row { display:flex; justify-content:space-between; font-size:0.82rem; padding:3px 0; }
+  .inv-row.total { border-top:1px solid var(--border); padding-top:8px; margin-top:4px; font-weight:700; color:var(--green); font-size:0.9rem; }
 </style>
 </head>
 <body>
-<header>
-  <div class="header-brand">
-    <span style="font-size:1.5rem;">👨‍⚕️</span>
-    <div>
-      <div class="brand-tag">Doctor's Console</div>
-      <div class="brand-sub">OPD Consultation · Diagnosis · Orders</div>
-    </div>
-  </div>
-  <div class="header-right">
-    <span class="doctor-badge" id="doctorName">Dr. Loading...</span>
-    <a href="/hospital-dashboard" class="back-btn">← Dashboard</a>
-  </div>
-</header>
 
-<div class="container">
-  <div class="queue-stats">
-    <div class="qstat">
-      <span class="qstat-icon">👥</span>
-      <div><div class="qstat-num" id="totalQueue">0</div><div class="qstat-label">In Queue Today</div></div>
+<div class="topbar">
+  <div class="topbar-left">
+    <span style="font-size:1.2rem">👨‍⚕️</span>
+    <span class="topbar-title">Doctor / OPD Consultation</span>
+    <span class="dept-badge">Doctor</span>
+  </div>
+  <div class="topbar-right">
+    <span id="staffName">Loading...</span>
+    <button class="btn-sm" onclick="doLogout()">Sign Out</button>
+  </div>
+</div>
+
+<div class="main">
+  <!-- Queue -->
+  <div class="queue-panel">
+    <div class="panel-header">
+      <h2>Doctor Queue</h2>
+      <span class="count-badge" id="queueCount">0</span>
     </div>
-    <div class="qstat">
-      <span class="qstat-icon">✅</span>
-      <div><div class="qstat-num" id="doneToday">0</div><div class="qstat-label">Consulted Today</div></div>
-    </div>
-    <div class="qstat">
-      <span class="qstat-icon">🔬</span>
-      <div><div class="qstat-num" id="labOrders">0</div><div class="qstat-label">Lab Orders Today</div></div>
-    </div>
-    <div class="qstat">
-      <span class="qstat-icon">💊</span>
-      <div><div class="qstat-num" id="rxOrders">0</div><div class="qstat-label">Prescriptions Today</div></div>
+    <div class="patient-list" id="patientList">
+      <div style="padding:20px;text-align:center;color:var(--muted);font-size:0.85rem">Loading...</div>
     </div>
   </div>
 
-  <div class="three-col">
-    <!-- LEFT: PATIENT QUEUE -->
-    <div class="panel">
-      <div class="panel-header">
-        <div class="panel-title">📋 Queue (Vitals Done)</div>
-        <span style="font-size:0.75rem;color:var(--text3);" id="queueCount">0</span>
-      </div>
-      <div class="patient-list" id="patientList">
-        <div style="padding:1.5rem;text-align:center;color:var(--text3);font-size:0.83rem;">Loading...</div>
-      </div>
-    </div>
-
-    <!-- CENTER: CONSULTATION -->
-    <div class="consult-area">
-      <div id="noPatientMsg" class="panel" style="min-height:400px;">
-        <div class="no-patient-msg">
-          <span class="big-icon">🩺</span>
-          <span>Select a patient from the queue to begin consultation</span>
-        </div>
-      </div>
-
-      <div id="consultArea" style="display:none;">
-        <!-- VITALS STRIP -->
-        <div class="vitals-strip">
-          <div class="panel-title" style="font-size:0.85rem;">📊 Vitals — <span id="vitalsPatientName" style="color:var(--accent)"></span></div>
-          <div class="vitals-grid" id="vitalsGrid">
-            <div class="vital-item"><div class="vital-val" id="vBp">—</div><div class="vital-name">BP</div></div>
-            <div class="vital-item"><div class="vital-val" id="vPulse">—</div><div class="vital-name">Pulse</div></div>
-            <div class="vital-item"><div class="vital-val" id="vTemp">—</div><div class="vital-name">Temp °C</div></div>
-            <div class="vital-item"><div class="vital-val" id="vSpo2">—</div><div class="vital-name">SpO₂</div></div>
-            <div class="vital-item"><div class="vital-val" id="vWeight">—</div><div class="vital-name">Weight kg</div></div>
-            <div class="vital-item"><div class="vital-val" id="vTriage">—</div><div class="vital-name">Triage</div></div>
-          </div>
-        </div>
-
-        <!-- CONSULTATION FORM -->
-        <div class="consult-form panel">
-          <div class="section-tabs">
-            <button class="tab-btn active" onclick="switchTab('history',this)">📋 History</button>
-            <button class="tab-btn" onclick="switchTab('exam',this)">🔍 Examination</button>
-            <button class="tab-btn" onclick="switchTab('diagnosis',this)">🩺 Diagnosis</button>
-            <button class="tab-btn" onclick="switchTab('plan',this)">📝 Treatment Plan</button>
-          </div>
-
-          <div class="tab-content active" id="tab-history">
-            <div class="form-row full"><div class="form-group"><label>Chief Complaint</label><textarea id="chief_complaint" rows="2" placeholder="Patient's main presenting complaint..."></textarea></div></div>
-            <div class="form-row full"><div class="form-group"><label>History of Present Illness</label><textarea id="hopi" rows="3" placeholder="Duration, onset, character, associated symptoms..."></textarea></div></div>
-            <div class="form-row">
-              <div class="form-group"><label>Past Medical History</label><textarea id="pmh" rows="2" placeholder="DM, HTN, previous surgeries..."></textarea></div>
-              <div class="form-group"><label>Drug History / Allergies</label><textarea id="drug_history" rows="2" placeholder="Current medications, known allergies..."></textarea></div>
-            </div>
-            <div class="form-row">
-              <div class="form-group"><label>Family History</label><input type="text" id="family_history" placeholder="Relevant family conditions..."></div>
-              <div class="form-group"><label>Social History</label><input type="text" id="social_history" placeholder="Smoking, alcohol, occupation..."></div>
-            </div>
-          </div>
-
-          <div class="tab-content" id="tab-exam">
-            <div class="form-row full"><div class="form-group"><label>General Examination</label><textarea id="gen_exam" rows="2" placeholder="Conscious, oriented, pallor, icterus, cyanosis..."></textarea></div></div>
-            <div class="form-row full"><div class="form-group"><label>Systemic Examination</label><textarea id="sys_exam" rows="3" placeholder="CVS, RS, abdomen, CNS findings..."></textarea></div></div>
-            <div class="form-row">
-              <div class="form-group"><label>Local Examination</label><textarea id="local_exam" rows="2" placeholder="Specific area examination findings..."></textarea></div>
-              <div class="form-group"><label>Additional Findings</label><textarea id="additional_findings" rows="2" placeholder="Any other relevant findings..."></textarea></div>
-            </div>
-          </div>
-
-          <div class="tab-content" id="tab-diagnosis">
-            <div class="form-row full"><div class="form-group">
-              <label>Provisional Diagnosis</label>
-              <textarea id="provisional_diagnosis" rows="2" placeholder="Working diagnosis..."></textarea>
-            </div></div>
-            <div class="form-row">
-              <div class="form-group">
-                <label>Final Diagnosis</label>
-                <input type="text" id="final_diagnosis" placeholder="Confirmed diagnosis...">
-              </div>
-              <div class="form-group">
-                <label>ICD-10 Code</label>
-                <input type="text" id="icd_code" placeholder="e.g. J18.9">
-                <div class="icd-hint">International Classification of Diseases code</div>
-              </div>
-            </div>
-            <div class="form-row full"><div class="form-group">
-              <label>Differential Diagnosis</label>
-              <textarea id="differential_diagnosis" rows="2" placeholder="Other possible diagnoses to rule out..."></textarea>
-            </div></div>
-          </div>
-
-          <div class="tab-content" id="tab-plan">
-            <div class="form-row full"><div class="form-group">
-              <label>Treatment Plan</label>
-              <textarea id="treatment_plan" rows="3" placeholder="Overall management plan..."></textarea>
-            </div></div>
-            <div class="form-row">
-              <div class="form-group">
-                <label>Follow Up</label>
-                <select id="follow_up">
-                  <option value="">-- Select --</option>
-                  <option value="1 Day">1 Day</option>
-                  <option value="3 Days">3 Days</option>
-                  <option value="1 Week">1 Week</option>
-                  <option value="2 Weeks">2 Weeks</option>
-                  <option value="1 Month">1 Month</option>
-                  <option value="As Needed">As Needed</option>
-                  <option value="Admitted">Admitted (IPD)</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label>Consultation Status</label>
-                <select id="consult_status">
-                  <option value="Draft">Draft</option>
-                  <option value="Completed">Completed</option>
-                  <option value="Referred">Referred to Specialist</option>
-                </select>
-              </div>
-            </div>
-            <div class="form-row full"><div class="form-group">
-              <label>Doctor's Notes (Internal)</label>
-              <textarea id="doctor_notes" rows="2" placeholder="Private notes for record..."></textarea>
-            </div></div>
-          </div>
-
-          <div style="padding:0 1.2rem 1.2rem;">
-            <button class="main-save-btn" onclick="saveConsultation()" id="saveConsultBtn">
-              💾 Save Consultation to Frappe
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- RIGHT: ORDERS -->
-    <div class="orders-panel">
-      <!-- LAB ORDER -->
-      <div class="order-form">
-        <div class="order-header lab">🔬 Lab Request</div>
-        <div class="order-body">
-          <div class="form-group"><label>Test Name</label>
-            <select id="labTest">
-              <option value="">-- Select Test --</option>
-              <option>CBC (Complete Blood Count)</option>
-              <option>Blood Sugar - Fasting</option>
-              <option>Blood Sugar - Random</option>
-              <option>HbA1c</option>
-              <option>Liver Function Test</option>
-              <option>Kidney Function Test</option>
-              <option>Lipid Profile</option>
-              <option>Thyroid Profile</option>
-              <option>Urine Routine</option>
-              <option>Stool Routine</option>
-              <option>Blood Culture</option>
-              <option>Widal Test</option>
-              <option>Dengue NS1/IgM</option>
-              <option>Malaria Antigen</option>
-            </select>
-          </div>
-          <div class="form-group"><label>Urgency</label>
-            <select id="labUrgency"><option>Routine</option><option>Urgent</option><option>STAT</option></select>
-          </div>
-          <div class="form-group"><label>Notes</label><input type="text" id="labNotes" placeholder="Special instructions..."></div>
-          <button class="mini-btn lab" onclick="placeOrder('lab')">+ Send to Laboratory</button>
-        </div>
-      </div>
-
-      <!-- RADIOLOGY ORDER -->
-      <div class="order-form">
-        <div class="order-header rad">📡 Radiology Request</div>
-        <div class="order-body">
-          <div class="form-group"><label>Investigation</label>
-            <select id="radTest">
-              <option value="">-- Select --</option>
-              <option>X-Ray Chest PA</option>
-              <option>X-Ray Abdomen</option>
-              <option>ECG 12-Lead</option>
-              <option>2D Echo</option>
-              <option>USG Abdomen</option>
-              <option>CT Brain</option>
-              <option>CT Chest</option>
-              <option>CT Abdomen</option>
-              <option>MRI Brain</option>
-              <option>MRI Spine</option>
-              <option>Doppler Study</option>
-            </select>
-          </div>
-          <div class="form-group"><label>Clinical Indication</label><input type="text" id="radIndication" placeholder="Why this scan is needed..."></div>
-          <button class="mini-btn rad" onclick="placeOrder('radiology')">+ Send to Radiology</button>
-        </div>
-      </div>
-
-      <!-- PRESCRIPTION -->
-      <div class="order-form">
-        <div class="order-header rx">💊 Prescription</div>
-        <div class="order-body">
-          <div class="form-group"><label>Medicine Name</label><input type="text" id="medName" placeholder="Drug name..."></div>
-          <div class="form-group"><label>Dosage & Route</label><input type="text" id="medDose" placeholder="e.g. 500mg Oral BD"></div>
-          <div class="form-group"><label>Duration</label>
-            <select id="medDuration">
-              <option>3 Days</option><option>5 Days</option><option>7 Days</option><option>10 Days</option><option>14 Days</option><option>1 Month</option><option>Ongoing</option>
-            </select>
-          </div>
-          <div class="form-group"><label>Instructions</label><input type="text" id="medInstructions" placeholder="After food, with water..."></div>
-          <button class="mini-btn rx" onclick="placeOrder('prescription')">+ Add to Prescription</button>
-          <div id="rxItems" style="margin-top:8px;"></div>
-        </div>
-      </div>
-
-      <!-- ADMIT TO IPD -->
-      <div class="order-form">
-        <div class="order-header admit">🛏️ Admit to IPD / ICU</div>
-        <div class="order-body">
-          <div class="form-group"><label>Ward Type</label>
-            <select id="admitWard">
-              <option>General Ward</option><option>Private Room</option><option>Semi-Private</option><option>ICU</option><option>HDU</option>
-            </select>
-          </div>
-          <div class="form-group"><label>Admission Reason</label><input type="text" id="admitReason" placeholder="Reason for admission..."></div>
-          <button class="mini-btn admit" onclick="placeOrder('admit')">🚨 Admit Patient</button>
-        </div>
-      </div>
+  <!-- Consultation -->
+  <div class="consult-panel" id="consultPanel">
+    <div class="empty-state">
+      <div style="font-size:3rem">👨‍⚕️</div>
+      <div>Select a patient from the queue</div>
     </div>
   </div>
 </div>
 
-<div class="toast" id="toast"></div>
-
 <script>
-const FRAPPE_URL = window.location.origin;
-let currentPatient = null;
-let currentVitals = null;
-let rxItems = [];
+const LAB_TESTS = ['CBC (Complete Blood Count)','Blood Sugar (Fasting)','Blood Sugar (Random)','HbA1c','Lipid Profile','Liver Function Test','Kidney Function Test','Thyroid Profile','Urine Routine','ECG','Blood Culture','Dengue NS1'];
+const RADIOLOGY = ['X-Ray Chest','X-Ray Hand','Ultrasound Abdomen','CT Scan Head','MRI Brain','Echo (Echocardiogram)','2D Echo','HRCT Chest'];
+const CONSULT_FEE = 500;
 
-document.addEventListener('DOMContentLoaded', () => {
-  loadPatientQueue();
-  loadDayCounts();
-  setInterval(loadPatientQueue, 30000);
-});
+let selectedPatient = null;
+let vitalsData = null;
+let medicines = [{ name:'',dose:'',freq:'',duration:'',instructions:'' }];
 
-// ─── LOAD QUEUE ──────────────────────────────────────────────────────────
-async function loadPatientQueue() {
+async function checkAuth() {
   try {
-    const res = await frappe_get_list('Patient Registration', {
-      fields: ['name','patient_name','age','gender','token_number','triage_level'],
-      filters: [['triage_status','=','Vitals Recorded']],
-      order_by: 'creation asc', limit: 40
-    });
-    const patients = res?.message || [];
-    document.getElementById('queueCount').textContent = patients.length;
-    document.getElementById('totalQueue').textContent = patients.length;
-    const list = document.getElementById('patientList');
-    if (!patients.length) {
-      list.innerHTML = '<div style="padding:1.5rem;text-align:center;color:var(--text3);font-size:0.82rem;">No patients in queue</div>';
+    const res = await fetch('/api/method/frappe.auth.get_logged_user',{credentials:'include'});
+    const data = await res.json();
+    const user = data.message;
+    if (!user||user==='Guest') { window.location.href='/login'; return; }
+    document.getElementById('staffName').textContent = user;
+    const roleRes = await fetch(`/api/resource/User/${encodeURIComponent(user)}?fields=["roles"]`,{credentials:'include'});
+    const roleData = await roleRes.json();
+    const roles = (roleData.data?.roles||[]).map(r=>r.role);
+    if (!roles.some(r=>['Doctor','System Manager','Administrator'].includes(r))) {
+      alert('Access denied.'); window.location.href='/login';
+    }
+  } catch(e) { window.location.href='/login'; }
+}
+function getCsrf() { const m=document.cookie.split(';').map(c=>c.trim().split('=')).find(c=>c[0]==='csrf_token'); return m?m[1]:''; }
+function doLogout() { fetch('/api/method/logout',{credentials:'include'}).then(()=>{ window.location.href='/login'; }); }
+
+const triageColors = {'1':'#f85149','2':'#f0883e','3':'#d29922','4':'#3fb950','5':'#4f8ef7'};
+
+async function loadQueue() {
+  const today = new Date().toISOString().split('T')[0];
+  try {
+    const res = await fetch(`/api/resource/Patient Registration?fields=["name","patient_name","token_number","triage_status","triage_level","chief_complaint","visit_type","date_of_birth","gender","phone"]&filters=[["creation",">=","${today} 00:00:00"],["triage_status","=","Vitals Recorded"]]&order_by=triage_level asc,token_number asc&limit=50`,{credentials:'include'});
+    const data = await res.json();
+    const list = data.data || [];
+    document.getElementById('queueCount').textContent = list.length;
+    if (!list.length) {
+      document.getElementById('patientList').innerHTML='<div style="padding:20px;text-align:center;color:var(--muted);font-size:0.85rem">No patients in queue ✓</div>';
       return;
     }
-    list.innerHTML = patients.map(p => `
-      <div class="patient-card ${currentPatient?.id===p.name?'active':''}" onclick="selectPatient('${p.name}','${p.patient_name}','${p.age||''}','${p.gender||''}','${p.token_number||''}','${p.triage_level||''}')">
-        <div class="pc-id">${p.name} · Token ${p.token_number||'—'}</div>
-        <div class="pc-name">${p.patient_name}</div>
-        <div class="pc-meta">
-          <span class="triage-dot ${p.triage_level||'Green'}"></span>
-          ${p.age||'?'} yrs · ${p.gender||'?'} · ${p.triage_level||'Pending'}
+    document.getElementById('patientList').innerHTML = list.map(p=>{
+      const color = triageColors[String(p.triage_level)]||'#4f8ef7';
+      return `<div class="patient-item ${selectedPatient?.name===p.name?'active':''}" onclick='selectPatient(${JSON.stringify(p)})'>
+        <div style="display:flex;align-items:center;gap:6px">
+          <span class="p-token">${p.token_number||'—'}</span>
+          <span class="triage-dot" style="background:${color}"></span>
         </div>
-      </div>`).join('');
+        <div class="p-name">${p.patient_name}</div>
+        <div class="p-detail">${p.visit_type||'OPD'} · ${(p.chief_complaint||'').substring(0,30)}</div>
+      </div>`;
+    }).join('');
   } catch(e) { console.error(e); }
 }
 
-async function loadDayCounts() {
+async function selectPatient(p) {
+  selectedPatient = p;
+  medicines = [{name:'',dose:'',freq:'',duration:'',instructions:''}];
+  loadQueue();
+
+  // Fetch vitals
   try {
-    const today = new Date().toISOString().split('T')[0];
-    const [cons, rx] = await Promise.all([
-      frappe_get_list('Consultation', { fields:['name'], filters:[['creation','>=',today]], limit:100 }),
-      frappe_get_list('Prescription', { fields:['name'], filters:[['creation','>=',today]], limit:100 })
-    ]);
-    document.getElementById('doneToday').textContent = cons?.message?.length || 0;
-    document.getElementById('rxOrders').textContent = rx?.message?.length || 0;
-  } catch(e) {}
+    const vsRes = await fetch(`/api/resource/Vital Signs?fields=["*"]&filters=[["patient","=","${p.name}"]]&order_by=creation desc&limit=1`,{credentials:'include'});
+    const vsData = await vsRes.json();
+    vitalsData = (vsData.data||[])[0] || null;
+  } catch(e) { vitalsData = null; }
+
+  const age = p.date_of_birth ? Math.floor((Date.now()-new Date(p.date_of_birth))/(365.25*24*3600*1000)) : '—';
+  const vs = vitalsData;
+
+  document.getElementById('consultPanel').innerHTML = `
+    <div class="patient-header">
+      <h2>${p.patient_name} <span style="font-size:0.8rem;color:var(--muted);font-weight:400">Token: ${p.token_number||'—'}</span></h2>
+      <div class="patient-meta">
+        <span class="meta-tag">🪪 ${p.name}</span>
+        <span class="meta-tag">🎂 ${age} yrs</span>
+        <span class="meta-tag">⚧ ${p.gender||'—'}</span>
+        <span class="meta-tag">📞 ${p.phone||'—'}</span>
+        <span class="meta-tag">🏥 ${p.visit_type||'OPD'}</span>
+        ${vs?`<span class="meta-tag" style="color:#d29922">⚠️ Allergy: ${vs.allergy||'None'}</span>`:''}
+      </div>
+    </div>
+
+    ${vs?`<div class="vitals-summary">
+      <div class="vs-item"><div class="vs-val">${vs.temperature||'—'}°F</div><div class="vs-label">Temperature</div></div>
+      <div class="vs-item"><div class="vs-val">${vs.bp_systolic||'—'}/${vs.bp_diastolic||'—'}</div><div class="vs-label">BP (mmHg)</div></div>
+      <div class="vs-item"><div class="vs-val">${vs.pulse_rate||'—'}</div><div class="vs-label">Pulse (bpm)</div></div>
+      <div class="vs-item"><div class="vs-val">${vs.spo2||'—'}%</div><div class="vs-label">SpO2</div></div>
+      <div class="vs-item"><div class="vs-val">${vs.blood_sugar||'—'}</div><div class="vs-label">Sugar (mg/dL)</div></div>
+    </div>`:'<div style="padding:12px 24px;font-size:0.82rem;color:var(--muted);background:rgba(248,81,73,0.05);">⚠️ Vitals not recorded yet.</div>'}
+
+    <div class="consult-body">
+
+      <div class="section-title">Consultation</div>
+      <div class="form-grid">
+        <div class="field full"><label>Chief Complaint</label><input type="text" id="c-complaint" value="${(p.chief_complaint||'').replace(/"/g,'&quot;')}"/></div>
+        <div class="field full"><label>History of Present Illness</label><textarea id="c-hpi" placeholder="HPI details..."></textarea></div>
+        <div class="field"><label>Diagnosis (Primary) *</label><input type="text" id="c-diag" placeholder="e.g. Type 2 DM, Hypertension" /></div>
+        <div class="field"><label>Diagnosis (Secondary)</label><input type="text" id="c-diag2" placeholder="Secondary diagnosis" /></div>
+        <div class="field full"><label>Clinical Notes / Examination Findings</label><textarea id="c-notes" placeholder="Examination findings, clinical notes..."></textarea></div>
+        <div class="field">
+          <label>Disposition</label>
+          <select id="c-disp">
+            <option value="OPD">OPD — Outpatient</option>
+            <option value="IPD">Admit to IPD</option>
+            <option value="ICU">Admit to ICU</option>
+            <option value="Discharge">Discharge</option>
+            <option value="Refer">Refer to Specialist</option>
+          </select>
+        </div>
+        <div class="field"><label>Follow-up Date</label><input type="date" id="c-followup" /></div>
+      </div>
+
+      <div class="section-title">Prescription (Medicines)</div>
+      <table class="rx-table">
+        <thead><tr><th>Medicine Name</th><th>Dose</th><th>Frequency</th><th>Duration</th><th>Instructions</th><th></th></tr></thead>
+        <tbody id="rxTableBody"></tbody>
+      </table>
+      <button class="btn-add-row" onclick="addMedicineRow()">+ Add Medicine</button>
+
+      <div class="section-title" style="margin-top:20px">Lab Orders</div>
+      <div class="order-grid" id="labOrders">
+        ${LAB_TESTS.map((t,i)=>`<div class="order-item"><input type="checkbox" id="lab-${i}"><label for="lab-${i}">${t}</label></div>`).join('')}
+      </div>
+
+      <div class="section-title">Radiology Orders</div>
+      <div class="order-grid" id="radOrders">
+        ${RADIOLOGY.map((t,i)=>`<div class="order-item"><input type="checkbox" id="rad-${i}"><label for="rad-${i}">${t}</label></div>`).join('')}
+      </div>
+
+      <div class="section-title">Billing Preview</div>
+      <div class="invoice-preview" id="invoicePreview">
+        <h4>📄 Sales Invoice (Preview)</h4>
+        <div id="invItems"></div>
+      </div>
+
+      <button class="btn-primary" id="saveConsultBtn" onclick="saveConsultation()">
+        Save Consultation + Create Prescription + Generate Invoice
+      </button>
+      <div class="msg error" id="c-err"></div>
+      <div class="msg success" id="c-succ"></div>
+    </div>
+  `;
+
+  renderRxTable();
+  updateInvoicePreview();
+
+  // Update invoice preview on change
+  document.querySelectorAll('[id^="lab-"],[id^="rad-"]').forEach(cb=>{
+    cb.addEventListener('change', updateInvoicePreview);
+  });
 }
 
-// ─── SELECT PATIENT & LOAD VITALS ────────────────────────────────────────
-async function selectPatient(id, name, age, gender, token, triage) {
-  currentPatient = { id, name, age, gender, token, triage };
-  rxItems = [];
-  document.getElementById('rxItems').innerHTML = '';
-  document.getElementById('noPatientMsg').style.display = 'none';
-  document.getElementById('consultArea').style.display = 'block';
-  document.getElementById('vitalsPatientName').textContent = `${name} (${id})`;
-
-  // Load vitals from Frappe
-  try {
-    const res = await frappe_get_list('Vital Signs', {
-      fields:['bp_systolic','bp_diastolic','pulse','temperature','spo2','weight','triage_level'],
-      filters:[['patient','=',id]], order_by:'creation desc', limit:1
-    });
-    const v = res?.message?.[0];
-    if (v) {
-      document.getElementById('vBp').textContent = v.bp_systolic ? `${v.bp_systolic}/${v.bp_diastolic}` : '—';
-      document.getElementById('vPulse').textContent = v.pulse || '—';
-      const t = parseFloat(v.temperature);
-      const tempEl = document.getElementById('vTemp');
-      tempEl.textContent = t || '—';
-      if (t > 38.5) tempEl.classList.add('warn');
-      if (t > 39.5) tempEl.classList.add('danger');
-      const s = parseFloat(v.spo2);
-      const spo2El = document.getElementById('vSpo2');
-      spo2El.textContent = s ? s+'%' : '—';
-      if (s < 94) spo2El.classList.add('warn');
-      if (s < 90) spo2El.classList.add('danger');
-      document.getElementById('vWeight').textContent = v.weight ? v.weight+'kg' : '—';
-      document.getElementById('vTriage').textContent = v.triage_level || triage || '—';
-    } else {
-      document.getElementById('vTriage').textContent = triage || '—';
-    }
-  } catch(e) {}
-  loadPatientQueue();
+function renderRxTable() {
+  const tbody = document.getElementById('rxTableBody');
+  if (!tbody) return;
+  tbody.innerHTML = medicines.map((m,i)=>`
+    <tr>
+      <td><input type="text" value="${m.name}" onchange="medicines[${i}].name=this.value;updateInvoicePreview()" placeholder="Medicine name" /></td>
+      <td><input type="text" value="${m.dose}" onchange="medicines[${i}].dose=this.value" placeholder="500mg" style="width:80px" /></td>
+      <td><select onchange="medicines[${i}].freq=this.value" style="width:110px">
+        <option ${m.freq===''?'selected':''} value="">Select</option>
+        <option ${m.freq==='OD'?'selected':''}>OD</option>
+        <option ${m.freq==='BD'?'selected':''}>BD</option>
+        <option ${m.freq==='TDS'?'selected':''}>TDS</option>
+        <option ${m.freq==='QID'?'selected':''}>QID</option>
+        <option ${m.freq==='SOS'?'selected':''}>SOS</option>
+      </select></td>
+      <td><input type="text" value="${m.duration}" onchange="medicines[${i}].duration=this.value" placeholder="5 days" style="width:80px" /></td>
+      <td><input type="text" value="${m.instructions}" onchange="medicines[${i}].instructions=this.value" placeholder="After food" /></td>
+      <td><button class="btn-del" onclick="removeMedicine(${i})">✕</button></td>
+    </tr>
+  `).join('');
 }
 
-// ─── TABS ─────────────────────────────────────────────────────────────────
-function switchTab(tab, btn) {
-  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('tab-'+tab).classList.add('active');
-  btn.classList.add('active');
+function addMedicineRow() {
+  medicines.push({name:'',dose:'',freq:'',duration:'',instructions:''});
+  renderRxTable();
 }
 
-// ─── PLACE ORDER ─────────────────────────────────────────────────────────
-async function placeOrder(type) {
-  if (!currentPatient) return showToast('Select a patient first', 'error');
-
-  try {
-    if (type === 'lab') {
-      const test = document.getElementById('labTest').value;
-      if (!test) return showToast('Select a lab test', 'error');
-      const res = await fetch(`${FRAPPE_URL}/api/resource/Lab Request`, {
-        method: 'POST',
-        headers: { 'Content-Type':'application/json', 'X-Frappe-CSRF-Token': getCsrfToken() },
-        body: JSON.stringify({
-          doctype: 'Lab Request', patient: currentPatient.id,
-          patient_name: currentPatient.name, test_name: test,
-          urgency: document.getElementById('labUrgency').value,
-          notes: document.getElementById('labNotes').value,
-          status: 'Pending'
-        })
-      });
-      const d = await res.json();
-      if (!res.ok) throw new Error(d?.exc_type || 'Error');
-      showToast(`✅ Lab request sent: ${d.data?.name}`, 'success');
-      document.getElementById('labOrders').textContent = parseInt(document.getElementById('labOrders').textContent||0)+1;
-
-    } else if (type === 'radiology') {
-      const test = document.getElementById('radTest').value;
-      if (!test) return showToast('Select a radiology test', 'error');
-      const res = await fetch(`${FRAPPE_URL}/api/resource/Radiology Request`, {
-        method: 'POST',
-        headers: { 'Content-Type':'application/json', 'X-Frappe-CSRF-Token': getCsrfToken() },
-        body: JSON.stringify({
-          doctype: 'Radiology Request', patient: currentPatient.id,
-          patient_name: currentPatient.name, investigation: test,
-          clinical_indication: document.getElementById('radIndication').value, status: 'Pending'
-        })
-      });
-      const d = await res.json();
-      if (!res.ok) throw new Error(d?.exc_type || 'Error');
-      showToast(`✅ Radiology request sent: ${d.data?.name}`, 'success');
-
-    } else if (type === 'prescription') {
-      const med = document.getElementById('medName').value.trim();
-      if (!med) return showToast('Enter medicine name', 'error');
-      rxItems.push({ name: med, dose: document.getElementById('medDose').value, duration: document.getElementById('medDuration').value, instructions: document.getElementById('medInstructions').value });
-      document.getElementById('rxItems').innerHTML = rxItems.map((r,i) =>
-        `<span class="chip rx">💊 ${r.name} ${r.dose}</span>`).join('');
-      document.getElementById('medName').value = '';
-      document.getElementById('medDose').value = '';
-      showToast(`💊 ${med} added to prescription`, 'success');
-
-    } else if (type === 'admit') {
-      const reason = document.getElementById('admitReason').value.trim();
-      if (!reason) return showToast('Enter admission reason', 'error');
-      const res = await fetch(`${FRAPPE_URL}/api/resource/IPD Admission`, {
-        method: 'POST',
-        headers: { 'Content-Type':'application/json', 'X-Frappe-CSRF-Token': getCsrfToken() },
-        body: JSON.stringify({
-          doctype: 'IPD Admission', patient: currentPatient.id,
-          patient_name: currentPatient.name, ward_type: document.getElementById('admitWard').value,
-          admission_reason: reason, status: 'Pending'
-        })
-      });
-      const d = await res.json();
-      if (!res.ok) throw new Error(d?.exc_type || 'Error');
-      showToast(`🛏️ Patient admitted: ${d.data?.name}`, 'success');
-    }
-  } catch(err) {
-    showToast(`❌ ${err.message}`, 'error');
-  }
+function removeMedicine(i) {
+  medicines.splice(i,1);
+  renderRxTable();
 }
 
-// ─── SAVE CONSULTATION ────────────────────────────────────────────────────
+function updateInvoicePreview() {
+  const preview = document.getElementById('invoicePreview');
+  if (!preview) return;
+  const items = [];
+  items.push({ desc:'Consultation Fee', qty:1, rate:CONSULT_FEE });
+  medicines.forEach(m=>{ if(m.name) items.push({ desc:'Medicine: '+m.name, qty:1, rate:0 }); });
+  const labChecked = LAB_TESTS.filter((_,i)=>document.getElementById('lab-'+i)?.checked);
+  labChecked.forEach(t=>items.push({ desc:'Lab: '+t, qty:1, rate:300 }));
+  const radChecked = RADIOLOGY.filter((_,i)=>document.getElementById('rad-'+i)?.checked);
+  radChecked.forEach(t=>items.push({ desc:'Radiology: '+t, qty:1, rate:800 }));
+  const total = items.reduce((s,i)=>s+i.rate,0);
+  preview.style.display='block';
+  document.getElementById('invItems').innerHTML = items.map(i=>`<div class="inv-row"><span>${i.desc}</span><span>₹${i.rate}</span></div>`).join('') +
+    `<div class="inv-row total"><span>Total</span><span>₹${total}</span></div>`;
+}
+
 async function saveConsultation() {
-  if (!currentPatient) return showToast('Select a patient first', 'error');
+  if (!selectedPatient) return;
   const btn = document.getElementById('saveConsultBtn');
-  btn.disabled = true;
-  btn.innerHTML = '<span class="loading"></span> Saving...';
+  const err = document.getElementById('c-err');
+  const succ = document.getElementById('c-succ');
+  err.style.display='none'; succ.style.display='none';
+
+  const diagnosis = document.getElementById('c-diag').value.trim();
+  if (!diagnosis) { err.textContent='Primary diagnosis is required.'; err.style.display='block'; return; }
+
+  btn.disabled=true; btn.textContent='Saving...';
 
   try {
-    const consultData = {
-      doctype: 'Consultation', patient: currentPatient.id,
-      patient_name: currentPatient.name,
-      chief_complaint: document.getElementById('chief_complaint').value,
-      history_of_present_illness: document.getElementById('hopi').value,
-      past_medical_history: document.getElementById('pmh').value,
-      drug_history: document.getElementById('drug_history').value,
-      general_examination: document.getElementById('gen_exam').value,
-      systemic_examination: document.getElementById('sys_exam').value,
-      provisional_diagnosis: document.getElementById('provisional_diagnosis').value,
-      final_diagnosis: document.getElementById('final_diagnosis').value,
-      icd_code: document.getElementById('icd_code').value,
-      treatment_plan: document.getElementById('treatment_plan').value,
-      follow_up: document.getElementById('follow_up').value,
-      status: document.getElementById('consult_status').value,
-      doctor_notes: document.getElementById('doctor_notes').value,
-      consultation_date: new Date().toISOString()
-    };
+    const labChecked = LAB_TESTS.filter((_,i)=>document.getElementById('lab-'+i)?.checked);
+    const radChecked = RADIOLOGY.filter((_,i)=>document.getElementById('rad-'+i)?.checked);
 
-    const res = await fetch(`${FRAPPE_URL}/api/resource/Consultation`, {
-      method: 'POST',
-      headers: { 'Content-Type':'application/json', 'X-Frappe-CSRF-Token': getCsrfToken() },
-      body: JSON.stringify(consultData)
+    // 1. Save Consultation
+    const consRes = await fetch('/api/resource/Consultation', {
+      method:'POST', headers:{'Content-Type':'application/json','X-Frappe-CSRF-Token':getCsrf()}, credentials:'include',
+      body: JSON.stringify({
+        doctype:'Consultation',
+        patient: selectedPatient.name,
+        patient_name: selectedPatient.patient_name,
+        token_number: selectedPatient.token_number,
+        chief_complaint: document.getElementById('c-complaint').value,
+        history_of_present_illness: document.getElementById('c-hpi').value,
+        diagnosis: diagnosis,
+        secondary_diagnosis: document.getElementById('c-diag2').value,
+        clinical_notes: document.getElementById('c-notes').value,
+        disposition: document.getElementById('c-disp').value,
+        follow_up_date: document.getElementById('c-followup').value,
+        consultation_date: new Date().toISOString(),
+      })
     });
-    const d = await res.json();
-    if (!res.ok) throw new Error(d?.exc_type || 'Save failed');
+    if (!consRes.ok) { const d=await consRes.json(); throw new Error('Consultation save: '+(d.exc||d._server_messages||'failed')); }
+    const consData = await consRes.json();
 
-    // Save prescription if items exist
-    if (rxItems.length > 0) {
-      await fetch(`${FRAPPE_URL}/api/resource/Prescription`, {
-        method: 'POST',
-        headers: { 'Content-Type':'application/json', 'X-Frappe-CSRF-Token': getCsrfToken() },
+    // 2. Save Prescription (medicines)
+    const validMeds = medicines.filter(m=>m.name.trim());
+    if (validMeds.length > 0) {
+      const rxRes = await fetch('/api/resource/Prescription', {
+        method:'POST', headers:{'Content-Type':'application/json','X-Frappe-CSRF-Token':getCsrf()}, credentials:'include',
         body: JSON.stringify({
-          doctype: 'Prescription', patient: currentPatient.id,
-          patient_name: currentPatient.name, consultation: d.data?.name,
-          medicines: JSON.stringify(rxItems), status: 'Pending'
+          doctype:'Prescription',
+          patient: selectedPatient.name,
+          patient_name: selectedPatient.patient_name,
+          token_number: selectedPatient.token_number,
+          consultation: consData.data?.name,
+          medicines: JSON.stringify(validMeds),
+          status:'Pending',
+          prescribed_date: new Date().toISOString(),
         })
+      });
+      if (!rxRes.ok) console.warn('Prescription save failed');
+    }
+
+    // 3. Lab Requests
+    for (const test of labChecked) {
+      await fetch('/api/resource/Lab Request', {
+        method:'POST', headers:{'Content-Type':'application/json','X-Frappe-CSRF-Token':getCsrf()}, credentials:'include',
+        body: JSON.stringify({ doctype:'Lab Request', patient:selectedPatient.name, patient_name:selectedPatient.patient_name, token_number:selectedPatient.token_number, test_name:test, status:'Pending', requested_by:document.getElementById('staffName').textContent })
       });
     }
 
-    // Update patient status
-    await fetch(`${FRAPPE_URL}/api/resource/Patient Registration/${currentPatient.id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type':'application/json', 'X-Frappe-CSRF-Token': getCsrfToken() },
-      body: JSON.stringify({ triage_status: 'Consulted' })
+    // 4. Radiology Requests
+    for (const scan of radChecked) {
+      await fetch('/api/resource/Radiology Request', {
+        method:'POST', headers:{'Content-Type':'application/json','X-Frappe-CSRF-Token':getCsrf()}, credentials:'include',
+        body: JSON.stringify({ doctype:'Radiology Request', patient:selectedPatient.name, patient_name:selectedPatient.patient_name, token_number:selectedPatient.token_number, scan_type:scan, status:'Pending' })
+      });
+    }
+
+    // 5. Sales Invoice
+    const invItems = [
+      { item_code:'Consultation', item_name:'Consultation Fee', qty:1, rate:CONSULT_FEE, amount:CONSULT_FEE }
+    ];
+    labChecked.forEach(t=>invItems.push({ item_code:'Lab Test', item_name:'Lab: '+t, qty:1, rate:300, amount:300 }));
+    radChecked.forEach(t=>invItems.push({ item_code:'Radiology', item_name:'Radiology: '+t, qty:1, rate:800, amount:800 }));
+    validMeds.forEach(m=>invItems.push({ item_code:'Medicine', item_name:'Medicine: '+m.name, qty:1, rate:0, amount:0 }));
+
+    const invRes = await fetch('/api/resource/Sales Invoice', {
+      method:'POST', headers:{'Content-Type':'application/json','X-Frappe-CSRF-Token':getCsrf()}, credentials:'include',
+      body: JSON.stringify({
+        doctype:'Sales Invoice',
+        customer: selectedPatient.patient_name,
+        patient: selectedPatient.name,
+        token_number: selectedPatient.token_number,
+        posting_date: new Date().toISOString().split('T')[0],
+        due_date: new Date().toISOString().split('T')[0],
+        items: invItems,
+      })
+    });
+    if (!invRes.ok) console.warn('Invoice creation failed (item master may not exist — configure in ERPNext)');
+    const invData = await invRes.json();
+    const invoiceName = invData.data?.name || '—';
+
+    // 6. Update patient status
+    await fetch(`/api/resource/Patient Registration/${selectedPatient.name}`, {
+      method:'PUT', headers:{'Content-Type':'application/json','X-Frappe-CSRF-Token':getCsrf()}, credentials:'include',
+      body: JSON.stringify({ triage_status:'Doctor Seen' })
     });
 
-    showToast(`✅ Consultation saved: ${d.data?.name}`, 'success');
-    currentPatient = null;
-    document.getElementById('consultArea').style.display = 'none';
-    document.getElementById('noPatientMsg').style.display = 'block';
-    loadPatientQueue();
-    loadDayCounts();
-  } catch(err) {
-    showToast(`❌ ${err.message}`, 'error');
+    const totalAmt = invItems.reduce((s,i)=>s+i.amount,0);
+    succ.textContent = `✅ Consultation saved! ${validMeds.length} medicines, ${labChecked.length} lab orders, ${radChecked.length} radiology orders. Invoice: ${invoiceName} (₹${totalAmt})`;
+    succ.style.display='block';
+    selectedPatient = null;
+    setTimeout(()=>{ loadQueue(); document.getElementById('consultPanel').innerHTML='<div class="empty-state"><div style="font-size:3rem">👨‍⚕️</div><div>Select a patient from the queue</div></div>'; }, 2000);
+
+  } catch(e) {
+    err.textContent='Error: '+(e.message||String(e)); err.style.display='block'; console.error(e);
   } finally {
-    btn.disabled = false;
-    btn.innerHTML = '💾 Save Consultation to Frappe';
+    btn.disabled=false; btn.textContent='Save Consultation + Create Prescription + Generate Invoice';
   }
 }
 
-// ─── HELPERS ─────────────────────────────────────────────────────────────
-function getCsrfToken() {
-  return document.cookie.split(';').map(c=>c.trim().split('=')).find(c=>c[0]==='csrf_token')?.[1] ||
-         window.frappe?.csrf_token || '';
-}
-async function frappe_get_list(doctype, params) {
-  const qs = new URLSearchParams({ fields:JSON.stringify(params.fields||['name']), filters:JSON.stringify(params.filters||[]), order_by:params.order_by||'creation desc', limit_page_length:params.limit||20 });
-  const res = await fetch(`${FRAPPE_URL}/api/resource/${doctype}?${qs}`, { headers:{'Accept':'application/json'} });
-  return res.json();
-}
-function showToast(msg, type='success') {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.className = `toast ${type} show`;
-  setTimeout(() => t.classList.remove('show'), 3500);
-}
+checkAuth();
+loadQueue();
+setInterval(loadQueue, 15000);
 </script>
 </body>
 </html>

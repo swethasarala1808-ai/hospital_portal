@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Patient Portal</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap');
+  :root { --bg:#0d1117; --surface:#161b22; --border:#21262d; --text:#e6edf3; --muted:#8b949e; --accent:#58a6ff; --green:#3fb950; --red:#f85149; --yellow:#d29922; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+  .topbar { background:var(--surface); border-bottom:1px solid var(--border); padding:0 24px; height:56px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; }
+  .topbar-left { display:flex; align-items:center; gap:10px; font-weight:600; }
+  .dept-badge { background:rgba(88,166,255,0.15); color:var(--accent); border:1px solid rgba(88,166,255,0.3); padding:2px 10px; border-radius:20px; font-size:0.72rem; font-weight:600; }
+  .topbar-right { display:flex; align-items:center; gap:12px; font-size:0.85rem; color:var(--muted); }
+  .btn-sm { background:rgba(248,81,73,0.1); border:1px solid rgba(248,81,73,0.3); color:#f85149; padding:5px 12px; border-radius:7px; cursor:pointer; font-family:inherit; font-size:0.78rem; }
+
+  .main { max-width:900px; margin:0 auto; padding:24px; }
+  .search-box { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:24px; margin-bottom:20px; }
+  .search-box h2 { font-size:1rem; font-weight:600; margin-bottom:14px; }
+  .search-row { display:flex; gap:10px; }
+  .search-row input { flex:1; background:rgba(255,255,255,0.05); border:1px solid var(--border); border-radius:9px; padding:11px 14px; color:var(--text); font-family:inherit; font-size:0.9rem; outline:none; transition:all 0.2s; }
+  .search-row input:focus { border-color:var(--accent); }
+  .btn-search { background:linear-gradient(135deg,var(--accent),#2563eb); border:none; border-radius:9px; color:white; padding:11px 20px; font-family:inherit; font-size:0.9rem; font-weight:600; cursor:pointer; white-space:nowrap; }
+
+  /* Journey tracker */
+  .journey-card { background:var(--surface); border:1px solid var(--border); border-radius:14px; overflow:hidden; margin-bottom:20px; display:none; }
+  .journey-card.show { display:block; }
+  .journey-header { padding:16px 22px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+  .journey-header h3 { font-size:1rem; font-weight:600; }
+  .token-display { font-size:1.4rem; font-weight:700; color:var(--accent); background:rgba(88,166,255,0.1); padding:4px 14px; border-radius:8px; }
+
+  .journey-steps { display:flex; align-items:flex-start; gap:0; padding:24px; overflow-x:auto; }
+  .step { flex:1; min-width:100px; text-align:center; position:relative; }
+  .step:not(:last-child)::after { content:''; position:absolute; top:18px; left:60%; width:80%; height:2px; background:var(--border); }
+  .step.done:not(:last-child)::after { background:var(--green); }
+  .step.active:not(:last-child)::after { background:rgba(88,166,255,0.3); }
+  .step-icon { width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1rem; margin:0 auto 8px; border:2px solid var(--border); background:var(--bg); position:relative; z-index:1; }
+  .step.done .step-icon { border-color:var(--green); background:rgba(63,185,80,0.1); }
+  .step.active .step-icon { border-color:var(--accent); background:rgba(88,166,255,0.1); animation:stepPulse 1.5s ease-in-out infinite; }
+  @keyframes stepPulse { 0%,100%{box-shadow:0 0 0 0 rgba(88,166,255,0.4)} 50%{box-shadow:0 0 0 8px rgba(88,166,255,0)} }
+  .step-label { font-size:0.72rem; color:var(--muted); }
+  .step.done .step-label { color:var(--green); }
+  .step.active .step-label { color:var(--accent); font-weight:600; }
+
+  /* Records grid */
+  .records-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .record-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; overflow:hidden; }
+  .record-header { padding:12px 16px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:8px; font-size:0.85rem; font-weight:600; }
+  .record-body { padding:14px 16px; }
+  .rec-row { display:flex; justify-content:space-between; font-size:0.82rem; padding:5px 0; border-bottom:1px solid rgba(33,38,45,0.5); }
+  .rec-row:last-child { border-bottom:none; }
+  .rec-row .key { color:var(--muted); }
+  .rec-row .val { font-weight:500; text-align:right; max-width:60%; }
+
+  .no-records { color:var(--muted); font-size:0.85rem; padding:8px 0; }
+  .loading { color:var(--muted); font-size:0.85rem; text-align:center; padding:20px; }
+
+  @media(max-width:700px) { .records-grid { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-left">
+    <span>👤</span>
+    Patient Portal
+    <span class="dept-badge">Self-Service</span>
+  </div>
+  <div class="topbar-right">
+    <span id="staffName"></span>
+    <button class="btn-sm" onclick="doLogout()">Sign Out</button>
+  </div>
+</div>
+
+<div class="main">
+  <div class="search-box">
+    <h2>Track Your Visit</h2>
+    <div class="search-row">
+      <input type="text" id="tokenInput" placeholder="Enter Token Number or Patient ID (e.g. 001 or PAT-2024-00001)" />
+      <button class="btn-search" onclick="searchPatient()">🔍 Search</button>
+    </div>
+    <div id="searchErr" style="color:#f85149;font-size:0.82rem;margin-top:8px;display:none"></div>
+  </div>
+
+  <!-- Journey tracker -->
+  <div class="journey-card" id="journeyCard">
+    <div class="journey-header">
+      <h3 id="journeyName">Patient Name</h3>
+      <span class="token-display" id="journeyToken">—</span>
+    </div>
+    <div class="journey-steps" id="journeySteps"></div>
+  </div>
+
+  <!-- Records -->
+  <div id="recordsSection" style="display:none">
+    <div style="font-size:0.8rem;color:var(--muted);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.5px">Your Records</div>
+    <div class="records-grid" id="recordsGrid"></div>
+  </div>
+</div>
+
+<script>
+const JOURNEY = [
+  {label:'Registered', icon:'📋', status:'Pending'},
+  {label:'Vitals Done', icon:'🩺', status:'Vitals Recorded'},
+  {label:'Doctor Seen', icon:'👨‍⚕️', status:'Doctor Seen'},
+  {label:'Completed', icon:'✅', status:'Completed'},
+];
+
+async function checkAuth() {
+  try {
+    const res = await fetch('/api/method/frappe.auth.get_logged_user',{credentials:'include'});
+    const data = await res.json();
+    if (!data.message||data.message==='Guest') { window.location.href='/login'; return; }
+    document.getElementById('staffName').textContent = data.message;
+  } catch(e) { window.location.href='/login'; }
+}
+function doLogout() { fetch('/api/method/logout',{credentials:'include'}).then(()=>{ window.location.href='/login'; }); }
+
+document.getElementById('tokenInput').addEventListener('keydown', e=>{ if(e.key==='Enter') searchPatient(); });
+
+async function searchPatient() {
+  const token = document.getElementById('tokenInput').value.trim();
+  const err = document.getElementById('searchErr');
+  err.style.display='none';
+  if (!token) { err.textContent='Enter a token number or patient ID.'; err.style.display='block'; return; }
+
+  try {
+    // Try token number first
+    let res = await fetch(`/api/resource/Patient Registration?fields=["*"]&filters=[["token_number","=","${token}"]]&limit=1`,{credentials:'include'});
+    let data = await res.json();
+    let patient = (data.data||[])[0];
+
+    // If not found, try patient ID
+    if (!patient) {
+      res = await fetch(`/api/resource/Patient Registration/${encodeURIComponent(token)}`,{credentials:'include'});
+      data = await res.json();
+      patient = data.data;
+    }
+
+    if (!patient) { err.textContent='No patient found with this token/ID.'; err.style.display='block'; return; }
+
+    showJourney(patient);
+    loadRecords(patient);
+  } catch(e) {
+    err.textContent='Search failed: '+(e.message||String(e)); err.style.display='block';
+  }
+}
+
+function showJourney(p) {
+  document.getElementById('journeyName').textContent = p.patient_name || 'Patient';
+  document.getElementById('journeyToken').textContent = 'Token: ' + (p.token_number||p.name);
+  document.getElementById('journeyCard').classList.add('show');
+
+  const statusOrder = JOURNEY.map(j=>j.status);
+  const currentIdx = statusOrder.indexOf(p.triage_status);
+
+  document.getElementById('journeySteps').innerHTML = JOURNEY.map((j,i)=>{
+    const cls = i < currentIdx ? 'done' : i === currentIdx ? 'active' : '';
+    return `<div class="step ${cls}">
+      <div class="step-icon">${i < currentIdx ? '✓' : j.icon}</div>
+      <div class="step-label">${j.label}</div>
+    </div>`;
+  }).join('');
+}
+
+async function loadRecords(p) {
+  document.getElementById('recordsSection').style.display='block';
+  document.getElementById('recordsGrid').innerHTML = '<div class="loading" style="grid-column:1/-1">Loading records...</div>';
+
+  const cards = [];
+
+  // Vitals
+  try {
+    const res = await fetch(`/api/resource/Vital Signs?fields=["temperature","bp_systolic","bp_diastolic","pulse_rate","spo2","weight","triage_level"]&filters=[["patient","=","${p.name}"]]&order_by=creation desc&limit=1`,{credentials:'include'});
+    const data = await res.json();
+    const vs = (data.data||[])[0];
+    if (vs) cards.push(`
+      <div class="record-card">
+        <div class="record-header" style="color:#3fb950">🩺 Vital Signs</div>
+        <div class="record-body">
+          <div class="rec-row"><span class="key">Temperature</span><span class="val">${vs.temperature||'—'} °F</span></div>
+          <div class="rec-row"><span class="key">Blood Pressure</span><span class="val">${vs.bp_systolic||'—'}/${vs.bp_diastolic||'—'} mmHg</span></div>
+          <div class="rec-row"><span class="key">Pulse</span><span class="val">${vs.pulse_rate||'—'} bpm</span></div>
+          <div class="rec-row"><span class="key">SpO2</span><span class="val">${vs.spo2||'—'}%</span></div>
+          <div class="rec-row"><span class="key">Weight</span><span class="val">${vs.weight||'—'} kg</span></div>
+        </div>
+      </div>`);
+  } catch(e){}
+
+  // Consultation
+  try {
+    const res = await fetch(`/api/resource/Consultation?fields=["diagnosis","clinical_notes","disposition","follow_up_date"]&filters=[["patient","=","${p.name}"]]&order_by=creation desc&limit=1`,{credentials:'include'});
+    const data = await res.json();
+    const c = (data.data||[])[0];
+    if (c) cards.push(`
+      <div class="record-card">
+        <div class="record-header" style="color:#a371f7">👨‍⚕️ Consultation</div>
+        <div class="record-body">
+          <div class="rec-row"><span class="key">Diagnosis</span><span class="val">${c.diagnosis||'—'}</span></div>
+          <div class="rec-row"><span class="key">Disposition</span><span class="val">${c.disposition||'OPD'}</span></div>
+          ${c.follow_up_date?`<div class="rec-row"><span class="key">Follow-up</span><span class="val">${c.follow_up_date}</span></div>`:''}
+        </div>
+      </div>`);
+  } catch(e){}
+
+  // Prescription
+  try {
+    const res = await fetch(`/api/resource/Prescription?fields=["medicines","status"]&filters=[["patient","=","${p.name}"]]&order_by=creation desc&limit=1`,{credentials:'include'});
+    const data = await res.json();
+    const rx = (data.data||[])[0];
+    if (rx) {
+      let meds = [];
+      try { meds = JSON.parse(rx.medicines||'[]'); } catch(e){}
+      cards.push(`
+        <div class="record-card">
+          <div class="record-header" style="color:#56d364">💊 Prescription <span style="font-size:0.72rem;background:rgba(86,211,100,0.1);padding:1px 7px;border-radius:10px;margin-left:6px">${rx.status||'Pending'}</span></div>
+          <div class="record-body">
+            ${meds.map(m=>`<div class="rec-row"><span class="key">${m.name||'—'}</span><span class="val">${m.dose||''} ${m.freq||''} × ${m.duration||''}</span></div>`).join('')||'<div class="no-records">No medicines</div>'}
+          </div>
+        </div>`);
+    }
+  } catch(e){}
+
+  // Invoice
+  try {
+    const res = await fetch(`/api/resource/Sales Invoice?fields=["name","grand_total","status","posting_date"]&filters=[["patient","=","${p.name}"]]&order_by=creation desc&limit=1`,{credentials:'include'});
+    const data = await res.json();
+    const inv = (data.data||[])[0];
+    if (inv) cards.push(`
+      <div class="record-card">
+        <div class="record-header" style="color:#4f8ef7">📄 Invoice</div>
+        <div class="record-body">
+          <div class="rec-row"><span class="key">Invoice No</span><span class="val">${inv.name}</span></div>
+          <div class="rec-row"><span class="key">Date</span><span class="val">${inv.posting_date||'—'}</span></div>
+          <div class="rec-row"><span class="key">Total</span><span class="val" style="color:#4f8ef7;font-weight:700">₹${inv.grand_total||0}</span></div>
+          <div class="rec-row"><span class="key">Status</span><span class="val" style="color:${inv.status==='Paid'?'#3fb950':'#d29922'}">${inv.status||'Draft'}</span></div>
+        </div>
+      </div>`);
+  } catch(e){}
+
+  if (!cards.length) {
+    document.getElementById('recordsGrid').innerHTML = '<div style="grid-column:1/-1;color:var(--muted);font-size:0.85rem;padding:10px">No records found yet for this patient.</div>';
+  } else {
+    document.getElementById('recordsGrid').innerHTML = cards.join('');
+  }
+}
+
+checkAuth();
+</script>
+</body>
+</html>

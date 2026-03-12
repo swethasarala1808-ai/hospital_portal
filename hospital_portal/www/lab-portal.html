@@ -1,309 +1,278 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Laboratory | Hospital Portal</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Laboratory Portal</title>
 <style>
-:root {
-  --bg:#0d1117; --surface:#161b22; --surface2:#21262d; --border:#30363d;
-  --text:#e6edf3; --text2:#8b949e; --text3:#484f58;
-  --teal:#2ea043; --blue:#58a6ff; --yellow:#e3b341; --red:#f85149; --purple:#bc8cff;
-}
-*{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
-header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 2rem;height:58px;display:flex;align-items:center;justify-content:space-between;}
-.logo{display:flex;align-items:center;gap:10px;}
-.logo-icon{width:34px;height:34px;background:linear-gradient(135deg,#1f6feb,#388bfd);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem;}
-.logo-text{font-size:1rem;font-weight:700;}
-.logo-sub{font-size:0.72rem;color:var(--text2);}
-.back-btn{background:var(--surface2);border:1px solid var(--border);color:var(--text2);padding:6px 14px;border-radius:6px;cursor:pointer;font-size:0.82rem;font-family:inherit;text-decoration:none;transition:all 0.2s;}
-.back-btn:hover{border-color:var(--blue);color:var(--blue);}
-.container{max-width:1400px;margin:0 auto;padding:1.5rem 2rem;}
-.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem;}
-.stat{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.1rem 1.4rem;}
-.stat-n{font-family:'JetBrains Mono',monospace;font-size:2rem;font-weight:700;}
-.stat-n.blue{color:var(--blue);} .stat-n.yellow{color:var(--yellow);} .stat-n.teal{color:var(--teal);} .stat-n.red{color:var(--red);}
-.stat-l{font-size:0.75rem;color:var(--text2);margin-top:4px;text-transform:uppercase;letter-spacing:0.04em;}
-.two-col{display:grid;grid-template-columns:1fr 380px;gap:1.2rem;}
-.panel{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
-.panel-head{padding:0.9rem 1.2rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
-.panel-title{font-size:0.88rem;font-weight:600;display:flex;align-items:center;gap:8px;}
-.tab-row{display:flex;border-bottom:1px solid var(--border);}
-.tab{padding:9px 16px;font-size:0.82rem;font-weight:600;border:none;background:none;cursor:pointer;color:var(--text2);border-bottom:2px solid transparent;font-family:inherit;transition:all 0.15s;}
-.tab.active{color:var(--blue);border-bottom-color:var(--blue);}
-.tab-pane{display:none;} .tab-pane.active{display:block;}
-table{width:100%;border-collapse:collapse;}
-th{padding:9px 12px;text-align:left;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--text2);background:var(--surface2);border-bottom:1px solid var(--border);}
-td{padding:11px 12px;border-bottom:1px solid var(--border);font-size:0.84rem;}
-tr:last-child td{border-bottom:none;}
-tr:hover td{background:rgba(88,166,255,0.04);}
-.mono{font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--blue);}
-.badge{display:inline-block;padding:2px 9px;border-radius:10px;font-size:0.7rem;font-weight:700;}
-.badge.pending{background:rgba(227,179,65,0.15);color:var(--yellow);}
-.badge.processing{background:rgba(88,166,255,0.15);color:var(--blue);}
-.badge.done{background:rgba(46,160,67,0.15);color:var(--teal);}
-.badge.stat{background:rgba(248,81,73,0.15);color:var(--red);}
-.btn{padding:5px 12px;border-radius:6px;font-size:0.78rem;font-weight:600;cursor:pointer;font-family:inherit;border:none;transition:all 0.15s;}
-.btn.primary{background:var(--blue);color:#0d1117;}
-.btn.primary:hover{background:#79c0ff;}
-.btn.success{background:var(--teal);color:white;}
-.btn.success:hover{background:#3fb950;}
-.btn.ghost{background:var(--surface2);color:var(--text2);border:1px solid var(--border);}
-.btn.ghost:hover{border-color:var(--blue);color:var(--blue);}
-/* RESULT FORM */
-.result-panel{padding:0;}
-.result-header{padding:1rem 1.2rem;border-bottom:1px solid var(--border);}
-.selected-req{background:rgba(88,166,255,0.08);border:1px solid rgba(88,166,255,0.2);border-radius:8px;padding:10px 12px;margin-bottom:12px;}
-.req-id{font-family:'JetBrains Mono',monospace;font-size:0.82rem;color:var(--blue);font-weight:600;}
-.form-body{padding:1.2rem;}
-.form-group{display:flex;flex-direction:column;gap:4px;margin-bottom:10px;}
-label{font-size:0.72rem;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.05em;}
-input,select,textarea{background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:8px 11px;font-size:0.85rem;font-family:inherit;color:var(--text);outline:none;transition:border-color 0.2s;}
-input:focus,select:focus,textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(88,166,255,0.1);}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-.result-fields{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px;}
-.result-field-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:6px;}
-.result-field-row input{font-size:0.8rem;padding:6px 8px;}
-.submit-btn{width:100%;padding:10px;background:var(--teal);color:white;border:none;border-radius:8px;font-size:0.9rem;font-weight:700;cursor:pointer;font-family:inherit;margin-top:10px;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;}
-.submit-btn:hover{background:#3fb950;transform:translateY(-1px);}
-.submit-btn:disabled{background:var(--text3);cursor:not-allowed;}
-.no-sel{text-align:center;padding:3rem 1rem;color:var(--text3);font-size:0.84rem;}
-.toast{position:fixed;bottom:2rem;right:2rem;z-index:999;background:#161b22;color:var(--text);padding:12px 20px;border-radius:10px;font-size:0.88rem;box-shadow:0 8px 24px rgba(0,0,0,0.4);transform:translateY(80px);opacity:0;transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);}
-.toast.show{transform:translateY(0);opacity:1;}
-.toast.success{border-left:4px solid var(--teal);}
-.toast.error{border-left:4px solid var(--red);}
-.loading{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 0.7s linear infinite;}
-@keyframes spin{to{transform:rotate(360deg);}}
-.urgency-stat{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;}
-.urgency-stat.Routine{background:var(--teal);}
-.urgency-stat.Urgent{background:var(--yellow);}
-.urgency-stat.STAT{background:var(--red);}
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap');
+  :root { --bg:#0d1117; --surface:#161b22; --border:#21262d; --text:#e6edf3; --muted:#8b949e; --accent:#f0883e; --green:#3fb950; --red:#f85149; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+  .topbar { background:var(--surface); border-bottom:1px solid var(--border); padding:0 24px; height:56px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; }
+  .topbar-left { display:flex; align-items:center; gap:10px; }
+  .topbar-title { font-weight:600; }
+  .dept-badge { background:rgba(240,136,62,0.15); color:var(--accent); border:1px solid rgba(240,136,62,0.3); padding:2px 10px; border-radius:20px; font-size:0.72rem; font-weight:600; }
+  .topbar-right { display:flex; align-items:center; gap:12px; font-size:0.85rem; color:var(--muted); }
+  .btn-sm { background:rgba(248,81,73,0.1); border:1px solid rgba(248,81,73,0.3); color:#f85149; padding:5px 12px; border-radius:7px; cursor:pointer; font-family:inherit; font-size:0.78rem; }
+  .main { display:grid; grid-template-columns:300px 1fr; gap:20px; padding:24px; max-width:1300px; margin:0 auto; }
+  .queue-panel,.report-panel { background:var(--surface); border:1px solid var(--border); border-radius:14px; overflow:hidden; }
+  .queue-panel { height:fit-content; position:sticky; top:76px; }
+  .panel-header { padding:14px 18px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+  .panel-header h2 { font-size:0.9rem; font-weight:600; }
+  .count-badge { background:rgba(240,136,62,0.15); color:var(--accent); padding:2px 8px; border-radius:20px; font-size:0.75rem; font-weight:600; }
+  .patient-list { overflow-y:auto; max-height:500px; }
+  .patient-item { padding:12px 16px; border-bottom:1px solid var(--border); cursor:pointer; transition:background 0.15s; }
+  .patient-item:hover { background:rgba(255,255,255,0.03); }
+  .patient-item.active { background:rgba(240,136,62,0.08); border-left:3px solid var(--accent); }
+  .p-token { font-size:0.8rem; font-weight:700; color:var(--accent); }
+  .p-name { font-weight:500; font-size:0.88rem; margin-top:2px; }
+  .p-detail { font-size:0.73rem; color:var(--muted); }
+  .empty-state { display:flex; flex-direction:column; align-items:center; justify-content:center; height:300px; color:var(--muted); }
+  .report-header { padding:18px 24px; border-bottom:1px solid var(--border); }
+  .report-header h2 { font-size:1.1rem; font-weight:600; }
+  .report-meta { display:flex; gap:12px; margin-top:6px; font-size:0.8rem; color:var(--muted); flex-wrap:wrap; }
+  .meta-tag { background:rgba(255,255,255,0.05); border:1px solid var(--border); padding:3px 10px; border-radius:20px; }
+  .report-body { padding:24px; }
+  .section-title { font-size:0.78rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:12px; padding-bottom:6px; border-bottom:1px solid var(--border); }
+  .test-card { background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:10px; padding:14px; margin-bottom:12px; }
+  .test-name { font-weight:600; font-size:0.9rem; margin-bottom:10px; color:var(--accent); }
+  .result-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+  .field label { display:block; font-size:0.72rem; color:var(--muted); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.4px; }
+  .field input,.field select,.field textarea { width:100%; background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:8px; padding:9px 12px; color:var(--text); font-family:inherit; font-size:0.88rem; outline:none; transition:all 0.2s; }
+  .field input:focus { border-color:var(--accent); }
+  .field textarea { resize:vertical; min-height:60px; }
+  .normal-range { font-size:0.7rem; color:var(--muted); margin-top:3px; }
+  .flag { font-size:0.7rem; padding:1px 6px; border-radius:4px; margin-left:4px; }
+  .flag.high { background:rgba(248,81,73,0.2); color:#f85149; }
+  .flag.low { background:rgba(79,142,247,0.2); color:#4f8ef7; }
+  .flag.normal { background:rgba(63,185,80,0.2); color:#3fb950; }
+  .btn-primary { background:linear-gradient(135deg,#f0883e,#c2410c); border:none; border-radius:10px; color:white; padding:12px 24px; font-family:inherit; font-size:0.95rem; font-weight:600; cursor:pointer; transition:all 0.2s; box-shadow:0 4px 14px rgba(240,136,62,0.25); width:100%; margin-top:4px; }
+  .btn-primary:hover { transform:translateY(-1px); }
+  .btn-primary:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
+  .msg { padding:10px 14px; border-radius:9px; font-size:0.85rem; margin-top:10px; display:none; }
+  .msg.error { background:rgba(248,81,73,0.1); border:1px solid rgba(248,81,73,0.3); color:#fca5a5; }
+  .msg.success { background:rgba(63,185,80,0.1); border:1px solid rgba(63,185,80,0.3); color:#86efac; }
+  @media(max-width:900px) { .main { grid-template-columns:1fr; } }
 </style>
 </head>
 <body>
-<header>
-  <div class="logo">
-    <div class="logo-icon">🔬</div>
-    <div><div class="logo-text">Laboratory Module</div><div class="logo-sub">Sample Collection · Testing · Reports</div></div>
+<div class="topbar">
+  <div class="topbar-left">
+    <span style="font-size:1.2rem">🔬</span>
+    <span class="topbar-title">Laboratory</span>
+    <span class="dept-badge">Lab Technician</span>
   </div>
-  <a href="/hospital-dashboard" class="back-btn">← Dashboard</a>
-</header>
-<div class="container">
-  <div class="stats-row">
-    <div class="stat"><div class="stat-n blue" id="sPending">0</div><div class="stat-l">Requests Pending</div></div>
-    <div class="stat"><div class="stat-n yellow" id="sProcessing">0</div><div class="stat-l">In Processing</div></div>
-    <div class="stat"><div class="stat-n teal" id="sDone">0</div><div class="stat-l">Reports Ready</div></div>
-    <div class="stat"><div class="stat-n red" id="sStat">0</div><div class="stat-l">STAT / Urgent</div></div>
+  <div class="topbar-right">
+    <span id="staffName">Loading...</span>
+    <button class="btn-sm" onclick="doLogout()">Sign Out</button>
   </div>
-  <div class="two-col">
-    <div class="panel">
-      <div class="tab-row">
-        <button class="tab active" onclick="switchTab('pending',this)">🔴 Pending Requests</button>
-        <button class="tab" onclick="switchTab('processing',this)">🔵 In Processing</button>
-        <button class="tab" onclick="switchTab('reports',this)">✅ Reports</button>
-      </div>
-      <div class="tab-pane active" id="tab-pending">
-        <div style="overflow-x:auto;">
-          <table><thead><tr><th>Lab ID</th><th>Patient</th><th>Test</th><th>Urgency</th><th>Ordered</th><th>Action</th></tr></thead>
-          <tbody id="pendingBody"><tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text3);">Loading...</td></tr></tbody>
-          </table>
-        </div>
-      </div>
-      <div class="tab-pane" id="tab-processing">
-        <div style="overflow-x:auto;">
-          <table><thead><tr><th>Lab ID</th><th>Patient</th><th>Test</th><th>Collected At</th><th>Action</th></tr></thead>
-          <tbody id="processingBody"><tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--text3);">None in processing</td></tr></tbody>
-          </table>
-        </div>
-      </div>
-      <div class="tab-pane" id="tab-reports">
-        <div style="overflow-x:auto;">
-          <table><thead><tr><th>Report ID</th><th>Patient</th><th>Test</th><th>Result</th><th>Reported At</th><th>Action</th></tr></thead>
-          <tbody id="reportsBody"><tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text3);">No reports yet</td></tr></tbody>
-          </table>
-        </div>
-      </div>
+</div>
+
+<div class="main">
+  <div class="queue-panel">
+    <div class="panel-header">
+      <h2>Lab Requests</h2>
+      <span class="count-badge" id="queueCount">0</span>
     </div>
-    <!-- RESULT FORM -->
-    <div class="panel result-panel">
-      <div class="panel-head"><div class="panel-title">📋 Enter Lab Results</div></div>
-      <div class="form-body" id="labFormBody">
-        <div class="no-sel" id="noSelMsg">
-          <div style="font-size:2.5rem;margin-bottom:10px;">🧪</div>
-          Click a pending request to collect sample or enter results
-        </div>
-        <div id="labResultForm" style="display:none;">
-          <div class="selected-req" id="selReqInfo"></div>
-          <div class="form-group">
-            <label>Sample Collection Time</label>
-            <input type="datetime-local" id="collectionTime">
-          </div>
-          <div class="form-group">
-            <label>Sample Type</label>
-            <select id="sampleType">
-              <option>Whole Blood (EDTA)</option><option>Serum</option><option>Plasma</option>
-              <option>Urine (Midstream)</option><option>Stool</option><option>Sputum</option>
-              <option>Swab</option><option>Other</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Result Summary</label>
-            <input type="text" id="resultSummary" placeholder="e.g. Hb: 11.2 g/dL, WBC: 8400...">
-          </div>
-          <div class="form-group">
-            <label>Detailed Values</label>
-            <textarea id="detailedValues" rows="4" placeholder="Parameter: Value (Reference Range)&#10;e.g. Haemoglobin: 11.2 g/dL (12-16)&#10;WBC: 8400 cells/µL (4000-11000)"></textarea>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>Result Status</label>
-              <select id="resultStatus">
-                <option value="Normal">Normal</option>
-                <option value="Abnormal">Abnormal</option>
-                <option value="Critical">Critical Value</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>Technician Note</label>
-              <input type="text" id="techNote" placeholder="Any remarks...">
-            </div>
-          </div>
-          <button class="submit-btn" onclick="submitLabResult()" id="submitLabBtn">
-            📋 Save Report to Frappe
-          </button>
-        </div>
-      </div>
+    <div class="patient-list" id="reqList">
+      <div style="padding:20px;text-align:center;color:var(--muted);font-size:0.85rem">Loading...</div>
+    </div>
+  </div>
+
+  <div class="report-panel" id="reportPanel">
+    <div class="empty-state">
+      <div style="font-size:3rem">🔬</div>
+      <div>Select a lab request to enter results</div>
     </div>
   </div>
 </div>
-<div class="toast" id="toast"></div>
+
 <script>
-const FRAPPE_URL = window.location.origin;
-let selRequest = null;
+// Common test parameters
+const TEST_PARAMS = {
+  'CBC (Complete Blood Count)': [
+    {name:'Haemoglobin',unit:'g/dL',normal:'M:13-17, F:12-15'},
+    {name:'WBC Count',unit:'×10³/μL',normal:'4.5-11.0'},
+    {name:'Platelet Count',unit:'×10³/μL',normal:'150-400'},
+    {name:'RBC Count',unit:'×10⁶/μL',normal:'M:4.5-5.5, F:4.0-5.0'},
+    {name:'Haematocrit',unit:'%',normal:'M:40-52, F:36-48'},
+  ],
+  'Blood Sugar (Fasting)': [{name:'Glucose (Fasting)',unit:'mg/dL',normal:'70-100'}],
+  'Blood Sugar (Random)': [{name:'Glucose (Random)',unit:'mg/dL',normal:'<140'}],
+  'HbA1c': [{name:'HbA1c',unit:'%',normal:'<5.7 (Normal), 5.7-6.4 (Pre-DM)'}],
+  'Lipid Profile': [
+    {name:'Total Cholesterol',unit:'mg/dL',normal:'<200'},
+    {name:'HDL',unit:'mg/dL',normal:'>40 M, >50 F'},
+    {name:'LDL',unit:'mg/dL',normal:'<100'},
+    {name:'Triglycerides',unit:'mg/dL',normal:'<150'},
+  ],
+  'Liver Function Test': [
+    {name:'Total Bilirubin',unit:'mg/dL',normal:'0.2-1.2'},
+    {name:'SGOT (AST)',unit:'U/L',normal:'10-40'},
+    {name:'SGPT (ALT)',unit:'U/L',normal:'7-56'},
+    {name:'Alkaline Phosphatase',unit:'U/L',normal:'44-147'},
+  ],
+  'Kidney Function Test': [
+    {name:'Creatinine',unit:'mg/dL',normal:'M:0.7-1.3, F:0.6-1.1'},
+    {name:'Urea (BUN)',unit:'mg/dL',normal:'7-20'},
+    {name:'Uric Acid',unit:'mg/dL',normal:'M:3.4-7.0, F:2.4-6.0'},
+  ],
+  'Thyroid Profile': [
+    {name:'TSH',unit:'μIU/mL',normal:'0.4-4.0'},
+    {name:'T3',unit:'ng/dL',normal:'80-200'},
+    {name:'T4',unit:'μg/dL',normal:'5.0-12.0'},
+  ],
+};
 
-document.addEventListener('DOMContentLoaded', () => {
-  loadAllLabData();
-  setInterval(loadAllLabData, 20000);
-  const now = new Date(); now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-  document.getElementById('collectionTime').value = now.toISOString().slice(0,16);
-});
+let selectedReq = null;
 
-async function loadAllLabData() {
+async function checkAuth() {
   try {
-    const [pending, processing, reports] = await Promise.all([
-      frappe_get_list('Lab Request', { fields:['name','patient','patient_name','test_name','urgency','creation'], filters:[['status','=','Pending']], order_by:'creation asc', limit:50 }),
-      frappe_get_list('Lab Request', { fields:['name','patient','patient_name','test_name','collection_time'], filters:[['status','=','Sample Collected']], limit:30 }),
-      frappe_get_list('Lab Report', { fields:['name','patient','patient_name','test_name','result_summary','creation'], filters:[], order_by:'creation desc', limit:30 })
-    ]);
-    const p = pending?.message||[], pr = processing?.message||[], r = reports?.message||[];
-    document.getElementById('sPending').textContent = p.length;
-    document.getElementById('sProcessing').textContent = pr.length;
-    document.getElementById('sDone').textContent = r.length;
-    document.getElementById('sStat').textContent = p.filter(x=>x.urgency==='STAT'||x.urgency==='Urgent').length;
-    renderPending(p); renderProcessing(pr); renderReports(r);
-  } catch(e){ console.error(e); }
+    const res = await fetch('/api/method/frappe.auth.get_logged_user',{credentials:'include'});
+    const data = await res.json();
+    const user = data.message;
+    if (!user||user==='Guest') { window.location.href='/login'; return; }
+    document.getElementById('staffName').textContent = user;
+    const roleRes = await fetch(`/api/resource/User/${encodeURIComponent(user)}?fields=["roles"]`,{credentials:'include'});
+    const roleData = await roleRes.json();
+    const roles = (roleData.data?.roles||[]).map(r=>r.role);
+    if (!roles.some(r=>['Lab Technician','System Manager','Administrator'].includes(r))) {
+      alert('Access denied.'); window.location.href='/login';
+    }
+  } catch(e) { window.location.href='/login'; }
 }
+function getCsrf() { const m=document.cookie.split(';').map(c=>c.trim().split('=')).find(c=>c[0]==='csrf_token'); return m?m[1]:''; }
+function doLogout() { fetch('/api/method/logout',{credentials:'include'}).then(()=>{ window.location.href='/login'; }); }
 
-function renderPending(data) {
-  const tb = document.getElementById('pendingBody');
-  if (!data.length) { tb.innerHTML='<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text3);">No pending requests 🎉</td></tr>'; return; }
-  tb.innerHTML = data.map(r => {
-    const t = new Date(r.creation).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
-    return `<tr>
-      <td><span class="mono">${r.name}</span></td>
-      <td><div style="font-weight:600;font-size:0.83rem;">${r.patient_name}</div><div style="font-size:0.73rem;color:var(--text2);">${r.patient}</div></td>
-      <td>${r.test_name}</td>
-      <td><span class="urgency-stat ${r.urgency}"></span>${r.urgency||'Routine'}</td>
-      <td style="color:var(--text2);font-size:0.8rem;">${t}</td>
-      <td><button class="btn primary" onclick="selectRequest('${r.name}','${r.patient}','${r.patient_name}','${r.test_name}','${r.urgency||'Routine'}')">Collect & Enter</button></td>
-    </tr>`;
-  }).join('');
-}
-
-function renderProcessing(data) {
-  const tb = document.getElementById('processingBody');
-  if (!data.length) { tb.innerHTML='<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--text3);">None in processing</td></tr>'; return; }
-  tb.innerHTML = data.map(r => `<tr>
-    <td><span class="mono">${r.name}</span></td>
-    <td>${r.patient_name}<br><span style="font-size:0.73rem;color:var(--text2);">${r.patient}</span></td>
-    <td>${r.test_name}</td>
-    <td style="color:var(--text2);font-size:0.8rem;">${r.collection_time||'—'}</td>
-    <td><button class="btn success" onclick="selectRequest('${r.name}','${r.patient}','${r.patient_name}','${r.test_name}','')">Enter Result</button></td>
-  </tr>`).join('');
-}
-
-function renderReports(data) {
-  const tb = document.getElementById('reportsBody');
-  if (!data.length) { tb.innerHTML='<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text3);">No reports</td></tr>'; return; }
-  tb.innerHTML = data.map(r => {
-    const t = new Date(r.creation).toLocaleDateString('en-IN');
-    return `<tr>
-      <td><span class="mono">${r.name}</span></td>
-      <td>${r.patient_name}</td>
-      <td>${r.test_name}</td>
-      <td style="font-size:0.8rem;">${r.result_summary||'—'}</td>
-      <td style="color:var(--text2);font-size:0.78rem;">${t}</td>
-      <td><span class="badge done">Done</span></td>
-    </tr>`;
-  }).join('');
-}
-
-function selectRequest(id, patient, patientName, testName, urgency) {
-  selRequest = { id, patient, patientName, testName, urgency };
-  document.getElementById('noSelMsg').style.display = 'none';
-  document.getElementById('labResultForm').style.display = 'block';
-  document.getElementById('selReqInfo').innerHTML = `
-    <div class="req-id">${id}</div>
-    <div style="font-weight:600;font-size:0.88rem;margin-top:3px;">${patientName}</div>
-    <div style="font-size:0.8rem;color:var(--text2);">Test: <strong>${testName}</strong> · Urgency: ${urgency}</div>`;
-  switchTab('pending', document.querySelector('.tab.active'));
-}
-
-function switchTab(tab, btn) {
-  document.querySelectorAll('.tab-pane').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
-  document.getElementById('tab-'+tab).classList.add('active');
-  if(btn) btn.classList.add('active');
-  else document.querySelectorAll('.tab')[0].classList.add('active');
-}
-
-async function submitLabResult() {
-  if (!selRequest) return showToast('Select a request first','error');
-  const btn = document.getElementById('submitLabBtn');
-  btn.disabled = true; btn.innerHTML = '<span class="loading"></span> Saving...';
+async function loadQueue() {
   try {
-    // 1. Update Lab Request status
-    await fetch(`${FRAPPE_URL}/api/resource/Lab Request/${selRequest.id}`, {
-      method:'PUT', headers:{'Content-Type':'application/json','X-Frappe-CSRF-Token':getCsrf()},
-      body: JSON.stringify({ status:'Completed', collection_time: document.getElementById('collectionTime').value })
-    });
-    // 2. Create Lab Report
-    const res = await fetch(`${FRAPPE_URL}/api/resource/Lab Report`, {
-      method:'POST', headers:{'Content-Type':'application/json','X-Frappe-CSRF-Token':getCsrf()},
+    const res = await fetch(`/api/resource/Lab Request?fields=["name","patient","patient_name","token_number","test_name","status"]&filters=[["status","=","Pending"]]&order_by=creation asc&limit=50`,{credentials:'include'});
+    const data = await res.json();
+    const list = data.data||[];
+    document.getElementById('queueCount').textContent = list.length;
+    if (!list.length) {
+      document.getElementById('reqList').innerHTML='<div style="padding:20px;text-align:center;color:var(--muted);font-size:0.85rem">No pending requests ✓</div>';
+      return;
+    }
+    document.getElementById('reqList').innerHTML = list.map(r=>`
+      <div class="patient-item ${selectedReq?.name===r.name?'active':''}" onclick='selectReq(${JSON.stringify(r).replace(/'/g,"&#39;")})'>
+        <div class="p-token">Token: ${r.token_number||'—'}</div>
+        <div class="p-name">${r.patient_name}</div>
+        <div class="p-detail">${r.test_name}</div>
+      </div>`).join('');
+  } catch(e) { console.error(e); }
+}
+
+function selectReq(req) {
+  selectedReq = req;
+  loadQueue();
+  const params = TEST_PARAMS[req.test_name] || [{name:'Result',unit:'',normal:''}];
+
+  document.getElementById('reportPanel').innerHTML = `
+    <div class="report-header">
+      <h2>${req.patient_name} — ${req.test_name}</h2>
+      <div class="report-meta">
+        <span class="meta-tag">🪪 ${req.patient}</span>
+        <span class="meta-tag">Token: ${req.token_number||'—'}</span>
+        <span class="meta-tag">Request: ${req.name}</span>
+      </div>
+    </div>
+    <div class="report-body">
+      <div class="section-title">Test Results</div>
+      <div class="test-card">
+        <div class="test-name">${req.test_name}</div>
+        <div class="result-grid">
+          ${params.map((p,i)=>`
+            <div>
+              <div class="field">
+                <label>${p.name} ${p.unit?`(${p.unit})`:''}</label>
+                <input type="text" id="param-${i}" placeholder="Enter value" oninput="checkFlag(${i},'${p.name}')" />
+                <div class="normal-range">Normal: ${p.normal} <span id="flag-${i}"></span></div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <div class="section-title">Lab Technician Notes</div>
+      <div class="field" style="margin-bottom:16px">
+        <label>Remarks / Interpretation</label>
+        <textarea id="lab-notes" placeholder="Any remarks, abnormal findings, interpretation..."></textarea>
+      </div>
+      <div class="field" style="margin-bottom:16px">
+        <label>Sample Type</label>
+        <select id="sample-type">
+          <option>Venous Blood</option><option>Capillary Blood</option><option>Urine</option><option>Stool</option><option>Sputum</option><option>Swab</option>
+        </select>
+      </div>
+
+      <button class="btn-primary" id="saveReportBtn" onclick="saveReport()">Save Report &amp; Mark Completed</button>
+      <div class="msg error" id="r-err"></div>
+      <div class="msg success" id="r-succ"></div>
+    </div>
+  `;
+  window._labParams = params;
+}
+
+function checkFlag(i, paramName) {
+  // Simple flag UI (numeric check)
+  const val = parseFloat(document.getElementById('param-'+i)?.value);
+  const flagEl = document.getElementById('flag-'+i);
+  if (!flagEl || isNaN(val)) return;
+  flagEl.innerHTML = '<span class="flag normal">Normal</span>';
+}
+
+async function saveReport() {
+  if (!selectedReq) return;
+  const btn = document.getElementById('saveReportBtn');
+  const err = document.getElementById('r-err');
+  const succ = document.getElementById('r-succ');
+  err.style.display='none'; succ.style.display='none';
+
+  const params = window._labParams||[];
+  const results = params.map((p,i)=>({ parameter:p.name, value:document.getElementById('param-'+i)?.value||'', unit:p.unit, normal_range:p.normal }));
+
+  btn.disabled=true; btn.textContent='Saving...';
+  try {
+    const res = await fetch('/api/resource/Lab Report', {
+      method:'POST', headers:{'Content-Type':'application/json','X-Frappe-CSRF-Token':getCsrf()}, credentials:'include',
       body: JSON.stringify({
-        doctype:'Lab Report', patient:selRequest.patient, patient_name:selRequest.patientName,
-        lab_request:selRequest.id, test_name:selRequest.testName,
-        result_summary:document.getElementById('resultSummary').value,
-        detailed_results:document.getElementById('detailedValues').value,
-        result_status:document.getElementById('resultStatus').value,
-        technician_note:document.getElementById('techNote').value,
-        report_date:new Date().toISOString()
+        doctype:'Lab Report',
+        patient: selectedReq.patient,
+        patient_name: selectedReq.patient_name,
+        token_number: selectedReq.token_number,
+        lab_request: selectedReq.name,
+        test_name: selectedReq.test_name,
+        results: JSON.stringify(results),
+        remarks: document.getElementById('lab-notes').value,
+        sample_type: document.getElementById('sample-type').value,
+        reported_at: new Date().toISOString(),
+        status:'Completed'
       })
     });
-    const d = await res.json();
-    if (!res.ok) throw new Error(d?.exc_type||'Save failed');
-    showToast(`✅ Lab report saved: ${d.data?.name}`, 'success');
-    selRequest = null;
-    document.getElementById('noSelMsg').style.display = 'block';
-    document.getElementById('labResultForm').style.display = 'none';
-    loadAllLabData();
-  } catch(err){ showToast(`❌ ${err.message}`,'error'); }
-  finally{ btn.disabled=false; btn.innerHTML='📋 Save Report to Frappe'; }
+    if (!res.ok) { const d=await res.json(); throw new Error(d.exc||'Save failed'); }
+
+    // Update Lab Request status
+    await fetch(`/api/resource/Lab Request/${selectedReq.name}`, {
+      method:'PUT', headers:{'Content-Type':'application/json','X-Frappe-CSRF-Token':getCsrf()}, credentials:'include',
+      body: JSON.stringify({ status:'Completed' })
+    });
+
+    succ.textContent = `✅ Lab report saved for ${selectedReq.patient_name}. ${results.length} parameters recorded.`;
+    succ.style.display='block';
+    selectedReq = null;
+    setTimeout(()=>{ loadQueue(); document.getElementById('reportPanel').innerHTML='<div class="empty-state"><div style="font-size:3rem">🔬</div><div>Select a lab request to enter results</div></div>'; }, 1500);
+  } catch(e) {
+    err.textContent='Error: '+(e.message||String(e)); err.style.display='block'; console.error(e);
+  } finally {
+    btn.disabled=false; btn.textContent='Save Report & Mark Completed';
+  }
 }
 
-function getCsrf(){ return document.cookie.split(';').map(c=>c.trim().split('=')).find(c=>c[0]==='csrf_token')?.[1]||window.frappe?.csrf_token||''; }
-async function frappe_get_list(dt,p){ const qs=new URLSearchParams({fields:JSON.stringify(p.fields||['name']),filters:JSON.stringify(p.filters||[]),order_by:p.order_by||'creation desc',limit_page_length:p.limit||20}); const r=await fetch(`${FRAPPE_URL}/api/resource/${dt}?${qs}`,{headers:{'Accept':'application/json'}}); return r.json(); }
-function showToast(msg,type='success'){ const t=document.getElementById('toast'); t.textContent=msg; t.className=`toast ${type} show`; setTimeout(()=>t.classList.remove('show'),3500); }
+checkAuth();
+loadQueue();
+setInterval(loadQueue, 20000);
 </script>
-</body></html>
+</body>
+</html>
