@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Radiology | Hospital Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0f0f23;--surface:#16162a;--surface2:#1e1e3f;--border:#2d2d5e;--text:#e2e8f0;--text2:#94a3b8;--text3:#4a5568;--purple:#a78bfa;--pink:#f472b6;--teal:#34d399;--yellow:#fbbf24;--red:#f87171;--blue:#60a5fa;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 20%,rgba(167,139,250,0.06) 0%,transparent 50%),radial-gradient(ellipse at 80% 80%,rgba(244,114,182,0.04) 0%,transparent 50%);pointer-events:none;z-index:0;}
+header{position:relative;z-index:10;background:var(--surface);border-bottom:1px solid var(--border);padding:0 2rem;height:60px;display:flex;align-items:center;justify-content:space-between;}
+.logo{display:flex;align-items:center;gap:12px;}
+.logo-ring{width:36px;height:36px;border-radius:50%;border:2px solid var(--purple);display:flex;align-items:center;justify-content:center;font-size:1rem;}
+.logo-text{font-size:1.05rem;font-weight:700;color:var(--purple);}
+.logo-sub{font-size:0.72rem;color:var(--text2);}
+.back-btn{background:var(--surface2);border:1px solid var(--border);color:var(--text2);padding:6px 14px;border-radius:6px;cursor:pointer;font-size:0.82rem;font-family:inherit;text-decoration:none;transition:all 0.2s;}
+.back-btn:hover{border-color:var(--purple);color:var(--purple);}
+.container{position:relative;z-index:1;max-width:1400px;margin:0 auto;padding:1.5rem 2rem;}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem;}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.2rem 1.5rem;}
+.stat-n{font-family:'Fira Code',monospace;font-size:2rem;font-weight:600;}
+.stat-n.purple{color:var(--purple);} .stat-n.pink{color:var(--pink);} .stat-n.teal{color:var(--teal);} .stat-n.yellow{color:var(--yellow);}
+.stat-l{font-size:0.75rem;color:var(--text2);margin-top:4px;text-transform:uppercase;letter-spacing:0.04em;}
+.two-col{display:grid;grid-template-columns:1fr 360px;gap:1.2rem;}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.panel-head{padding:0.9rem 1.2rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.panel-title{font-size:0.88rem;font-weight:600;}
+table{width:100%;border-collapse:collapse;}
+th{padding:9px 12px;text-align:left;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--text2);background:var(--surface2);border-bottom:1px solid var(--border);}
+td{padding:11px 12px;border-bottom:1px solid var(--border);font-size:0.84rem;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(167,139,250,0.04);}
+.mono{font-family:'Fira Code',monospace;font-size:0.78rem;color:var(--purple);}
+.badge{display:inline-block;padding:2px 9px;border-radius:10px;font-size:0.7rem;font-weight:600;}
+.badge.pending{background:rgba(251,191,36,0.15);color:var(--yellow);}
+.badge.done{background:rgba(52,211,153,0.15);color:var(--teal);}
+.btn{padding:5px 12px;border-radius:6px;font-size:0.78rem;font-weight:600;cursor:pointer;font-family:inherit;border:none;transition:all 0.15s;}
+.btn.primary{background:var(--purple);color:#0f0f23;}
+.btn.primary:hover{background:#c4b5fd;}
+.form-body{padding:1.2rem;}
+.form-group{display:flex;flex-direction:column;gap:4px;margin-bottom:10px;}
+label{font-size:0.72rem;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.05em;}
+input,select,textarea{background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:8px 11px;font-size:0.85rem;font-family:inherit;color:var(--text);outline:none;transition:border-color 0.2s;}
+input:focus,select:focus,textarea:focus{border-color:var(--purple);box-shadow:0 0 0 3px rgba(167,139,250,0.1);}
+.selected-req{background:rgba(167,139,250,0.08);border:1px solid rgba(167,139,250,0.25);border-radius:8px;padding:10px 12px;margin-bottom:12px;}
+.req-id{font-family:'Fira Code',monospace;font-size:0.82rem;color:var(--purple);font-weight:600;}
+.submit-btn{width:100%;padding:10px;background:var(--purple);color:#0f0f23;border:none;border-radius:8px;font-size:0.9rem;font-weight:700;cursor:pointer;font-family:inherit;margin-top:10px;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.submit-btn:hover{background:#c4b5fd;transform:translateY(-1px);}
+.no-sel{text-align:center;padding:3rem 1rem;color:var(--text3);font-size:0.84rem;}
+.toast{position:fixed;bottom:2rem;right:2rem;z-index:999;background:var(--surface);color:var(--text);padding:12px 20px;border-radius:10px;font-size:0.88rem;box-shadow:0 8px 24px rgba(0,0,0,0.4);transform:translateY(80px);opacity:0;transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.success{border-left:4px solid var(--teal);}
+.toast.error{border-left:4px solid var(--red);}
+.loading{display:inline-block;width:13px;height:13px;border:2px solid rgba(0,0,0,0.2);border-top-color:#0f0f23;border-radius:50%;animation:spin 0.7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">
+    <div class="logo-ring">📡</div>
+    <div><div class="logo-text">Radiology</div><div class="logo-sub">X-Ray · ECG · CT · MRI · Echo</div></div>
+  </div>
+  <a href="/hospital-dashboard" class="back-btn">← Dashboard</a>
+</header>
+<div class="container">
+  <div class="stats-row">
+    <div class="stat"><div class="stat-n purple" id="sPending">0</div><div class="stat-l">Scans Pending</div></div>
+    <div class="stat"><div class="stat-n pink" id="sInProgress">0</div><div class="stat-l">In Progress</div></div>
+    <div class="stat"><div class="stat-n teal" id="sDone">0</div><div class="stat-l">Reports Done</div></div>
+    <div class="stat"><div class="stat-n yellow" id="sStat">0</div><div class="stat-l">CT/MRI Today</div></div>
+  </div>
+  <div class="two-col">
+    <div class="panel">
+      <div class="panel-head"><div class="panel-title">📋 Radiology Requests</div>
+        <div style="display:flex;gap:8px;">
+          <select id="statusFilter" onchange="filterRequests()" style="font-size:0.8rem;padding:5px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);">
+            <option value="">All Statuses</option><option value="Pending">Pending</option><option value="In Progress">In Progress</option><option value="Completed">Completed</option>
+          </select>
+        </div>
+      </div>
+      <div style="overflow-x:auto;">
+        <table><thead><tr><th>Request ID</th><th>Patient</th><th>Investigation</th><th>Indication</th><th>Status</th><th>Action</th></tr></thead>
+        <tbody id="reqBody"><tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text3);">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><div class="panel-title">📝 Report Entry</div></div>
+      <div class="form-body">
+        <div class="no-sel" id="noSel"><div style="font-size:2.5rem;margin-bottom:10px;">🩻</div>Select a request to enter the report</div>
+        <div id="repForm" style="display:none;">
+          <div class="selected-req" id="selInfo"></div>
+          <div class="form-group"><label>Scan Date & Time</label><input type="datetime-local" id="scanTime"></div>
+          <div class="form-group"><label>Radiologist</label><input type="text" id="radiologist" placeholder="Radiologist name..."></div>
+          <div class="form-group"><label>Findings</label><textarea id="findings" rows="4" placeholder="Detailed radiological findings..."></textarea></div>
+          <div class="form-group"><label>Impression / Conclusion</label><textarea id="impression" rows="2" placeholder="Summary impression..."></textarea></div>
+          <div class="form-group"><label>Report Status</label>
+            <select id="repStatus"><option value="Preliminary">Preliminary</option><option value="Final">Final</option><option value="Addendum">Addendum</option></select>
+          </div>
+          <button class="submit-btn" onclick="submitReport()" id="submitRepBtn">💾 Save Radiology Report</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const FRAPPE_URL=window.location.origin;
+let selReq=null;
+let allRequests=[];
+document.addEventListener('DOMContentLoaded',()=>{loadRequests();setInterval(loadRequests,25000);const now=new Date();now.setMinutes(now.getMinutes()-now.getTimezoneOffset());document.getElementById('scanTime').value=now.toISOString().slice(0,16);});
+async function loadRequests(){try{const res=await frappe_get_list('Radiology Request',{fields:['name','patient','patient_name','investigation','clinical_indication','status','creation'],filters:[],order_by:'creation desc',limit:60});allRequests=res?.message||[];const p=allRequests.filter(r=>r.status==='Pending');document.getElementById('sPending').textContent=p.length;document.getElementById('sInProgress').textContent=allRequests.filter(r=>r.status==='In Progress').length;document.getElementById('sDone').textContent=allRequests.filter(r=>r.status==='Completed').length;document.getElementById('sStat').textContent=allRequests.filter(r=>r.investigation&&(r.investigation.includes('CT')||r.investigation.includes('MRI'))).length;renderReqs(allRequests);}catch(e){console.error(e);}}
+function renderReqs(data){const tb=document.getElementById('reqBody');if(!data.length){tb.innerHTML='<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text3);">No requests</td></tr>';return;}tb.innerHTML=data.map(r=>`<tr><td><span class="mono">${r.name}</span></td><td><div style="font-weight:600;font-size:0.83rem;">${r.patient_name}</div><div style="font-size:0.73rem;color:var(--text2);">${r.patient}</div></td><td>${r.investigation||'—'}</td><td style="font-size:0.8rem;color:var(--text2);">${r.clinical_indication||'—'}</td><td><span class="badge ${r.status==='Completed'?'done':'pending'}">${r.status||'Pending'}</span></td><td><button class="btn primary" onclick="selectReq('${r.name}','${r.patient}','${r.patient_name}','${r.investigation||''}','${r.clinical_indication||''}')">Enter Report</button></td></tr>`).join('');}
+function filterRequests(){const f=document.getElementById('statusFilter').value;renderReqs(f?allRequests.filter(r=>r.status===f):allRequests);}
+function selectReq(id,patient,patName,investigation,indication){selReq={id,patient,patName,investigation,indication};document.getElementById('noSel').style.display='none';document.getElementById('repForm').style.display='block';document.getElementById('selInfo').innerHTML=`<div class="req-id">${id}</div><div style="font-weight:600;font-size:0.88rem;margin-top:3px;">${patName}</div><div style="font-size:0.8rem;color:var(--text2);">Investigation: <strong>${investigation}</strong></div>`;}
+async function submitReport(){if(!selReq)return;const btn=document.getElementById('submitRepBtn');btn.disabled=true;btn.innerHTML='<span class="loading"></span> Saving...';try{await fetch(`${FRAPPE_URL}/api/resource/Radiology Request/${selReq.id}`,{method:'PUT',headers:{'Content-Type':'application/json','X-Frappe-CSRF-Token':getCsrf()},body:JSON.stringify({status:'Completed'})});const res=await fetch(`${FRAPPE_URL}/api/resource/Radiology Report`,{method:'POST',headers:{'Content-Type':'application/json','X-Frappe-CSRF-Token':getCsrf()},body:JSON.stringify({doctype:'Radiology Report',patient:selReq.patient,patient_name:selReq.patName,radiology_request:selReq.id,investigation:selReq.investigation,scan_time:document.getElementById('scanTime').value,radiologist:document.getElementById('radiologist').value,findings:document.getElementById('findings').value,impression:document.getElementById('impression').value,status:document.getElementById('repStatus').value,report_date:new Date().toISOString()})});const d=await res.json();if(!res.ok)throw new Error(d?.exc_type||'Error');showToast(`✅ Report saved: ${d.data?.name}`,'success');selReq=null;document.getElementById('noSel').style.display='block';document.getElementById('repForm').style.display='none';loadRequests();}catch(err){showToast(`❌ ${err.message}`,'error');}finally{btn.disabled=false;btn.innerHTML='💾 Save Radiology Report';}}
+function getCsrf(){return document.cookie.split(';').map(c=>c.trim().split('=')).find(c=>c[0]==='csrf_token')?.[1]||window.frappe?.csrf_token||'';}
+async function frappe_get_list(dt,p){const qs=new URLSearchParams({fields:JSON.stringify(p.fields||['name']),filters:JSON.stringify(p.filters||[]),order_by:p.order_by||'creation desc',limit_page_length:p.limit||20});const r=await fetch(`${FRAPPE_URL}/api/resource/${dt}?${qs}`,{headers:{'Accept':'application/json'}});return r.json();}
+function showToast(msg,type='success'){const t=document.getElementById('toast');t.textContent=msg;t.className=`toast ${type} show`;setTimeout(()=>t.classList.remove('show'),3500);}
+</script>
+</body></html>

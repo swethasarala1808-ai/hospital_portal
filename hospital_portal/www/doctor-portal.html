@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Doctor Consultation | Hospital Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #fafbfc;
+  --surface: #fff;
+  --surface2: #f4f6f9;
+  --border: #e2e8f0;
+  --text: #1a202c;
+  --text2: #4a5568;
+  --text3: #a0aec0;
+  --accent: #553c9a;
+  --accent2: #6b46c1;
+  --accent-light: #faf5ff;
+  --green: #38a169;
+  --red: #e53e3e;
+  --yellow: #d69e2e;
+  --blue: #3182ce;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: 'Lato', sans-serif; background: var(--bg); color: var(--text); }
+
+header {
+  background: var(--surface);
+  border-bottom: 3px solid var(--accent);
+  padding: 0 2rem; height: 62px;
+  display: flex; align-items: center; justify-content: space-between;
+  box-shadow: 0 1px 8px rgba(85,60,154,0.08);
+}
+.header-brand { display: flex; align-items: center; gap: 10px; }
+.brand-tag {
+  font-family: 'Fraunces', serif; font-size: 1.15rem; font-weight: 700;
+  color: var(--accent);
+}
+.brand-sub { font-size: 0.78rem; color: var(--text3); }
+.header-right { display: flex; align-items: center; gap: 12px; }
+.doctor-badge {
+  background: var(--accent-light); color: var(--accent);
+  border: 1px solid #d6bcfa; padding: 5px 14px;
+  border-radius: 20px; font-size: 0.82rem; font-weight: 700;
+}
+.back-btn {
+  background: var(--surface2); border: 1px solid var(--border);
+  color: var(--text2); padding: 6px 14px; border-radius: 7px;
+  cursor: pointer; font-size: 0.82rem; font-family: inherit;
+  text-decoration: none; display: inline-flex; align-items: center; gap: 5px;
+  transition: all 0.2s;
+}
+.back-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+.container { max-width: 1500px; margin: 0 auto; padding: 1.5rem 2rem; }
+
+/* QUEUE STATS */
+.queue-stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 1rem; margin-bottom: 1.5rem; }
+.qstat {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 1rem 1.4rem;
+  display: flex; align-items: center; gap: 12px;
+}
+.qstat-icon { font-size: 1.6rem; }
+.qstat-num { font-family: 'Fraunces', serif; font-size: 2rem; font-weight: 700; line-height:1; }
+.qstat-label { font-size: 0.75rem; color: var(--text2); }
+
+/* THREE COLUMN LAYOUT */
+.three-col { display: grid; grid-template-columns: 280px 1fr 320px; gap: 1.2rem; }
+
+/* LEFT: PATIENT LIST */
+.panel { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.panel-header {
+  padding: 0.9rem 1.2rem; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.panel-title { font-size: 0.85rem; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 7px; }
+.patient-list { max-height: 620px; overflow-y: auto; }
+.patient-card {
+  padding: 12px 14px; border-bottom: 1px solid var(--border);
+  cursor: pointer; transition: background 0.15s;
+  display: flex; flex-direction: column; gap: 4px;
+}
+.patient-card:hover { background: var(--accent-light); }
+.patient-card.active { background: var(--accent-light); border-left: 3px solid var(--accent); }
+.pc-id { font-size: 0.72rem; color: var(--accent); font-weight: 700; }
+.pc-name { font-size: 0.88rem; font-weight: 700; }
+.pc-meta { font-size: 0.75rem; color: var(--text2); display: flex; gap: 8px; align-items: center; }
+.triage-dot {
+  width: 9px; height: 9px; border-radius: 50%; display: inline-block;
+}
+.triage-dot.Red { background: #e53e3e; }
+.triage-dot.Orange { background: #dd6b20; }
+.triage-dot.Yellow { background: #d69e2e; }
+.triage-dot.Green { background: #38a169; }
+
+/* CENTER: CONSULTATION FORM */
+.consult-area { display: flex; flex-direction: column; gap: 1rem; }
+.vitals-strip {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+  padding: 1rem 1.4rem;
+}
+.vitals-grid { display: grid; grid-template-columns: repeat(6,1fr); gap: 8px; margin-top: 10px; }
+.vital-item {
+  background: var(--surface2); border-radius: 8px; padding: 10px 8px; text-align: center;
+}
+.vital-val { font-family: 'Fraunces', serif; font-size: 1.2rem; font-weight: 700; }
+.vital-val.warn { color: var(--yellow); }
+.vital-val.danger { color: var(--red); }
+.vital-name { font-size: 0.67rem; color: var(--text3); text-transform: uppercase; letter-spacing: 0.04em; margin-top: 2px; }
+
+.consult-form { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; }
+.section-tabs { display: flex; border-bottom: 1px solid var(--border); overflow-x: auto; }
+.tab-btn {
+  padding: 10px 18px; font-size: 0.82rem; font-weight: 700;
+  border: none; background: none; cursor: pointer; font-family: inherit;
+  color: var(--text2); border-bottom: 2px solid transparent; transition: all 0.2s;
+  white-space: nowrap;
+}
+.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+.tab-content { padding: 1.2rem; display: none; }
+.tab-content.active { display: block; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+.form-row.full { grid-template-columns: 1fr; }
+.form-row.three { grid-template-columns: 1fr 1fr 1fr; }
+.form-group { display: flex; flex-direction: column; gap: 4px; }
+label { font-size: 0.73rem; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: 0.05em; }
+input, select, textarea {
+  border: 1px solid var(--border); border-radius: 7px;
+  padding: 8px 11px; font-size: 0.87rem; font-family: inherit;
+  color: var(--text); background: var(--surface); outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+input:focus, select:focus, textarea:focus {
+  border-color: var(--accent2); box-shadow: 0 0 0 3px rgba(107,70,193,0.1);
+}
+textarea { resize: vertical; }
+.icd-hint { font-size: 0.72rem; color: var(--text3); margin-top: 3px; }
+
+/* ORDERS PANEL (right) */
+.orders-panel { display: flex; flex-direction: column; gap: 1rem; }
+.order-form {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden;
+}
+.order-header {
+  padding: 0.8rem 1.1rem; font-size: 0.82rem; font-weight: 700;
+  display: flex; align-items: center; gap: 7px;
+  border-bottom: 1px solid var(--border);
+}
+.order-header.lab { background: #ebf8ff; color: #2b6cb0; }
+.order-header.rad { background: #faf5ff; color: var(--accent); }
+.order-header.rx { background: #f0fff4; color: var(--green); }
+.order-header.admit { background: #fff5f5; color: var(--red); }
+.order-body { padding: 1rem; }
+.order-body .form-group { margin-bottom: 8px; }
+.mini-btn {
+  width: 100%; padding: 8px; font-size: 0.82rem; font-weight: 700;
+  border: none; border-radius: 7px; cursor: pointer; font-family: inherit;
+  transition: all 0.15s;
+}
+.mini-btn.lab { background: #ebf8ff; color: #2b6cb0; }
+.mini-btn.lab:hover { background: #2b6cb0; color: white; }
+.mini-btn.rad { background: var(--accent-light); color: var(--accent); }
+.mini-btn.rad:hover { background: var(--accent); color: white; }
+.mini-btn.rx { background: #f0fff4; color: var(--green); }
+.mini-btn.rx:hover { background: var(--green); color: white; }
+.mini-btn.admit { background: #fff5f5; color: var(--red); }
+.mini-btn.admit:hover { background: var(--red); color: white; }
+
+.main-save-btn {
+  width: 100%; padding: 12px; background: var(--accent); color: white;
+  border: none; border-radius: 8px; font-size: 0.95rem; font-weight: 700;
+  font-family: inherit; cursor: pointer; display: flex; align-items: center;
+  justify-content: center; gap: 8px; transition: all 0.2s;
+}
+.main-save-btn:hover { background: var(--accent2); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(85,60,154,0.35); }
+
+.no-patient-msg {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; min-height: 300px; color: var(--text3);
+  font-size: 0.88rem; gap: 12px;
+}
+.no-patient-msg .big-icon { font-size: 3rem; }
+
+/* RECENT ORDERS HISTORY */
+.order-history { padding: 0; }
+.order-item {
+  padding: 10px 12px; border-bottom: 1px solid var(--border);
+  font-size: 0.8rem;
+}
+.order-item:last-child { border-bottom: none; }
+.order-item-type { font-weight: 700; font-size: 0.75rem; color: var(--text2); text-transform: uppercase; }
+.order-item-detail { margin-top: 2px; color: var(--text); }
+
+/* TAG CHIP */
+.chip {
+  display: inline-block; padding: 2px 10px; border-radius: 12px;
+  font-size: 0.72rem; font-weight: 700; margin: 2px;
+}
+.chip.lab { background: #ebf8ff; color: #2b6cb0; }
+.chip.rad { background: var(--accent-light); color: var(--accent); }
+.chip.rx { background: #f0fff4; color: var(--green); }
+
+/* TOAST */
+.toast {
+  position: fixed; bottom: 2rem; right: 2rem; z-index: 999;
+  background: #2d3748; color: white; padding: 12px 20px;
+  border-radius: 10px; font-size: 0.88rem;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  transform: translateY(80px); opacity: 0;
+  transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast.success { border-left: 4px solid var(--green); }
+.toast.error { border-left: 4px solid var(--red); }
+.loading { display:inline-block; width:13px; height:13px; border:2px solid rgba(255,255,255,0.4); border-top-color:white; border-radius:50%; animation:spin 0.7s linear infinite; }
+@keyframes spin { to { transform:rotate(360deg); } }
+</style>
+</head>
+<body>
+<header>
+  <div class="header-brand">
+    <span style="font-size:1.5rem;">👨‍⚕️</span>
+    <div>
+      <div class="brand-tag">Doctor's Console</div>
+      <div class="brand-sub">OPD Consultation · Diagnosis · Orders</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <span class="doctor-badge" id="doctorName">Dr. Loading...</span>
+    <a href="/hospital-dashboard" class="back-btn">← Dashboard</a>
+  </div>
+</header>
+
+<div class="container">
+  <div class="queue-stats">
+    <div class="qstat">
+      <span class="qstat-icon">👥</span>
+      <div><div class="qstat-num" id="totalQueue">0</div><div class="qstat-label">In Queue Today</div></div>
+    </div>
+    <div class="qstat">
+      <span class="qstat-icon">✅</span>
+      <div><div class="qstat-num" id="doneToday">0</div><div class="qstat-label">Consulted Today</div></div>
+    </div>
+    <div class="qstat">
+      <span class="qstat-icon">🔬</span>
+      <div><div class="qstat-num" id="labOrders">0</div><div class="qstat-label">Lab Orders Today</div></div>
+    </div>
+    <div class="qstat">
+      <span class="qstat-icon">💊</span>
+      <div><div class="qstat-num" id="rxOrders">0</div><div class="qstat-label">Prescriptions Today</div></div>
+    </div>
+  </div>
+
+  <div class="three-col">
+    <!-- LEFT: PATIENT QUEUE -->
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">📋 Queue (Vitals Done)</div>
+        <span style="font-size:0.75rem;color:var(--text3);" id="queueCount">0</span>
+      </div>
+      <div class="patient-list" id="patientList">
+        <div style="padding:1.5rem;text-align:center;color:var(--text3);font-size:0.83rem;">Loading...</div>
+      </div>
+    </div>
+
+    <!-- CENTER: CONSULTATION -->
+    <div class="consult-area">
+      <div id="noPatientMsg" class="panel" style="min-height:400px;">
+        <div class="no-patient-msg">
+          <span class="big-icon">🩺</span>
+          <span>Select a patient from the queue to begin consultation</span>
+        </div>
+      </div>
+
+      <div id="consultArea" style="display:none;">
+        <!-- VITALS STRIP -->
+        <div class="vitals-strip">
+          <div class="panel-title" style="font-size:0.85rem;">📊 Vitals — <span id="vitalsPatientName" style="color:var(--accent)"></span></div>
+          <div class="vitals-grid" id="vitalsGrid">
+            <div class="vital-item"><div class="vital-val" id="vBp">—</div><div class="vital-name">BP</div></div>
+            <div class="vital-item"><div class="vital-val" id="vPulse">—</div><div class="vital-name">Pulse</div></div>
+            <div class="vital-item"><div class="vital-val" id="vTemp">—</div><div class="vital-name">Temp °C</div></div>
+            <div class="vital-item"><div class="vital-val" id="vSpo2">—</div><div class="vital-name">SpO₂</div></div>
+            <div class="vital-item"><div class="vital-val" id="vWeight">—</div><div class="vital-name">Weight kg</div></div>
+            <div class="vital-item"><div class="vital-val" id="vTriage">—</div><div class="vital-name">Triage</div></div>
+          </div>
+        </div>
+
+        <!-- CONSULTATION FORM -->
+        <div class="consult-form panel">
+          <div class="section-tabs">
+            <button class="tab-btn active" onclick="switchTab('history',this)">📋 History</button>
+            <button class="tab-btn" onclick="switchTab('exam',this)">🔍 Examination</button>
+            <button class="tab-btn" onclick="switchTab('diagnosis',this)">🩺 Diagnosis</button>
+            <button class="tab-btn" onclick="switchTab('plan',this)">📝 Treatment Plan</button>
+          </div>
+
+          <div class="tab-content active" id="tab-history">
+            <div class="form-row full"><div class="form-group"><label>Chief Complaint</label><textarea id="chief_complaint" rows="2" placeholder="Patient's main presenting complaint..."></textarea></div></div>
+            <div class="form-row full"><div class="form-group"><label>History of Present Illness</label><textarea id="hopi" rows="3" placeholder="Duration, onset, character, associated symptoms..."></textarea></div></div>
+            <div class="form-row">
+              <div class="form-group"><label>Past Medical History</label><textarea id="pmh" rows="2" placeholder="DM, HTN, previous surgeries..."></textarea></div>
+              <div class="form-group"><label>Drug History / Allergies</label><textarea id="drug_history" rows="2" placeholder="Current medications, known allergies..."></textarea></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label>Family History</label><input type="text" id="family_history" placeholder="Relevant family conditions..."></div>
+              <div class="form-group"><label>Social History</label><input type="text" id="social_history" placeholder="Smoking, alcohol, occupation..."></div>
+            </div>
+          </div>
+
+          <div class="tab-content" id="tab-exam">
+            <div class="form-row full"><div class="form-group"><label>General Examination</label><textarea id="gen_exam" rows="2" placeholder="Conscious, oriented, pallor, icterus, cyanosis..."></textarea></div></div>
+            <div class="form-row full"><div class="form-group"><label>Systemic Examination</label><textarea id="sys_exam" rows="3" placeholder="CVS, RS, abdomen, CNS findings..."></textarea></div></div>
+            <div class="form-row">
+              <div class="form-group"><label>Local Examination</label><textarea id="local_exam" rows="2" placeholder="Specific area examination findings..."></textarea></div>
+              <div class="form-group"><label>Additional Findings</label><textarea id="additional_findings" rows="2" placeholder="Any other relevant findings..."></textarea></div>
+            </div>
+          </div>
+
+          <div class="tab-content" id="tab-diagnosis">
+            <div class="form-row full"><div class="form-group">
+              <label>Provisional Diagnosis</label>
+              <textarea id="provisional_diagnosis" rows="2" placeholder="Working diagnosis..."></textarea>
+            </div></div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Final Diagnosis</label>
+                <input type="text" id="final_diagnosis" placeholder="Confirmed diagnosis...">
+              </div>
+              <div class="form-group">
+                <label>ICD-10 Code</label>
+                <input type="text" id="icd_code" placeholder="e.g. J18.9">
+                <div class="icd-hint">International Classification of Diseases code</div>
+              </div>
+            </div>
+            <div class="form-row full"><div class="form-group">
+              <label>Differential Diagnosis</label>
+              <textarea id="differential_diagnosis" rows="2" placeholder="Other possible diagnoses to rule out..."></textarea>
+            </div></div>
+          </div>
+
+          <div class="tab-content" id="tab-plan">
+            <div class="form-row full"><div class="form-group">
+              <label>Treatment Plan</label>
+              <textarea id="treatment_plan" rows="3" placeholder="Overall management plan..."></textarea>
+            </div></div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Follow Up</label>
+                <select id="follow_up">
+                  <option value="">-- Select --</option>
+                  <option value="1 Day">1 Day</option>
+                  <option value="3 Days">3 Days</option>
+                  <option value="1 Week">1 Week</option>
+                  <option value="2 Weeks">2 Weeks</option>
+                  <option value="1 Month">1 Month</option>
+                  <option value="As Needed">As Needed</option>
+                  <option value="Admitted">Admitted (IPD)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Consultation Status</label>
+                <select id="consult_status">
+                  <option value="Draft">Draft</option>
+                  <option value="Completed">Completed</option>
+                  <option value="Referred">Referred to Specialist</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row full"><div class="form-group">
+              <label>Doctor's Notes (Internal)</label>
+              <textarea id="doctor_notes" rows="2" placeholder="Private notes for record..."></textarea>
+            </div></div>
+          </div>
+
+          <div style="padding:0 1.2rem 1.2rem;">
+            <button class="main-save-btn" onclick="saveConsultation()" id="saveConsultBtn">
+              💾 Save Consultation to Frappe
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: ORDERS -->
+    <div class="orders-panel">
+      <!-- LAB ORDER -->
+      <div class="order-form">
+        <div class="order-header lab">🔬 Lab Request</div>
+        <div class="order-body">
+          <div class="form-group"><label>Test Name</label>
+            <select id="labTest">
+              <option value="">-- Select Test --</option>
+              <option>CBC (Complete Blood Count)</option>
+              <option>Blood Sugar - Fasting</option>
+              <option>Blood Sugar - Random</option>
+              <option>HbA1c</option>
+              <option>Liver Function Test</option>
+              <option>Kidney Function Test</option>
+              <option>Lipid Profile</option>
+              <option>Thyroid Profile</option>
+              <option>Urine Routine</option>
+              <option>Stool Routine</option>
+              <option>Blood Culture</option>
+              <option>Widal Test</option>
+              <option>Dengue NS1/IgM</option>
+              <option>Malaria Antigen</option>
+            </select>
+          </div>
+          <div class="form-group"><label>Urgency</label>
+            <select id="labUrgency"><option>Routine</option><option>Urgent</option><option>STAT</option></select>
+          </div>
+          <div class="form-group"><label>Notes</label><input type="text" id="labNotes" placeholder="Special instructions..."></div>
+          <button class="mini-btn lab" onclick="placeOrder('lab')">+ Send to Laboratory</button>
+        </div>
+      </div>
+
+      <!-- RADIOLOGY ORDER -->
+      <div class="order-form">
+        <div class="order-header rad">📡 Radiology Request</div>
+        <div class="order-body">
+          <div class="form-group"><label>Investigation</label>
+            <select id="radTest">
+              <option value="">-- Select --</option>
+              <option>X-Ray Chest PA</option>
+              <option>X-Ray Abdomen</option>
+              <option>ECG 12-Lead</option>
+              <option>2D Echo</option>
+              <option>USG Abdomen</option>
+              <option>CT Brain</option>
+              <option>CT Chest</option>
+              <option>CT Abdomen</option>
+              <option>MRI Brain</option>
+              <option>MRI Spine</option>
+              <option>Doppler Study</option>
+            </select>
+          </div>
+          <div class="form-group"><label>Clinical Indication</label><input type="text" id="radIndication" placeholder="Why this scan is needed..."></div>
+          <button class="mini-btn rad" onclick="placeOrder('radiology')">+ Send to Radiology</button>
+        </div>
+      </div>
+
+      <!-- PRESCRIPTION -->
+      <div class="order-form">
+        <div class="order-header rx">💊 Prescription</div>
+        <div class="order-body">
+          <div class="form-group"><label>Medicine Name</label><input type="text" id="medName" placeholder="Drug name..."></div>
+          <div class="form-group"><label>Dosage & Route</label><input type="text" id="medDose" placeholder="e.g. 500mg Oral BD"></div>
+          <div class="form-group"><label>Duration</label>
+            <select id="medDuration">
+              <option>3 Days</option><option>5 Days</option><option>7 Days</option><option>10 Days</option><option>14 Days</option><option>1 Month</option><option>Ongoing</option>
+            </select>
+          </div>
+          <div class="form-group"><label>Instructions</label><input type="text" id="medInstructions" placeholder="After food, with water..."></div>
+          <button class="mini-btn rx" onclick="placeOrder('prescription')">+ Add to Prescription</button>
+          <div id="rxItems" style="margin-top:8px;"></div>
+        </div>
+      </div>
+
+      <!-- ADMIT TO IPD -->
+      <div class="order-form">
+        <div class="order-header admit">🛏️ Admit to IPD / ICU</div>
+        <div class="order-body">
+          <div class="form-group"><label>Ward Type</label>
+            <select id="admitWard">
+              <option>General Ward</option><option>Private Room</option><option>Semi-Private</option><option>ICU</option><option>HDU</option>
+            </select>
+          </div>
+          <div class="form-group"><label>Admission Reason</label><input type="text" id="admitReason" placeholder="Reason for admission..."></div>
+          <button class="mini-btn admit" onclick="placeOrder('admit')">🚨 Admit Patient</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const FRAPPE_URL = window.location.origin;
+let currentPatient = null;
+let currentVitals = null;
+let rxItems = [];
+
+document.addEventListener('DOMContentLoaded', () => {
+  loadPatientQueue();
+  loadDayCounts();
+  setInterval(loadPatientQueue, 30000);
+});
+
+// ─── LOAD QUEUE ──────────────────────────────────────────────────────────
+async function loadPatientQueue() {
+  try {
+    const res = await frappe_get_list('Patient Registration', {
+      fields: ['name','patient_name','age','gender','token_number','triage_level'],
+      filters: [['triage_status','=','Vitals Recorded']],
+      order_by: 'creation asc', limit: 40
+    });
+    const patients = res?.message || [];
+    document.getElementById('queueCount').textContent = patients.length;
+    document.getElementById('totalQueue').textContent = patients.length;
+    const list = document.getElementById('patientList');
+    if (!patients.length) {
+      list.innerHTML = '<div style="padding:1.5rem;text-align:center;color:var(--text3);font-size:0.82rem;">No patients in queue</div>';
+      return;
+    }
+    list.innerHTML = patients.map(p => `
+      <div class="patient-card ${currentPatient?.id===p.name?'active':''}" onclick="selectPatient('${p.name}','${p.patient_name}','${p.age||''}','${p.gender||''}','${p.token_number||''}','${p.triage_level||''}')">
+        <div class="pc-id">${p.name} · Token ${p.token_number||'—'}</div>
+        <div class="pc-name">${p.patient_name}</div>
+        <div class="pc-meta">
+          <span class="triage-dot ${p.triage_level||'Green'}"></span>
+          ${p.age||'?'} yrs · ${p.gender||'?'} · ${p.triage_level||'Pending'}
+        </div>
+      </div>`).join('');
+  } catch(e) { console.error(e); }
+}
+
+async function loadDayCounts() {
+  try {
+    const today = new Date().toISOString().split('T')[0];
+    const [cons, rx] = await Promise.all([
+      frappe_get_list('Consultation', { fields:['name'], filters:[['creation','>=',today]], limit:100 }),
+      frappe_get_list('Prescription', { fields:['name'], filters:[['creation','>=',today]], limit:100 })
+    ]);
+    document.getElementById('doneToday').textContent = cons?.message?.length || 0;
+    document.getElementById('rxOrders').textContent = rx?.message?.length || 0;
+  } catch(e) {}
+}
+
+// ─── SELECT PATIENT & LOAD VITALS ────────────────────────────────────────
+async function selectPatient(id, name, age, gender, token, triage) {
+  currentPatient = { id, name, age, gender, token, triage };
+  rxItems = [];
+  document.getElementById('rxItems').innerHTML = '';
+  document.getElementById('noPatientMsg').style.display = 'none';
+  document.getElementById('consultArea').style.display = 'block';
+  document.getElementById('vitalsPatientName').textContent = `${name} (${id})`;
+
+  // Load vitals from Frappe
+  try {
+    const res = await frappe_get_list('Vital Signs', {
+      fields:['bp_systolic','bp_diastolic','pulse','temperature','spo2','weight','triage_level'],
+      filters:[['patient','=',id]], order_by:'creation desc', limit:1
+    });
+    const v = res?.message?.[0];
+    if (v) {
+      document.getElementById('vBp').textContent = v.bp_systolic ? `${v.bp_systolic}/${v.bp_diastolic}` : '—';
+      document.getElementById('vPulse').textContent = v.pulse || '—';
+      const t = parseFloat(v.temperature);
+      const tempEl = document.getElementById('vTemp');
+      tempEl.textContent = t || '—';
+      if (t > 38.5) tempEl.classList.add('warn');
+      if (t > 39.5) tempEl.classList.add('danger');
+      const s = parseFloat(v.spo2);
+      const spo2El = document.getElementById('vSpo2');
+      spo2El.textContent = s ? s+'%' : '—';
+      if (s < 94) spo2El.classList.add('warn');
+      if (s < 90) spo2El.classList.add('danger');
+      document.getElementById('vWeight').textContent = v.weight ? v.weight+'kg' : '—';
+      document.getElementById('vTriage').textContent = v.triage_level || triage || '—';
+    } else {
+      document.getElementById('vTriage').textContent = triage || '—';
+    }
+  } catch(e) {}
+  loadPatientQueue();
+}
+
+// ─── TABS ─────────────────────────────────────────────────────────────────
+function switchTab(tab, btn) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ─── PLACE ORDER ─────────────────────────────────────────────────────────
+async function placeOrder(type) {
+  if (!currentPatient) return showToast('Select a patient first', 'error');
+
+  try {
+    if (type === 'lab') {
+      const test = document.getElementById('labTest').value;
+      if (!test) return showToast('Select a lab test', 'error');
+      const res = await fetch(`${FRAPPE_URL}/api/resource/Lab Request`, {
+        method: 'POST',
+        headers: { 'Content-Type':'application/json', 'X-Frappe-CSRF-Token': getCsrfToken() },
+        body: JSON.stringify({
+          doctype: 'Lab Request', patient: currentPatient.id,
+          patient_name: currentPatient.name, test_name: test,
+          urgency: document.getElementById('labUrgency').value,
+          notes: document.getElementById('labNotes').value,
+          status: 'Pending'
+        })
+      });
+      const d = await res.json();
+      if (!res.ok) throw new Error(d?.exc_type || 'Error');
+      showToast(`✅ Lab request sent: ${d.data?.name}`, 'success');
+      document.getElementById('labOrders').textContent = parseInt(document.getElementById('labOrders').textContent||0)+1;
+
+    } else if (type === 'radiology') {
+      const test = document.getElementById('radTest').value;
+      if (!test) return showToast('Select a radiology test', 'error');
+      const res = await fetch(`${FRAPPE_URL}/api/resource/Radiology Request`, {
+        method: 'POST',
+        headers: { 'Content-Type':'application/json', 'X-Frappe-CSRF-Token': getCsrfToken() },
+        body: JSON.stringify({
+          doctype: 'Radiology Request', patient: currentPatient.id,
+          patient_name: currentPatient.name, investigation: test,
+          clinical_indication: document.getElementById('radIndication').value, status: 'Pending'
+        })
+      });
+      const d = await res.json();
+      if (!res.ok) throw new Error(d?.exc_type || 'Error');
+      showToast(`✅ Radiology request sent: ${d.data?.name}`, 'success');
+
+    } else if (type === 'prescription') {
+      const med = document.getElementById('medName').value.trim();
+      if (!med) return showToast('Enter medicine name', 'error');
+      rxItems.push({ name: med, dose: document.getElementById('medDose').value, duration: document.getElementById('medDuration').value, instructions: document.getElementById('medInstructions').value });
+      document.getElementById('rxItems').innerHTML = rxItems.map((r,i) =>
+        `<span class="chip rx">💊 ${r.name} ${r.dose}</span>`).join('');
+      document.getElementById('medName').value = '';
+      document.getElementById('medDose').value = '';
+      showToast(`💊 ${med} added to prescription`, 'success');
+
+    } else if (type === 'admit') {
+      const reason = document.getElementById('admitReason').value.trim();
+      if (!reason) return showToast('Enter admission reason', 'error');
+      const res = await fetch(`${FRAPPE_URL}/api/resource/IPD Admission`, {
+        method: 'POST',
+        headers: { 'Content-Type':'application/json', 'X-Frappe-CSRF-Token': getCsrfToken() },
+        body: JSON.stringify({
+          doctype: 'IPD Admission', patient: currentPatient.id,
+          patient_name: currentPatient.name, ward_type: document.getElementById('admitWard').value,
+          admission_reason: reason, status: 'Pending'
+        })
+      });
+      const d = await res.json();
+      if (!res.ok) throw new Error(d?.exc_type || 'Error');
+      showToast(`🛏️ Patient admitted: ${d.data?.name}`, 'success');
+    }
+  } catch(err) {
+    showToast(`❌ ${err.message}`, 'error');
+  }
+}
+
+// ─── SAVE CONSULTATION ────────────────────────────────────────────────────
+async function saveConsultation() {
+  if (!currentPatient) return showToast('Select a patient first', 'error');
+  const btn = document.getElementById('saveConsultBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="loading"></span> Saving...';
+
+  try {
+    const consultData = {
+      doctype: 'Consultation', patient: currentPatient.id,
+      patient_name: currentPatient.name,
+      chief_complaint: document.getElementById('chief_complaint').value,
+      history_of_present_illness: document.getElementById('hopi').value,
+      past_medical_history: document.getElementById('pmh').value,
+      drug_history: document.getElementById('drug_history').value,
+      general_examination: document.getElementById('gen_exam').value,
+      systemic_examination: document.getElementById('sys_exam').value,
+      provisional_diagnosis: document.getElementById('provisional_diagnosis').value,
+      final_diagnosis: document.getElementById('final_diagnosis').value,
+      icd_code: document.getElementById('icd_code').value,
+      treatment_plan: document.getElementById('treatment_plan').value,
+      follow_up: document.getElementById('follow_up').value,
+      status: document.getElementById('consult_status').value,
+      doctor_notes: document.getElementById('doctor_notes').value,
+      consultation_date: new Date().toISOString()
+    };
+
+    const res = await fetch(`${FRAPPE_URL}/api/resource/Consultation`, {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json', 'X-Frappe-CSRF-Token': getCsrfToken() },
+      body: JSON.stringify(consultData)
+    });
+    const d = await res.json();
+    if (!res.ok) throw new Error(d?.exc_type || 'Save failed');
+
+    // Save prescription if items exist
+    if (rxItems.length > 0) {
+      await fetch(`${FRAPPE_URL}/api/resource/Prescription`, {
+        method: 'POST',
+        headers: { 'Content-Type':'application/json', 'X-Frappe-CSRF-Token': getCsrfToken() },
+        body: JSON.stringify({
+          doctype: 'Prescription', patient: currentPatient.id,
+          patient_name: currentPatient.name, consultation: d.data?.name,
+          medicines: JSON.stringify(rxItems), status: 'Pending'
+        })
+      });
+    }
+
+    // Update patient status
+    await fetch(`${FRAPPE_URL}/api/resource/Patient Registration/${currentPatient.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type':'application/json', 'X-Frappe-CSRF-Token': getCsrfToken() },
+      body: JSON.stringify({ triage_status: 'Consulted' })
+    });
+
+    showToast(`✅ Consultation saved: ${d.data?.name}`, 'success');
+    currentPatient = null;
+    document.getElementById('consultArea').style.display = 'none';
+    document.getElementById('noPatientMsg').style.display = 'block';
+    loadPatientQueue();
+    loadDayCounts();
+  } catch(err) {
+    showToast(`❌ ${err.message}`, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '💾 Save Consultation to Frappe';
+  }
+}
+
+// ─── HELPERS ─────────────────────────────────────────────────────────────
+function getCsrfToken() {
+  return document.cookie.split(';').map(c=>c.trim().split('=')).find(c=>c[0]==='csrf_token')?.[1] ||
+         window.frappe?.csrf_token || '';
+}
+async function frappe_get_list(doctype, params) {
+  const qs = new URLSearchParams({ fields:JSON.stringify(params.fields||['name']), filters:JSON.stringify(params.filters||[]), order_by:params.order_by||'creation desc', limit_page_length:params.limit||20 });
+  const res = await fetch(`${FRAPPE_URL}/api/resource/${doctype}?${qs}`, { headers:{'Accept':'application/json'} });
+  return res.json();
+}
+function showToast(msg, type='success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = `toast ${type} show`;
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+</script>
+</body>
+</html>

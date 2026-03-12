@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Laboratory | Hospital Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0d1117; --surface:#161b22; --surface2:#21262d; --border:#30363d;
+  --text:#e6edf3; --text2:#8b949e; --text3:#484f58;
+  --teal:#2ea043; --blue:#58a6ff; --yellow:#e3b341; --red:#f85149; --purple:#bc8cff;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 2rem;height:58px;display:flex;align-items:center;justify-content:space-between;}
+.logo{display:flex;align-items:center;gap:10px;}
+.logo-icon{width:34px;height:34px;background:linear-gradient(135deg,#1f6feb,#388bfd);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem;}
+.logo-text{font-size:1rem;font-weight:700;}
+.logo-sub{font-size:0.72rem;color:var(--text2);}
+.back-btn{background:var(--surface2);border:1px solid var(--border);color:var(--text2);padding:6px 14px;border-radius:6px;cursor:pointer;font-size:0.82rem;font-family:inherit;text-decoration:none;transition:all 0.2s;}
+.back-btn:hover{border-color:var(--blue);color:var(--blue);}
+.container{max-width:1400px;margin:0 auto;padding:1.5rem 2rem;}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem;}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.1rem 1.4rem;}
+.stat-n{font-family:'JetBrains Mono',monospace;font-size:2rem;font-weight:700;}
+.stat-n.blue{color:var(--blue);} .stat-n.yellow{color:var(--yellow);} .stat-n.teal{color:var(--teal);} .stat-n.red{color:var(--red);}
+.stat-l{font-size:0.75rem;color:var(--text2);margin-top:4px;text-transform:uppercase;letter-spacing:0.04em;}
+.two-col{display:grid;grid-template-columns:1fr 380px;gap:1.2rem;}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+.panel-head{padding:0.9rem 1.2rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.panel-title{font-size:0.88rem;font-weight:600;display:flex;align-items:center;gap:8px;}
+.tab-row{display:flex;border-bottom:1px solid var(--border);}
+.tab{padding:9px 16px;font-size:0.82rem;font-weight:600;border:none;background:none;cursor:pointer;color:var(--text2);border-bottom:2px solid transparent;font-family:inherit;transition:all 0.15s;}
+.tab.active{color:var(--blue);border-bottom-color:var(--blue);}
+.tab-pane{display:none;} .tab-pane.active{display:block;}
+table{width:100%;border-collapse:collapse;}
+th{padding:9px 12px;text-align:left;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--text2);background:var(--surface2);border-bottom:1px solid var(--border);}
+td{padding:11px 12px;border-bottom:1px solid var(--border);font-size:0.84rem;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(88,166,255,0.04);}
+.mono{font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--blue);}
+.badge{display:inline-block;padding:2px 9px;border-radius:10px;font-size:0.7rem;font-weight:700;}
+.badge.pending{background:rgba(227,179,65,0.15);color:var(--yellow);}
+.badge.processing{background:rgba(88,166,255,0.15);color:var(--blue);}
+.badge.done{background:rgba(46,160,67,0.15);color:var(--teal);}
+.badge.stat{background:rgba(248,81,73,0.15);color:var(--red);}
+.btn{padding:5px 12px;border-radius:6px;font-size:0.78rem;font-weight:600;cursor:pointer;font-family:inherit;border:none;transition:all 0.15s;}
+.btn.primary{background:var(--blue);color:#0d1117;}
+.btn.primary:hover{background:#79c0ff;}
+.btn.success{background:var(--teal);color:white;}
+.btn.success:hover{background:#3fb950;}
+.btn.ghost{background:var(--surface2);color:var(--text2);border:1px solid var(--border);}
+.btn.ghost:hover{border-color:var(--blue);color:var(--blue);}
+/* RESULT FORM */
+.result-panel{padding:0;}
+.result-header{padding:1rem 1.2rem;border-bottom:1px solid var(--border);}
+.selected-req{background:rgba(88,166,255,0.08);border:1px solid rgba(88,166,255,0.2);border-radius:8px;padding:10px 12px;margin-bottom:12px;}
+.req-id{font-family:'JetBrains Mono',monospace;font-size:0.82rem;color:var(--blue);font-weight:600;}
+.form-body{padding:1.2rem;}
+.form-group{display:flex;flex-direction:column;gap:4px;margin-bottom:10px;}
+label{font-size:0.72rem;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.05em;}
+input,select,textarea{background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:8px 11px;font-size:0.85rem;font-family:inherit;color:var(--text);outline:none;transition:border-color 0.2s;}
+input:focus,select:focus,textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(88,166,255,0.1);}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.result-fields{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px;}
+.result-field-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:6px;}
+.result-field-row input{font-size:0.8rem;padding:6px 8px;}
+.submit-btn{width:100%;padding:10px;background:var(--teal);color:white;border:none;border-radius:8px;font-size:0.9rem;font-weight:700;cursor:pointer;font-family:inherit;margin-top:10px;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.submit-btn:hover{background:#3fb950;transform:translateY(-1px);}
+.submit-btn:disabled{background:var(--text3);cursor:not-allowed;}
+.no-sel{text-align:center;padding:3rem 1rem;color:var(--text3);font-size:0.84rem;}
+.toast{position:fixed;bottom:2rem;right:2rem;z-index:999;background:#161b22;color:var(--text);padding:12px 20px;border-radius:10px;font-size:0.88rem;box-shadow:0 8px 24px rgba(0,0,0,0.4);transform:translateY(80px);opacity:0;transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.success{border-left:4px solid var(--teal);}
+.toast.error{border-left:4px solid var(--red);}
+.loading{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 0.7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.urgency-stat{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;}
+.urgency-stat.Routine{background:var(--teal);}
+.urgency-stat.Urgent{background:var(--yellow);}
+.urgency-stat.STAT{background:var(--red);}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">
+    <div class="logo-icon">🔬</div>
+    <div><div class="logo-text">Laboratory Module</div><div class="logo-sub">Sample Collection · Testing · Reports</div></div>
+  </div>
+  <a href="/hospital-dashboard" class="back-btn">← Dashboard</a>
+</header>
+<div class="container">
+  <div class="stats-row">
+    <div class="stat"><div class="stat-n blue" id="sPending">0</div><div class="stat-l">Requests Pending</div></div>
+    <div class="stat"><div class="stat-n yellow" id="sProcessing">0</div><div class="stat-l">In Processing</div></div>
+    <div class="stat"><div class="stat-n teal" id="sDone">0</div><div class="stat-l">Reports Ready</div></div>
+    <div class="stat"><div class="stat-n red" id="sStat">0</div><div class="stat-l">STAT / Urgent</div></div>
+  </div>
+  <div class="two-col">
+    <div class="panel">
+      <div class="tab-row">
+        <button class="tab active" onclick="switchTab('pending',this)">🔴 Pending Requests</button>
+        <button class="tab" onclick="switchTab('processing',this)">🔵 In Processing</button>
+        <button class="tab" onclick="switchTab('reports',this)">✅ Reports</button>
+      </div>
+      <div class="tab-pane active" id="tab-pending">
+        <div style="overflow-x:auto;">
+          <table><thead><tr><th>Lab ID</th><th>Patient</th><th>Test</th><th>Urgency</th><th>Ordered</th><th>Action</th></tr></thead>
+          <tbody id="pendingBody"><tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text3);">Loading...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="tab-pane" id="tab-processing">
+        <div style="overflow-x:auto;">
+          <table><thead><tr><th>Lab ID</th><th>Patient</th><th>Test</th><th>Collected At</th><th>Action</th></tr></thead>
+          <tbody id="processingBody"><tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--text3);">None in processing</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="tab-pane" id="tab-reports">
+        <div style="overflow-x:auto;">
+          <table><thead><tr><th>Report ID</th><th>Patient</th><th>Test</th><th>Result</th><th>Reported At</th><th>Action</th></tr></thead>
+          <tbody id="reportsBody"><tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text3);">No reports yet</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <!-- RESULT FORM -->
+    <div class="panel result-panel">
+      <div class="panel-head"><div class="panel-title">📋 Enter Lab Results</div></div>
+      <div class="form-body" id="labFormBody">
+        <div class="no-sel" id="noSelMsg">
+          <div style="font-size:2.5rem;margin-bottom:10px;">🧪</div>
+          Click a pending request to collect sample or enter results
+        </div>
+        <div id="labResultForm" style="display:none;">
+          <div class="selected-req" id="selReqInfo"></div>
+          <div class="form-group">
+            <label>Sample Collection Time</label>
+            <input type="datetime-local" id="collectionTime">
+          </div>
+          <div class="form-group">
+            <label>Sample Type</label>
+            <select id="sampleType">
+              <option>Whole Blood (EDTA)</option><option>Serum</option><option>Plasma</option>
+              <option>Urine (Midstream)</option><option>Stool</option><option>Sputum</option>
+              <option>Swab</option><option>Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Result Summary</label>
+            <input type="text" id="resultSummary" placeholder="e.g. Hb: 11.2 g/dL, WBC: 8400...">
+          </div>
+          <div class="form-group">
+            <label>Detailed Values</label>
+            <textarea id="detailedValues" rows="4" placeholder="Parameter: Value (Reference Range)&#10;e.g. Haemoglobin: 11.2 g/dL (12-16)&#10;WBC: 8400 cells/µL (4000-11000)"></textarea>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Result Status</label>
+              <select id="resultStatus">
+                <option value="Normal">Normal</option>
+                <option value="Abnormal">Abnormal</option>
+                <option value="Critical">Critical Value</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Technician Note</label>
+              <input type="text" id="techNote" placeholder="Any remarks...">
+            </div>
+          </div>
+          <button class="submit-btn" onclick="submitLabResult()" id="submitLabBtn">
+            📋 Save Report to Frappe
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const FRAPPE_URL = window.location.origin;
+let selRequest = null;
+
+document.addEventListener('DOMContentLoaded', () => {
+  loadAllLabData();
+  setInterval(loadAllLabData, 20000);
+  const now = new Date(); now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+  document.getElementById('collectionTime').value = now.toISOString().slice(0,16);
+});
+
+async function loadAllLabData() {
+  try {
+    const [pending, processing, reports] = await Promise.all([
+      frappe_get_list('Lab Request', { fields:['name','patient','patient_name','test_name','urgency','creation'], filters:[['status','=','Pending']], order_by:'creation asc', limit:50 }),
+      frappe_get_list('Lab Request', { fields:['name','patient','patient_name','test_name','collection_time'], filters:[['status','=','Sample Collected']], limit:30 }),
+      frappe_get_list('Lab Report', { fields:['name','patient','patient_name','test_name','result_summary','creation'], filters:[], order_by:'creation desc', limit:30 })
+    ]);
+    const p = pending?.message||[], pr = processing?.message||[], r = reports?.message||[];
+    document.getElementById('sPending').textContent = p.length;
+    document.getElementById('sProcessing').textContent = pr.length;
+    document.getElementById('sDone').textContent = r.length;
+    document.getElementById('sStat').textContent = p.filter(x=>x.urgency==='STAT'||x.urgency==='Urgent').length;
+    renderPending(p); renderProcessing(pr); renderReports(r);
+  } catch(e){ console.error(e); }
+}
+
+function renderPending(data) {
+  const tb = document.getElementById('pendingBody');
+  if (!data.length) { tb.innerHTML='<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text3);">No pending requests 🎉</td></tr>'; return; }
+  tb.innerHTML = data.map(r => {
+    const t = new Date(r.creation).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+    return `<tr>
+      <td><span class="mono">${r.name}</span></td>
+      <td><div style="font-weight:600;font-size:0.83rem;">${r.patient_name}</div><div style="font-size:0.73rem;color:var(--text2);">${r.patient}</div></td>
+      <td>${r.test_name}</td>
+      <td><span class="urgency-stat ${r.urgency}"></span>${r.urgency||'Routine'}</td>
+      <td style="color:var(--text2);font-size:0.8rem;">${t}</td>
+      <td><button class="btn primary" onclick="selectRequest('${r.name}','${r.patient}','${r.patient_name}','${r.test_name}','${r.urgency||'Routine'}')">Collect & Enter</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function renderProcessing(data) {
+  const tb = document.getElementById('processingBody');
+  if (!data.length) { tb.innerHTML='<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--text3);">None in processing</td></tr>'; return; }
+  tb.innerHTML = data.map(r => `<tr>
+    <td><span class="mono">${r.name}</span></td>
+    <td>${r.patient_name}<br><span style="font-size:0.73rem;color:var(--text2);">${r.patient}</span></td>
+    <td>${r.test_name}</td>
+    <td style="color:var(--text2);font-size:0.8rem;">${r.collection_time||'—'}</td>
+    <td><button class="btn success" onclick="selectRequest('${r.name}','${r.patient}','${r.patient_name}','${r.test_name}','')">Enter Result</button></td>
+  </tr>`).join('');
+}
+
+function renderReports(data) {
+  const tb = document.getElementById('reportsBody');
+  if (!data.length) { tb.innerHTML='<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text3);">No reports</td></tr>'; return; }
+  tb.innerHTML = data.map(r => {
+    const t = new Date(r.creation).toLocaleDateString('en-IN');
+    return `<tr>
+      <td><span class="mono">${r.name}</span></td>
+      <td>${r.patient_name}</td>
+      <td>${r.test_name}</td>
+      <td style="font-size:0.8rem;">${r.result_summary||'—'}</td>
+      <td style="color:var(--text2);font-size:0.78rem;">${t}</td>
+      <td><span class="badge done">Done</span></td>
+    </tr>`;
+  }).join('');
+}
+
+function selectRequest(id, patient, patientName, testName, urgency) {
+  selRequest = { id, patient, patientName, testName, urgency };
+  document.getElementById('noSelMsg').style.display = 'none';
+  document.getElementById('labResultForm').style.display = 'block';
+  document.getElementById('selReqInfo').innerHTML = `
+    <div class="req-id">${id}</div>
+    <div style="font-weight:600;font-size:0.88rem;margin-top:3px;">${patientName}</div>
+    <div style="font-size:0.8rem;color:var(--text2);">Test: <strong>${testName}</strong> · Urgency: ${urgency}</div>`;
+  switchTab('pending', document.querySelector('.tab.active'));
+}
+
+function switchTab(tab, btn) {
+  document.querySelectorAll('.tab-pane').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  if(btn) btn.classList.add('active');
+  else document.querySelectorAll('.tab')[0].classList.add('active');
+}
+
+async function submitLabResult() {
+  if (!selRequest) return showToast('Select a request first','error');
+  const btn = document.getElementById('submitLabBtn');
+  btn.disabled = true; btn.innerHTML = '<span class="loading"></span> Saving...';
+  try {
+    // 1. Update Lab Request status
+    await fetch(`${FRAPPE_URL}/api/resource/Lab Request/${selRequest.id}`, {
+      method:'PUT', headers:{'Content-Type':'application/json','X-Frappe-CSRF-Token':getCsrf()},
+      body: JSON.stringify({ status:'Completed', collection_time: document.getElementById('collectionTime').value })
+    });
+    // 2. Create Lab Report
+    const res = await fetch(`${FRAPPE_URL}/api/resource/Lab Report`, {
+      method:'POST', headers:{'Content-Type':'application/json','X-Frappe-CSRF-Token':getCsrf()},
+      body: JSON.stringify({
+        doctype:'Lab Report', patient:selRequest.patient, patient_name:selRequest.patientName,
+        lab_request:selRequest.id, test_name:selRequest.testName,
+        result_summary:document.getElementById('resultSummary').value,
+        detailed_results:document.getElementById('detailedValues').value,
+        result_status:document.getElementById('resultStatus').value,
+        technician_note:document.getElementById('techNote').value,
+        report_date:new Date().toISOString()
+      })
+    });
+    const d = await res.json();
+    if (!res.ok) throw new Error(d?.exc_type||'Save failed');
+    showToast(`✅ Lab report saved: ${d.data?.name}`, 'success');
+    selRequest = null;
+    document.getElementById('noSelMsg').style.display = 'block';
+    document.getElementById('labResultForm').style.display = 'none';
+    loadAllLabData();
+  } catch(err){ showToast(`❌ ${err.message}`,'error'); }
+  finally{ btn.disabled=false; btn.innerHTML='📋 Save Report to Frappe'; }
+}
+
+function getCsrf(){ return document.cookie.split(';').map(c=>c.trim().split('=')).find(c=>c[0]==='csrf_token')?.[1]||window.frappe?.csrf_token||''; }
+async function frappe_get_list(dt,p){ const qs=new URLSearchParams({fields:JSON.stringify(p.fields||['name']),filters:JSON.stringify(p.filters||[]),order_by:p.order_by||'creation desc',limit_page_length:p.limit||20}); const r=await fetch(`${FRAPPE_URL}/api/resource/${dt}?${qs}`,{headers:{'Accept':'application/json'}}); return r.json(); }
+function showToast(msg,type='success'){ const t=document.getElementById('toast'); t.textContent=msg; t.className=`toast ${type} show`; setTimeout(()=>t.classList.remove('show'),3500); }
+</script>
+</body></html>

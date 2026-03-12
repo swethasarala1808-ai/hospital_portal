@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pharmacy | Hospital Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inconsolata:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f8faf5;--surface:#fff;--surface2:#f0f4eb;--border:#d4e0c8;--text:#1a2510;--text2:#5a7050;--text3:#9ab08a;--green:#2d7a3a;--green2:#4caf50;--yellow:#f59e0b;--red:#dc2626;--blue:#1d4ed8;--light-green:#e8f5e9;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+header{background:var(--green);color:white;padding:0 2rem;height:60px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 12px rgba(45,122,58,0.25);}
+.logo{display:flex;align-items:center;gap:12px;}
+.logo-icon{font-size:1.6rem;}
+.logo-title{font-size:1.1rem;font-weight:800;}
+.logo-sub{font-size:0.72rem;opacity:0.75;}
+.back-btn{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:white;padding:6px 14px;border-radius:7px;cursor:pointer;font-size:0.82rem;font-family:inherit;text-decoration:none;transition:all 0.2s;}
+.back-btn:hover{background:rgba(255,255,255,0.25);}
+.container{max-width:1400px;margin:0 auto;padding:1.5rem 2rem;}
+.stats-row{display:grid;grid-template-columns:repeat(5,1fr);gap:1rem;margin-bottom:1.5rem;}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1rem 1.2rem;display:flex;align-items:center;gap:10px;}
+.stat-icon{font-size:1.6rem;}
+.stat-n{font-family:'Inconsolata',monospace;font-size:1.8rem;font-weight:700;line-height:1;}
+.stat-n.green{color:var(--green);}
+.stat-n.yellow{color:var(--yellow);}
+.stat-n.red{color:var(--red);}
+.stat-n.blue{color:var(--blue);}
+.stat-l{font-size:0.73rem;color:var(--text2);}
+.two-col{display:grid;grid-template-columns:1fr 400px;gap:1.2rem;}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.panel-head{padding:0.9rem 1.2rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--surface2);}
+.panel-title{font-size:0.88rem;font-weight:700;display:flex;align-items:center;gap:7px;}
+table{width:100%;border-collapse:collapse;}
+th{padding:9px 12px;text-align:left;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--text2);background:var(--surface2);border-bottom:1px solid var(--border);}
+td{padding:11px 12px;border-bottom:1px solid var(--border);font-size:0.84rem;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:var(--light-green);}
+.mono{font-family:'Inconsolata',monospace;font-size:0.8rem;color:var(--green);font-weight:600;}
+.badge{display:inline-block;padding:2px 10px;border-radius:12px;font-size:0.7rem;font-weight:700;}
+.badge.pending{background:#fef3c7;color:#92400e;}
+.badge.dispensed{background:var(--light-green);color:var(--green);}
+.badge.partial{background:#ede9fe;color:#5b21b6;}
+.stock-alert{background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:10px 12px;margin:0 1rem 1rem;display:flex;align-items:center;gap:8px;font-size:0.82rem;color:var(--red);}
+.btn{padding:5px 12px;border-radius:6px;font-size:0.78rem;font-weight:700;cursor:pointer;font-family:inherit;border:none;transition:all 0.15s;}
+.btn.primary{background:var(--green);color:white;}
+.btn.primary:hover{background:#1e5c2a;}
+.dispense-panel{display:flex;flex-direction:column;gap:1rem;}
+.rx-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.rx-header{padding:0.9rem 1.2rem;background:var(--green);color:white;font-weight:700;font-size:0.88rem;}
+.rx-body{padding:1.2rem;}
+.selected-rx{background:var(--light-green);border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:12px;}
+.rx-id{font-family:'Inconsolata',monospace;font-size:0.82rem;color:var(--green);font-weight:700;}
+.form-group{display:flex;flex-direction:column;gap:4px;margin-bottom:10px;}
+label{font-size:0.72rem;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.05em;}
+input,select,textarea{background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:8px 11px;font-size:0.85rem;font-family:inherit;color:var(--text);outline:none;transition:border-color 0.2s;}
+input:focus,select:focus{border-color:var(--green);}
+.med-item{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:7px;margin-bottom:6px;font-size:0.83rem;}
+.med-name{font-weight:600;}
+.med-dose{color:var(--text2);font-size:0.78rem;}
+.check-btn{width:28px;height:28px;border-radius:6px;background:var(--surface);border:1.5px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:0.85rem;transition:all 0.15s;flex-shrink:0;}
+.check-btn.checked{background:var(--green);border-color:var(--green);color:white;}
+.dispense-btn{width:100%;padding:11px;background:var(--green);color:white;border:none;border-radius:8px;font-size:0.9rem;font-weight:700;font-family:inherit;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;}
+.dispense-btn:hover{background:#1e5c2a;transform:translateY(-1px);box-shadow:0 4px 12px rgba(45,122,58,0.3);}
+.no-sel{text-align:center;padding:3rem 1rem;color:var(--text3);font-size:0.84rem;}
+.toast{position:fixed;bottom:2rem;right:2rem;z-index:999;background:#1a2510;color:white;padding:12px 20px;border-radius:10px;font-size:0.88rem;box-shadow:0 8px 24px rgba(0,0,0,0.2);transform:translateY(80px);opacity:0;transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.success{border-left:4px solid var(--green2);}
+.toast.error{border-left:4px solid var(--red);}
+.loading{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 0.7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">
+    <div class="logo-icon">💊</div>
+    <div><div class="logo-title">Pharmacy</div><div class="logo-sub">Dispensing · Stock · Prescriptions</div></div>
+  </div>
+  <a href="/hospital-dashboard" class="back-btn">← Dashboard</a>
+</header>
+<div class="container">
+  <div class="stats-row">
+    <div class="stat"><span class="stat-icon">📋</span><div><div class="stat-n blue" id="sPending">0</div><div class="stat-l">Prescriptions Due</div></div></div>
+    <div class="stat"><span class="stat-icon">✅</span><div><div class="stat-n green" id="sDone">0</div><div class="stat-l">Dispensed Today</div></div></div>
+    <div class="stat"><span class="stat-icon">⚠️</span><div><div class="stat-n yellow" id="sLowStock">0</div><div class="stat-l">Low Stock Alerts</div></div></div>
+    <div class="stat"><span class="stat-icon">⏰</span><div><div class="stat-n red" id="sExpiring">0</div><div class="stat-l">Expiring Soon</div></div></div>
+    <div class="stat"><span class="stat-icon">💰</span><div><div class="stat-n green" id="sRevenue">0</div><div class="stat-l">Items Today</div></div></div>
+  </div>
+  <div class="two-col">
+    <div class="panel">
+      <div class="panel-head"><div class="panel-title">📋 Pending Prescriptions</div></div>
+      <div style="overflow-x:auto;">
+        <table><thead><tr><th>Rx ID</th><th>Patient</th><th>Medicines</th><th>Doctor</th><th>Time</th><th>Status</th><th>Action</th></tr></thead>
+        <tbody id="rxBody"><tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text3);">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="dispense-panel">
+      <div class="rx-card">
+        <div class="rx-header">💊 Dispense Medicines</div>
+        <div class="rx-body">
+          <div class="no-sel" id="noSelMsg"><div style="font-size:2.5rem;margin-bottom:10px;">💊</div>Select a prescription to dispense</div>
+          <div id="dispenseForm" style="display:none;">
+            <div class="selected-rx" id="selRxInfo"></div>
+            <div id="medItemsList"></div>
+            <div class="form-group"><label>Dispensed By</label><input type="text" id="dispensedBy" placeholder="Pharmacist name..."></div>
+            <div class="form-group"><label>Remarks</label><input type="text" id="pharmaRemarks" placeholder="Any notes..."></div>
+            <button class="dispense-btn" onclick="dispense()" id="dispenseBtn">✅ Confirm Dispensing</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const FRAPPE_URL=window.location.origin;
+let selRx=null;let dispChecked={};
+document.addEventListener('DOMContentLoaded',()=>{loadPrescriptions();setInterval(loadPrescriptions,20000);});
+async function loadPrescriptions(){try{const[pending,done]=await Promise.all([frappe_get_list('Prescription',{fields:['name','patient','patient_name','medicines','status','creation'],filters:[['status','=','Pending']],order_by:'creation asc',limit:50}),frappe_get_list('Prescription',{fields:['name'],filters:[['status','=','Dispensed']],limit:100})]);const p=pending?.message||[];const d=done?.message||[];document.getElementById('sPending').textContent=p.length;document.getElementById('sDone').textContent=d.length;document.getElementById('sRevenue').textContent=d.length;renderRx(p);}catch(e){console.error(e);}}
+function renderRx(data){const tb=document.getElementById('rxBody');if(!data.length){tb.innerHTML='<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text3);">No pending prescriptions 🎉</td></tr>';return;}tb.innerHTML=data.map(r=>{let meds='—';try{const ms=JSON.parse(r.medicines||'[]');meds=ms.slice(0,2).map(m=>m.name||m).join(', ')+(ms.length>2?` +${ms.length-2} more`:'');}catch(e){meds=r.medicines||'—';}const t=new Date(r.creation).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});return`<tr><td><span class="mono">${r.name}</span></td><td><div style="font-weight:600;font-size:0.83rem;">${r.patient_name}</div><div style="font-size:0.73rem;color:var(--text2);">${r.patient}</div></td><td style="font-size:0.8rem;">${meds}</td><td style="color:var(--text2);font-size:0.8rem;">Dr.</td><td style="color:var(--text2);font-size:0.78rem;">${t}</td><td><span class="badge pending">Pending</span></td><td><button class="btn primary" onclick="selectRx('${r.name}','${r.patient}','${r.patient_name}','${encodeURIComponent(r.medicines||'[]')}')">Dispense</button></td></tr>`;}).join('');}
+function selectRx(id,patient,patName,medsEncoded){let meds=[];try{meds=JSON.parse(decodeURIComponent(medsEncoded));}catch(e){}selRx={id,patient,patName,meds};dispChecked={};document.getElementById('noSelMsg').style.display='none';document.getElementById('dispenseForm').style.display='block';document.getElementById('selRxInfo').innerHTML=`<div class="rx-id">${id}</div><div style="font-weight:600;font-size:0.88rem;margin-top:3px;">${patName}</div>`;document.getElementById('medItemsList').innerHTML=meds.length?meds.map((m,i)=>`<div class="med-item" id="med-${i}"><div><div class="med-name">${m.name||m}</div><div class="med-dose">${m.dose||''} · ${m.duration||''}</div></div><div class="check-btn" id="chk-${i}" onclick="toggleCheck(${i})" title="Mark dispensed">○</div></div>`).join(''):'<div style="color:var(--text3);font-size:0.83rem;text-align:center;padding:1rem;">No medicine details found</div>';}
+function toggleCheck(i){dispChecked[i]=!dispChecked[i];const el=document.getElementById(`chk-${i}`);el.classList.toggle('checked',dispChecked[i]);el.textContent=dispChecked[i]?'✓':'○';}
+async function dispense(){if(!selRx)return;const btn=document.getElementById('dispenseBtn');btn.disabled=true;btn.innerHTML='<span class="loading"></span> Processing...';try{const res=await fetch(`${FRAPPE_URL}/api/resource/Pharmacy Dispensing`,{method:'POST',headers:{'Content-Type':'application/json','X-Frappe-CSRF-Token':getCsrf()},body:JSON.stringify({doctype:'Pharmacy Dispensing',patient:selRx.patient,patient_name:selRx.patName,prescription:selRx.id,medicines_dispensed:JSON.stringify(selRx.meds),dispensed_by:document.getElementById('dispensedBy').value,remarks:document.getElementById('pharmaRemarks').value,dispensing_date:new Date().toISOString(),status:'Dispensed'})});const d=await res.json();if(!res.ok)throw new Error(d?.exc_type||'Error');await fetch(`${FRAPPE_URL}/api/resource/Prescription/${selRx.id}`,{method:'PUT',headers:{'Content-Type':'application/json','X-Frappe-CSRF-Token':getCsrf()},body:JSON.stringify({status:'Dispensed'})});showToast(`✅ Dispensed: ${d.data?.name}`,'success');selRx=null;document.getElementById('noSelMsg').style.display='block';document.getElementById('dispenseForm').style.display='none';loadPrescriptions();}catch(err){showToast(`❌ ${err.message}`,'error');}finally{btn.disabled=false;btn.innerHTML='✅ Confirm Dispensing';}}
+function getCsrf(){return document.cookie.split(';').map(c=>c.trim().split('=')).find(c=>c[0]==='csrf_token')?.[1]||window.frappe?.csrf_token||'';}
+async function frappe_get_list(dt,p){const qs=new URLSearchParams({fields:JSON.stringify(p.fields||['name']),filters:JSON.stringify(p.filters||[]),order_by:p.order_by||'creation desc',limit_page_length:p.limit||20});const r=await fetch(`${FRAPPE_URL}/api/resource/${dt}?${qs}`,{headers:{'Accept':'application/json'}});return r.json();}
+function showToast(msg,type='success'){const t=document.getElementById('toast');t.textContent=msg;t.className=`toast ${type} show`;setTimeout(()=>t.classList.remove('show'),3500);}
+</script>
+</body></html>

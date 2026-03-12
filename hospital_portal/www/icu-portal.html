@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ICU Critical Care | Hospital Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#050a0e;--surface:#0a1520;--surface2:#0f1e2e;--border:#1a3050;--text:#b8d4e8;--text2:#7a9ab8;--text3:#3a5a78;--cyan:#00d4ff;--green:#00ff88;--yellow:#ffd600;--red:#ff3030;--orange:#ff8800;--purple:#aa44ff;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Exo 2',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 39px,rgba(0,212,255,0.03) 39px,rgba(0,212,255,0.03) 40px),repeating-linear-gradient(90deg,transparent,transparent 39px,rgba(0,212,255,0.02) 39px,rgba(0,212,255,0.02) 40px);pointer-events:none;z-index:0;}
+header{position:relative;z-index:10;background:var(--surface);border-bottom:1px solid var(--border);padding:0 2rem;height:60px;display:flex;align-items:center;justify-content:space-between;}
+.logo{display:flex;align-items:center;gap:12px;}
+.logo-icon{font-size:1.4rem;animation:blink 1.5s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0.5;}}
+.logo-title{font-family:'Share Tech Mono',monospace;font-size:1.1rem;color:var(--red);letter-spacing:0.08em;}
+.logo-sub{font-size:0.7rem;color:var(--text3);letter-spacing:0.04em;}
+.critical-badge{background:rgba(255,48,48,0.15);border:1px solid rgba(255,48,48,0.4);color:var(--red);padding:4px 14px;border-radius:4px;font-family:'Share Tech Mono',monospace;font-size:0.75rem;letter-spacing:0.08em;animation:pulse-red 2s ease-in-out infinite;}
+@keyframes pulse-red{0%,100%{box-shadow:0 0 0 0 rgba(255,48,48,0.3);}50%{box-shadow:0 0 0 6px rgba(255,48,48,0);}}
+.back-btn{background:var(--surface2);border:1px solid var(--border);color:var(--text2);padding:6px 14px;border-radius:6px;cursor:pointer;font-size:0.82rem;font-family:inherit;text-decoration:none;transition:all 0.2s;}
+.back-btn:hover{border-color:var(--cyan);color:var(--cyan);}
+.container{position:relative;z-index:1;max-width:1600px;margin:0 auto;padding:1.5rem 2rem;}
+
+/* MONITOR STATS */
+.monitor-row{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:1.5rem;}
+.monitor-stat{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1rem;text-align:center;position:relative;overflow:hidden;}
+.monitor-stat::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,212,255,0.03),transparent);pointer-events:none;}
+.monitor-num{font-family:'Share Tech Mono',monospace;font-size:2rem;font-weight:400;line-height:1;}
+.monitor-num.cyan{color:var(--cyan);} .monitor-num.green{color:var(--green);} .monitor-num.yellow{color:var(--yellow);} .monitor-num.red{color:var(--red);} .monitor-num.orange{color:var(--orange);} .monitor-num.purple{color:var(--purple);}
+.monitor-label{font-size:0.65rem;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-top:5px;}
+
+/* PATIENT BEDS */
+.icu-beds{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem;margin-bottom:1.5rem;}
+.icu-bed{background:var(--surface);border:2px solid var(--border);border-radius:10px;overflow:hidden;transition:border-color 0.2s;}
+.icu-bed.critical{border-color:rgba(255,48,48,0.5);}
+.icu-bed.stable{border-color:rgba(0,255,136,0.3);}
+.icu-bed.empty{border-color:var(--border);opacity:0.5;}
+.bed-head{padding:10px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);}
+.bed-head.critical{background:rgba(255,48,48,0.08);}
+.bed-head.stable{background:rgba(0,255,136,0.05);}
+.bed-head.empty{background:var(--surface2);}
+.bed-id{font-family:'Share Tech Mono',monospace;font-size:0.85rem;color:var(--cyan);}
+.bed-status{font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;padding:2px 8px;border-radius:3px;}
+.bed-status.critical{background:rgba(255,48,48,0.2);color:var(--red);}
+.bed-status.stable{background:rgba(0,255,136,0.15);color:var(--green);}
+.bed-status.empty{background:rgba(122,154,184,0.1);color:var(--text3);}
+.bed-patient{padding:10px 14px;border-bottom:1px solid var(--border);}
+.bed-patient-name{font-size:0.9rem;font-weight:700;}
+.bed-patient-meta{font-size:0.73rem;color:var(--text2);margin-top:2px;}
+.vitals-mini{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:8px 14px;border-bottom:1px solid var(--border);}
+.vital-mini{text-align:center;padding:4px;}
+.vital-mini-val{font-family:'Share Tech Mono',monospace;font-size:1rem;color:var(--cyan);}
+.vital-mini-val.warn{color:var(--yellow);}
+.vital-mini-val.crit{color:var(--red);}
+.vital-mini-label{font-size:0.6rem;color:var(--text3);text-transform:uppercase;margin-top:1px;}
+.bed-actions{padding:8px 14px;display:flex;gap:6px;}
+.icu-btn{flex:1;padding:6px;border:1px solid var(--border);background:var(--surface2);color:var(--text2);border-radius:5px;font-size:0.72rem;cursor:pointer;font-family:inherit;transition:all 0.15s;font-weight:600;}
+.icu-btn.record{border-color:rgba(0,212,255,0.3);color:var(--cyan);}
+.icu-btn.record:hover{background:rgba(0,212,255,0.1);}
+.icu-btn.alert{border-color:rgba(255,48,48,0.3);color:var(--red);}
+.icu-btn.alert:hover{background:rgba(255,48,48,0.1);}
+
+/* MONITORING FORM */
+.bottom-panel{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+.panel-head{padding:0.9rem 1.2rem;border-bottom:1px solid var(--border);font-size:0.88rem;font-weight:700;display:flex;align-items:center;justify-content:space-between;}
+.panel-head.cyan{background:rgba(0,212,255,0.06);color:var(--cyan);}
+.panel-head.red{background:rgba(255,48,48,0.06);color:var(--red);}
+.form-body{padding:1.2rem;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
+.form-row.three{grid-template-columns:1fr 1fr 1fr;}
+.form-group{display:flex;flex-direction:column;gap:3px;}
+label{font-size:0.68rem;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;}
+input,select,textarea{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:7px 10px;font-size:0.83rem;font-family:inherit;color:var(--text);outline:none;transition:border-color 0.2s;}
+input:focus,select:focus{border-color:var(--cyan);}
+.form-select-patient{background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:8px 12px;font-size:0.85rem;font-family:inherit;color:var(--text);outline:none;width:100%;margin-bottom:12px;}
+.submit-btn{width:100%;padding:10px;border:none;border-radius:7px;font-size:0.9rem;font-weight:700;cursor:pointer;font-family:inherit;margin-top:10px;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.submit-btn.cyan{background:var(--cyan);color:#050a0e;}
+.submit-btn.cyan:hover{background:#33dfff;}
+.submit-btn.red{background:var(--red);color:white;}
+.submit-btn.red:hover{background:#ff5555;}
+table{width:100%;border-collapse:collapse;}
+th{padding:8px 10px;text-align:left;font-size:0.67rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3);background:var(--surface2);border-bottom:1px solid var(--border);}
+td{padding:9px 10px;border-bottom:1px solid var(--border);font-size:0.82rem;}
+tr:last-child td{border-bottom:none;}
+.mono{font-family:'Share Tech Mono',monospace;font-size:0.78rem;color:var(--cyan);}
+.toast{position:fixed;bottom:2rem;right:2rem;z-index:999;background:var(--surface);color:var(--text);padding:12px 20px;border-radius:8px;font-size:0.88rem;box-shadow:0 8px 24px rgba(0,0,0,0.5);border:1px solid var(--border);transform:translateY(80px);opacity:0;transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.success{border-left:3px solid var(--green);}
+.toast.error{border-left:3px solid var(--red);}
+.loading{display:inline-block;width:12px;height:12px;border:2px solid rgba(0,0,0,0.2);border-top-color:#050a0e;border-radius:50%;animation:spin 0.7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">
+    <span class="logo-icon">🚨</span>
+    <div><div class="logo-title">ICU — CRITICAL CARE</div><div class="logo-sub">Continuous Monitoring · Ventilator · Emergency Response</div></div>
+  </div>
+  <div style="display:flex;align-items:center;gap:12px;">
+    <span class="critical-badge" id="liveTime">LIVE</span>
+    <a href="/hospital-dashboard" class="back-btn">← Dashboard</a>
+  </div>
+</header>
+<div class="container">
+  <div class="monitor-row">
+    <div class="monitor-stat"><div class="monitor-num red" id="sCritical">0</div><div class="monitor-label">Critical Patients</div></div>
+    <div class="monitor-stat"><div class="monitor-num orange" id="sVentilator">0</div><div class="monitor-label">On Ventilator</div></div>
+    <div class="monitor-stat"><div class="monitor-num cyan" id="sBeds">12</div><div class="monitor-label">ICU Beds Total</div></div>
+    <div class="monitor-stat"><div class="monitor-num green" id="sAvailable">0</div><div class="monitor-label">Available Beds</div></div>
+    <div class="monitor-stat"><div class="monitor-num yellow" id="sAlerts">0</div><div class="monitor-label">Active Alerts</div></div>
+    <div class="monitor-stat"><div class="monitor-num purple" id="sMonitoring">0</div><div class="monitor-label">Hourly Charts</div></div>
+  </div>
+
+  <div class="icu-beds" id="icuBeds">
+    <div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--text3);">Loading ICU beds...</div>
+  </div>
+
+  <div class="bottom-panel">
+    <!-- MONITORING FORM -->
+    <div class="panel">
+      <div class="panel-head cyan">📊 Record ICU Monitoring Chart</div>
+      <div class="form-body">
+        <select class="form-select-patient" id="monPatient">
+          <option value="">-- Select ICU Patient --</option>
+        </select>
+        <div class="form-row three">
+          <div class="form-group"><label>HR (bpm)</label><input type="number" id="monHR" placeholder="72"></div>
+          <div class="form-group"><label>BP Systolic</label><input type="number" id="monBP_s" placeholder="120"></div>
+          <div class="form-group"><label>BP Diastolic</label><input type="number" id="monBP_d" placeholder="80"></div>
+        </div>
+        <div class="form-row three">
+          <div class="form-group"><label>SpO₂ (%)</label><input type="number" id="monSpO2" placeholder="98"></div>
+          <div class="form-group"><label>Temp (°C)</label><input type="number" id="monTemp" step="0.1" placeholder="37.0"></div>
+          <div class="form-group"><label>RR (/min)</label><input type="number" id="monRR" placeholder="16"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>GCS Score</label><input type="number" id="monGCS" min="3" max="15" placeholder="15"></div>
+          <div class="form-group"><label>Urine Output (mL/hr)</label><input type="number" id="monUrine" placeholder="50"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Ventilator Mode</label>
+            <select id="monVentMode"><option value="">Not on Ventilator</option><option>AC/VC</option><option>SIMV</option><option>PSV</option><option>CPAP</option><option>BiPAP</option><option>High Flow O₂</option></select>
+          </div>
+          <div class="form-group"><label>FiO₂ (%)</label><input type="number" id="monFiO2" min="21" max="100" placeholder="21"></div>
+        </div>
+        <div class="form-group"><label>Clinical Notes</label><textarea id="monNotes" rows="2" placeholder="Patient condition, interventions..."></textarea></div>
+        <button class="submit-btn cyan" onclick="saveMonitoring()" id="saveMonBtn">📊 Save Monitoring Chart</button>
+      </div>
+    </div>
+
+    <!-- RECENT CHARTS -->
+    <div class="panel">
+      <div class="panel-head" style="border-bottom:1px solid var(--border);">📋 Recent ICU Charts</div>
+      <div style="overflow-x:auto;max-height:420px;overflow-y:auto;">
+        <table>
+          <thead><tr><th>ICU ID</th><th>Patient</th><th>HR</th><th>BP</th><th>SpO₂</th><th>Time</th></tr></thead>
+          <tbody id="chartsBody"><tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text3);">No charts yet</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const FRAPPE_URL=window.location.origin;
+let icuPatients=[];
+document.addEventListener('DOMContentLoaded',()=>{loadICUPatients();loadRecentCharts();setInterval(loadICUPatients,30000);setInterval(updateClock,1000);updateClock();});
+
+function updateClock(){const now=new Date();document.getElementById('liveTime').textContent=now.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',second:'2-digit'})+' LIVE';}
+
+async function loadICUPatients(){
+  try{
+    const res=await frappe_get_list('ICU Monitoring',{fields:['name','patient','patient_name','hr','bp_systolic','bp_diastolic','spo2','temperature','gcs','ventilator_mode','status','creation'],filters:[],order_by:'creation desc',limit:20});
+    const charts=res?.message||[];
+    // Get unique patients (latest chart per patient)
+    const patMap={};
+    charts.forEach(c=>{if(!patMap[c.patient])patMap[c.patient]=c;});
+    icuPatients=Object.values(patMap);
+
+    // Also load from IPD Admission if ward=ICU
+    const ipdRes=await frappe_get_list('IPD Admission',{fields:['name','patient','patient_name','ward_type'],filters:[['ward_type','=','ICU'],['status','=','Active']],limit:20});
+    const ipdPatients=ipdRes?.message||[];
+    const allIcuPats=[...new Map([...icuPatients,...ipdPatients].map(p=>[p.patient,p])).values()];
+
+    renderICUBeds(allIcuPats,patMap);
+    populatePatientDropdown(allIcuPats);
+
+    const ventCount=icuPatients.filter(p=>p.ventilator_mode&&p.ventilator_mode!=='Not on Ventilator').length;
+    document.getElementById('sCritical').textContent=allIcuPats.length;
+    document.getElementById('sVentilator').textContent=ventCount;
+    document.getElementById('sAvailable').textContent=Math.max(0,12-allIcuPats.length);
+    document.getElementById('sMonitoring').textContent=charts.length;
+  }catch(e){console.error(e);}
+}
+
+function renderICUBeds(patients,patMap){
+  const ICU_BEDS=['ICU-01','ICU-02','ICU-03','ICU-04','ICU-05','ICU-06','ICU-07','ICU-08','ICU-09','ICU-10','ICU-11','ICU-12'];
+  const bedPatMap={};
+  patients.forEach((p,i)=>{if(i<ICU_BEDS.length)bedPatMap[ICU_BEDS[i]]=p;});
+  document.getElementById('icuBeds').innerHTML=ICU_BEDS.map(bed=>{
+    const p=bedPatMap[bed];
+    if(!p){return`<div class="icu-bed empty"><div class="bed-head empty"><span class="bed-id">${bed}</span><span class="bed-status empty">EMPTY</span></div><div style="padding:1.5rem;text-align:center;color:var(--text3);font-size:0.8rem;">Available</div></div>`;}
+    const chart=patMap[p.patient]||{};
+    const isCrit=chart.spo2&&chart.spo2<90||chart.hr&&(chart.hr>130||chart.hr<40);
+    const spo2Class=chart.spo2?(chart.spo2<90?'crit':chart.spo2<94?'warn':''):'';
+    const hrClass=chart.hr?(chart.hr>130||chart.hr<40?'crit':chart.hr>100?'warn':''):'';
+    const bpVal=chart.bp_systolic?`${chart.bp_systolic}/${chart.bp_diastolic}`:'—';
+    return`<div class="icu-bed ${isCrit?'critical':'stable'}">
+      <div class="bed-head ${isCrit?'critical':'stable'}"><span class="bed-id">${bed}</span><span class="bed-status ${isCrit?'critical':'stable'}">${isCrit?'🔴 CRITICAL':'🟢 STABLE'}</span></div>
+      <div class="bed-patient"><div class="bed-patient-name">${p.patient_name}</div><div class="bed-patient-meta">${p.patient}${chart.ventilator_mode&&chart.ventilator_mode!='Not on Ventilator'?' · 🫁 '+chart.ventilator_mode:''}</div></div>
+      <div class="vitals-mini">
+        <div class="vital-mini"><div class="vital-mini-val ${hrClass}">${chart.hr||'—'}</div><div class="vital-mini-label">HR bpm</div></div>
+        <div class="vital-mini"><div class="vital-mini-val">${bpVal}</div><div class="vital-mini-label">BP</div></div>
+        <div class="vital-mini"><div class="vital-mini-val ${spo2Class}">${chart.spo2?chart.spo2+'%':'—'}</div><div class="vital-mini-label">SpO₂</div></div>
+      </div>
+      <div class="bed-actions">
+        <button class="icu-btn record" onclick="selectPatient('${p.patient}','${p.patient_name}')">📊 Chart</button>
+        <button class="icu-btn alert">🚨 Alert</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function populatePatientDropdown(patients){
+  const sel=document.getElementById('monPatient');
+  const current=sel.value;
+  sel.innerHTML='<option value="">-- Select ICU Patient --</option>'+patients.map(p=>`<option value="${p.patient}|${p.patient_name}">${p.patient_name} (${p.patient})</option>`).join('');
+  if(current)sel.value=current;
+}
+
+function selectPatient(id,name){document.getElementById('monPatient').value=`${id}|${name}`;}
+
+async function loadRecentCharts(){
+  try{
+    const res=await frappe_get_list('ICU Monitoring',{fields:['name','patient','patient_name','hr','bp_systolic','bp_diastolic','spo2','creation'],order_by:'creation desc',limit:20});
+    const charts=res?.message||[];
+    document.getElementById('sAlerts').textContent=charts.filter(c=>c.spo2&&c.spo2<90).length;
+    const tb=document.getElementById('chartsBody');
+    if(!charts.length){tb.innerHTML='<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text3);">No charts recorded</td></tr>';return;}
+    tb.innerHTML=charts.map(c=>{
+      const t=new Date(c.creation).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+      const spo2Class=c.spo2&&c.spo2<90?'color:var(--red)':c.spo2&&c.spo2<94?'color:var(--yellow)':'color:var(--cyan)';
+      return`<tr><td><span class="mono">${c.name}</span></td><td style="font-size:0.8rem;">${c.patient_name}</td><td style="${c.hr&&(c.hr>130||c.hr<40)?'color:var(--red)':'color:var(--cyan)'}">${c.hr||'—'}</td><td style="color:var(--cyan);">${c.bp_systolic?c.bp_systolic+'/'+c.bp_diastolic:'—'}</td><td style="${spo2Class}">${c.spo2?c.spo2+'%':'—'}</td><td style="color:var(--text3);font-size:0.75rem;">${t}</td></tr>`;
+    }).join('');
+  }catch(e){console.error(e);}
+}
+
+async function saveMonitoring(){
+  const patVal=document.getElementById('monPatient').value;
+  if(!patVal)return showToast('Select an ICU patient','error');
+  const[patient,patientName]=patVal.split('|');
+  const btn=document.getElementById('saveMonBtn');
+  btn.disabled=true;btn.innerHTML='<span class="loading"></span> Saving...';
+  try{
+    const res=await fetch(`${FRAPPE_URL}/api/resource/ICU Monitoring`,{method:'POST',headers:{'Content-Type':'application/json','X-Frappe-CSRF-Token':getCsrf()},body:JSON.stringify({
+      doctype:'ICU Monitoring',patient,patient_name:patientName,
+      hr:parseInt(document.getElementById('monHR').value)||null,
+      bp_systolic:parseInt(document.getElementById('monBP_s').value)||null,
+      bp_diastolic:parseInt(document.getElementById('monBP_d').value)||null,
+      spo2:parseFloat(document.getElementById('monSpO2').value)||null,
+      temperature:parseFloat(document.getElementById('monTemp').value)||null,
+      respiratory_rate:parseInt(document.getElementById('monRR').value)||null,
+      gcs:parseInt(document.getElementById('monGCS').value)||null,
+      urine_output:parseInt(document.getElementById('monUrine').value)||null,
+      ventilator_mode:document.getElementById('monVentMode').value||null,
+      fio2:parseInt(document.getElementById('monFiO2').value)||null,
+      clinical_notes:document.getElementById('monNotes').value,
+      monitoring_time:new Date().toISOString()
+    })});
+    const d=await res.json();
+    if(!res.ok)throw new Error(d?.exc_type||'Error');
+    showToast(`✅ Chart saved: ${d.data?.name}`,'success');
+    loadRecentCharts();loadICUPatients();
+  }catch(err){showToast(`❌ ${err.message}`,'error');}
+  finally{btn.disabled=false;btn.innerHTML='📊 Save Monitoring Chart';}
+}
+
+function getCsrf(){return document.cookie.split(';').map(c=>c.trim().split('=')).find(c=>c[0]==='csrf_token')?.[1]||window.frappe?.csrf_token||'';}
+async function frappe_get_list(dt,p){const qs=new URLSearchParams({fields:JSON.stringify(p.fields||['name']),filters:JSON.stringify(p.filters||[]),order_by:p.order_by||'creation desc',limit_page_length:p.limit||20});const r=await fetch(`${FRAPPE_URL}/api/resource/${dt}?${qs}`,{headers:{'Accept':'application/json'}});return r.json();}
+function showToast(msg,type='success'){const t=document.getElementById('toast');t.textContent=msg;t.className=`toast ${type} show`;setTimeout(()=>t.classList.remove('show'),3500);}
+</script>
+</body></html>

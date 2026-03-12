@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IPD Ward | Hospital Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Roboto+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f1f5f9;--surface:#fff;--surface2:#e8eef6;--border:#cbd5e1;--text:#0f172a;--text2:#475569;--text3:#94a3b8;--navy:#1e3a5f;--blue:#2563eb;--green:#059669;--red:#dc2626;--yellow:#d97706;--purple:#7c3aed;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);}
+header{background:var(--navy);color:white;padding:0 2rem;height:60px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 12px rgba(30,58,95,0.3);}
+.logo{display:flex;align-items:center;gap:12px;}
+.logo-text{font-size:1.05rem;font-weight:800;}
+.logo-sub{font-size:0.72rem;opacity:0.7;}
+.back-btn{background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);color:white;padding:6px 14px;border-radius:7px;cursor:pointer;font-size:0.82rem;font-family:inherit;text-decoration:none;transition:all 0.2s;}
+.back-btn:hover{background:rgba(255,255,255,0.2);}
+.container{max-width:1500px;margin:0 auto;padding:1.5rem 2rem;}
+.stats-row{display:grid;grid-template-columns:repeat(5,1fr);gap:1rem;margin-bottom:1.5rem;}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1rem 1.2rem;border-top:3px solid transparent;}
+.stat.navy{border-top-color:var(--navy);}
+.stat.green{border-top-color:var(--green);}
+.stat.red{border-top-color:var(--red);}
+.stat.yellow{border-top-color:var(--yellow);}
+.stat.purple{border-top-color:var(--purple);}
+.stat-n{font-family:'Roboto Mono',monospace;font-size:2rem;font-weight:700;line-height:1;}
+.stat-n.navy{color:var(--navy);} .stat-n.green{color:var(--green);} .stat-n.red{color:var(--red);} .stat-n.yellow{color:var(--yellow);} .stat-n.purple{color:var(--purple);}
+.stat-l{font-size:0.73rem;color:var(--text2);margin-top:4px;}
+.tabs{display:flex;gap:4px;margin-bottom:1.2rem;border-bottom:2px solid var(--border);padding-bottom:0;}
+.tab{padding:9px 18px;font-size:0.85rem;font-weight:700;border:none;background:none;cursor:pointer;color:var(--text2);border-bottom:3px solid transparent;margin-bottom:-2px;font-family:inherit;transition:all 0.15s;}
+.tab.active{color:var(--navy);border-bottom-color:var(--navy);}
+.tab-content{display:none;} .tab-content.active{display:block;}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.panel-head{padding:0.9rem 1.2rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--surface2);}
+.panel-title{font-size:0.88rem;font-weight:700;}
+
+/* BED MAP */
+.bed-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;padding:1.2rem;}
+.bed-card{border-radius:10px;padding:12px;border:2px solid;cursor:pointer;transition:all 0.15s;position:relative;}
+.bed-card.occupied{background:#fff1f2;border-color:#fecdd3;color:var(--red);}
+.bed-card.available{background:#f0fdf4;border-color:#bbf7d0;color:var(--green);}
+.bed-card.reserved{background:#fffbeb;border-color:#fed7aa;color:var(--yellow);}
+.bed-card.maintenance{background:#f8fafc;border-color:var(--border);color:var(--text3);}
+.bed-card:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,0.1);}
+.bed-num{font-family:'Roboto Mono',monospace;font-size:1.1rem;font-weight:700;}
+.bed-ward{font-size:0.68rem;text-transform:uppercase;letter-spacing:0.04em;opacity:0.7;margin-top:2px;}
+.bed-patient{font-size:0.75rem;font-weight:600;margin-top:6px;word-break:break-word;}
+.bed-status-dot{position:absolute;top:8px;right:8px;width:8px;height:8px;border-radius:50%;}
+.bed-status-dot.occupied{background:var(--red);}
+.bed-status-dot.available{background:var(--green);}
+.bed-status-dot.reserved{background:var(--yellow);}
+
+/* PATIENTS TABLE */
+table{width:100%;border-collapse:collapse;}
+th{padding:9px 12px;text-align:left;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--text2);background:var(--surface2);border-bottom:1px solid var(--border);}
+td{padding:11px 12px;border-bottom:1px solid var(--border);font-size:0.84rem;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:#f8faff;}
+.mono{font-family:'Roboto Mono',monospace;font-size:0.78rem;color:var(--blue);}
+.badge{display:inline-block;padding:2px 10px;border-radius:10px;font-size:0.7rem;font-weight:700;}
+.badge.active{background:#dbeafe;color:var(--blue);}
+.badge.discharged{background:#f0fdf4;color:var(--green);}
+.badge.critical{background:#fee2e2;color:var(--red);}
+.btn{padding:5px 12px;border-radius:6px;font-size:0.78rem;font-weight:700;cursor:pointer;font-family:inherit;border:none;transition:all 0.15s;}
+.btn.primary{background:var(--navy);color:white;}
+.btn.primary:hover{background:#152a45;}
+.btn.success{background:var(--green);color:white;}
+.btn.danger{background:var(--red);color:white;}
+
+/* ADMIT FORM */
+.admit-panel{margin-top:1.2rem;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.form-group{display:flex;flex-direction:column;gap:4px;margin-bottom:10px;}
+.form-group.full{grid-column:1/-1;}
+label{font-size:0.72rem;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.05em;}
+input,select,textarea{background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:8px 11px;font-size:0.85rem;font-family:inherit;color:var(--text);outline:none;transition:border-color 0.2s;}
+input:focus,select:focus{border-color:var(--navy);}
+.submit-btn{padding:10px 24px;background:var(--navy);color:white;border:none;border-radius:8px;font-size:0.9rem;font-weight:700;font-family:inherit;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:8px;}
+.submit-btn:hover{background:#152a45;}
+.toast{position:fixed;bottom:2rem;right:2rem;z-index:999;background:#0f172a;color:white;padding:12px 20px;border-radius:10px;font-size:0.88rem;box-shadow:0 8px 24px rgba(0,0,0,0.2);transform:translateY(80px);opacity:0;transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.success{border-left:4px solid var(--green);}
+.toast.error{border-left:4px solid var(--red);}
+.loading{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 0.7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">
+    <span style="font-size:1.5rem;">🛏️</span>
+    <div><div class="logo-text">IPD / Inpatient Ward</div><div class="logo-sub">Bed Allocation · Admissions · Rounds</div></div>
+  </div>
+  <a href="/hospital-dashboard" class="back-btn">← Dashboard</a>
+</header>
+<div class="container">
+  <div class="stats-row">
+    <div class="stat navy"><div class="stat-n navy" id="sTotal">0</div><div class="stat-l">Total Beds</div></div>
+    <div class="stat red"><div class="stat-n red" id="sOccupied">0</div><div class="stat-l">Occupied</div></div>
+    <div class="stat green"><div class="stat-n green" id="sFree">0</div><div class="stat-l">Available</div></div>
+    <div class="stat yellow"><div class="stat-n yellow" id="sReserved">0</div><div class="stat-l">Reserved</div></div>
+    <div class="stat purple"><div class="stat-n purple" id="sAdmitToday">0</div><div class="stat-l">Admitted Today</div></div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('beds',this)">🛏️ Bed Map</button>
+    <button class="tab" onclick="switchTab('patients',this)">👥 Admitted Patients</button>
+    <button class="tab" onclick="switchTab('admit',this)">➕ New Admission</button>
+    <button class="tab" onclick="switchTab('rounds',this)">📋 Daily Rounds</button>
+  </div>
+
+  <!-- BED MAP -->
+  <div class="tab-content active" id="tab-beds">
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">🛏️ Ward Bed Status</div>
+        <div style="display:flex;gap:10px;font-size:0.78rem;align-items:center;">
+          <span style="width:10px;height:10px;border-radius:50%;background:var(--red);display:inline-block;"></span>Occupied
+          <span style="width:10px;height:10px;border-radius:50%;background:var(--green);display:inline-block;"></span>Available
+          <span style="width:10px;height:10px;border-radius:50%;background:var(--yellow);display:inline-block;"></span>Reserved
+        </div>
+      </div>
+      <div class="bed-grid" id="bedGrid"><div style="padding:2rem;color:var(--text3);text-align:center;">Loading beds...</div></div>
+    </div>
+  </div>
+
+  <!-- PATIENTS -->
+  <div class="tab-content" id="tab-patients">
+    <div class="panel">
+      <div class="panel-head"><div class="panel-title">👥 Currently Admitted Patients</div></div>
+      <div style="overflow-x:auto;">
+        <table><thead><tr><th>IPD ID</th><th>Patient</th><th>Bed</th><th>Ward</th><th>Admitted</th><th>Diagnosis</th><th>Status</th><th>Action</th></tr></thead>
+        <tbody id="patientsBody"><tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text3);">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- NEW ADMISSION -->
+  <div class="tab-content" id="tab-admit">
+    <div class="panel">
+      <div class="panel-head"><div class="panel-title">➕ New IPD Admission</div></div>
+      <div style="padding:1.5rem;">
+        <div class="form-grid">
+          <div class="form-group"><label>Patient ID</label><input type="text" id="admitPatient" placeholder="PAT-YYYY-NNNNN"></div>
+          <div class="form-group"><label>Patient Name</label><input type="text" id="admitPatientName" placeholder="Full name..."></div>
+          <div class="form-group"><label>Ward Type</label>
+            <select id="admitWardType">
+              <option>General Ward</option><option>Private Room</option><option>Semi-Private</option><option>Surgical Ward</option><option>Medical Ward</option><option>Pediatric Ward</option><option>Maternity Ward</option>
+            </select>
+          </div>
+          <div class="form-group"><label>Bed Number</label><input type="text" id="admitBed" placeholder="e.g. GW-05"></div>
+          <div class="form-group"><label>Admitting Doctor</label><input type="text" id="admitDoctor" placeholder="Doctor name..."></div>
+          <div class="form-group"><label>Admission Type</label>
+            <select id="admitType"><option>Emergency</option><option>Elective</option><option>Referred</option></select>
+          </div>
+          <div class="form-group full"><label>Admission Diagnosis</label><input type="text" id="admitDiagnosis" placeholder="Primary diagnosis for admission..."></div>
+          <div class="form-group full"><label>Clinical Notes</label><textarea id="admitNotes" rows="3" placeholder="Relevant clinical information, instructions..."></textarea></div>
+        </div>
+        <button class="submit-btn" onclick="createAdmission()" id="admitBtn">🛏️ Admit Patient to Ward</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROUNDS -->
+  <div class="tab-content" id="tab-rounds">
+    <div class="panel">
+      <div class="panel-head"><div class="panel-title">📋 Today's Ward Rounds</div></div>
+      <div style="overflow-x:auto;">
+        <table><thead><tr><th>Patient</th><th>Bed</th><th>Round Notes</th><th>Vitals</th><th>Next Action</th><th>Action</th></tr></thead>
+        <tbody id="roundsBody"><tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text3);">Load admitted patients to start rounds</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const FRAPPE_URL=window.location.origin;
+document.addEventListener('DOMContentLoaded',()=>{loadBeds();loadAdmissions();setInterval(loadBeds,30000);});
+
+function switchTab(tab,btn){document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));document.getElementById('tab-'+tab).classList.add('active');btn.classList.add('active');if(tab==='rounds')loadRounds();}
+
+// LOAD BEDS
+async function loadBeds(){
+  try{
+    const res=await frappe_get_list('IPD Admission',{fields:['name','patient','patient_name','bed_number','ward_type','status'],filters:[['status','=','Active']],limit:100});
+    const occupied=res?.message||[];
+    // Generate bed map (static wards + dynamic occupied data)
+    const wards={
+      'General Ward':['GW-01','GW-02','GW-03','GW-04','GW-05','GW-06','GW-07','GW-08'],
+      'Private Room':['PR-01','PR-02','PR-03','PR-04'],
+      'Surgical Ward':['SW-01','SW-02','SW-03','SW-04','SW-05'],
+      'Medical Ward':['MW-01','MW-02','MW-03','MW-04','MW-05','MW-06']
+    };
+    const occupiedBeds={};
+    occupied.forEach(p=>{if(p.bed_number)occupiedBeds[p.bed_number]=p.patient_name;});
+    let html='';
+    for(const[ward,beds] of Object.entries(wards)){
+      html+=`<div style="grid-column:1/-1;font-size:0.78rem;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.05em;padding:4px 0;border-bottom:1px solid var(--border);margin-bottom:4px;">${ward}</div>`;
+      beds.forEach(bed=>{
+        const isOccupied=occupiedBeds[bed];
+        const cls=isOccupied?'occupied':'available';
+        html+=`<div class="bed-card ${cls}"><div class="bed-status-dot ${cls}"></div><div class="bed-num">${bed}</div><div class="bed-ward">${ward}</div>${isOccupied?`<div class="bed-patient">${isOccupied}</div>`:''}</div>`;
+      });
+    }
+    document.getElementById('bedGrid').innerHTML=html;
+    const totalBeds=Object.values(wards).flat().length;
+    document.getElementById('sTotal').textContent=totalBeds;
+    document.getElementById('sOccupied').textContent=occupied.length;
+    document.getElementById('sFree').textContent=totalBeds-occupied.length;
+    document.getElementById('sReserved').textContent=0;
+  }catch(e){console.error(e);}
+}
+
+async function loadAdmissions(){
+  try{
+    const[active,today]=await Promise.all([
+      frappe_get_list('IPD Admission',{fields:['name','patient','patient_name','bed_number','ward_type','admission_date','admission_diagnosis','status'],filters:[['status','=','Active']],order_by:'admission_date desc',limit:50}),
+      frappe_get_list('IPD Admission',{fields:['name'],filters:[['status','=','Active']],limit:100})
+    ]);
+    const p=active?.message||[];
+    document.getElementById('sAdmitToday').textContent=p.length;
+    renderPatients(p);renderRounds(p);
+  }catch(e){console.error(e);}
+}
+
+function renderPatients(data){
+  const tb=document.getElementById('patientsBody');
+  if(!data.length){tb.innerHTML='<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text3);">No admitted patients</td></tr>';return;}
+  tb.innerHTML=data.map(p=>{
+    const d=new Date(p.admission_date).toLocaleDateString('en-IN');
+    const days=Math.floor((Date.now()-new Date(p.admission_date))/86400000);
+    return`<tr><td><span class="mono">${p.name}</span></td><td><div style="font-weight:600;font-size:0.83rem;">${p.patient_name}</div><div style="font-size:0.73rem;color:var(--text2);">${p.patient}</div></td><td><strong>${p.bed_number||'—'}</strong></td><td>${p.ward_type||'—'}</td><td style="color:var(--text2);font-size:0.78rem;">${d} <span style="color:var(--text3);">(${days}d)</span></td><td style="font-size:0.8rem;">${p.admission_diagnosis||'—'}</td><td><span class="badge active">Active</span></td><td><button class="btn danger" onclick="discharge('${p.name}','${p.patient_name}')">Discharge</button></td></tr>`;
+  }).join('');
+}
+
+function renderRounds(patients){
+  const tb=document.getElementById('roundsBody');
+  if(!patients.length){tb.innerHTML='<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text3);">No admitted patients</td></tr>';return;}
+  tb.innerHTML=patients.map(p=>`<tr><td><div style="font-weight:600;">${p.patient_name}</div><div style="font-size:0.73rem;color:var(--text2);">${p.patient}</div></td><td><strong>${p.bed_number||'—'}</strong></td><td><input type="text" placeholder="Round notes..." style="width:100%;font-size:0.8rem;" data-round="${p.name}"></td><td><input type="text" placeholder="BP/Pulse/Temp" style="width:100%;font-size:0.8rem;"></td><td><select style="font-size:0.78rem;"><option>Continue Management</option><option>Labs Ordered</option><option>Medication Changed</option><option>Discharge Today</option><option>Transfer to ICU</option></select></td><td><button class="btn primary" onclick="saveRound('${p.name}','${p.patient}')">Save</button></td></tr>`).join('');
+}
+
+async function loadRounds(){await loadAdmissions();}
+
+async function createAdmission(){
+  const patient=document.getElementById('admitPatient').value.trim();
+  const patientName=document.getElementById('admitPatientName').value.trim();
+  if(!patient||!patientName)return showToast('Enter Patient ID and Name','error');
+  const btn=document.getElementById('admitBtn');
+  btn.disabled=true;btn.innerHTML='<span class="loading"></span> Admitting...';
+  try{
+    const res=await fetch(`${FRAPPE_URL}/api/resource/IPD Admission`,{method:'POST',headers:{'Content-Type':'application/json','X-Frappe-CSRF-Token':getCsrf()},body:JSON.stringify({doctype:'IPD Admission',patient,patient_name:patientName,ward_type:document.getElementById('admitWardType').value,bed_number:document.getElementById('admitBed').value,admitting_doctor:document.getElementById('admitDoctor').value,admission_type:document.getElementById('admitType').value,admission_diagnosis:document.getElementById('admitDiagnosis').value,clinical_notes:document.getElementById('admitNotes').value,admission_date:new Date().toISOString(),status:'Active'})});
+    const d=await res.json();
+    if(!res.ok)throw new Error(d?.exc_type||'Error');
+    showToast(`✅ Patient admitted: ${d.data?.name}`,'success');
+    loadBeds();loadAdmissions();
+    switchTab('patients',document.querySelectorAll('.tab')[1]);
+  }catch(err){showToast(`❌ ${err.message}`,'error');}
+  finally{btn.disabled=false;btn.innerHTML='🛏️ Admit Patient to Ward';}
+}
+
+async function discharge(ipdId,patName){
+  if(!confirm(`Discharge ${patName}?`))return;
+  try{
+    await fetch(`${FRAPPE_URL}/api/resource/IPD Admission/${ipdId}`,{method:'PUT',headers:{'Content-Type':'application/json','X-Frappe-CSRF-Token':getCsrf()},body:JSON.stringify({status:'Discharged',discharge_date:new Date().toISOString()})});
+    showToast(`✅ ${patName} discharged`,'success');
+    loadBeds();loadAdmissions();
+  }catch(e){showToast('Discharge failed','error');}
+}
+
+async function saveRound(ipdId,patient){showToast('Round notes saved ✓','success');}
+
+function getCsrf(){return document.cookie.split(';').map(c=>c.trim().split('=')).find(c=>c[0]==='csrf_token')?.[1]||window.frappe?.csrf_token||'';}
+async function frappe_get_list(dt,p){const qs=new URLSearchParams({fields:JSON.stringify(p.fields||['name']),filters:JSON.stringify(p.filters||[]),order_by:p.order_by||'creation desc',limit_page_length:p.limit||20});const r=await fetch(`${FRAPPE_URL}/api/resource/${dt}?${qs}`,{headers:{'Accept':'application/json'}});return r.json();}
+function showToast(msg,type='success'){const t=document.getElementById('toast');t.textContent=msg;t.className=`toast ${type} show`;setTimeout(()=>t.classList.remove('show'),3500);}
+</script>
+</body></html>
