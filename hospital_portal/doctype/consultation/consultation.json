@@ -1,236 +1,176 @@
 {
-  "name": "Consultation",
-  "doctype": "DocType",
-  "module": "Hospital Portal",
-  "naming_rule": "Expression",
-  "autoname": "format:CONS-{YYYY}-{#####}",
-  "title_field": "patient_name",
-  "is_submittable": 1,
-  "track_changes": 1,
-  "fields": [
-    {
-      "fieldname": "section_patient",
-      "fieldtype": "Section Break",
-      "label": "Patient"
-    },
-    {
-      "fieldname": "patient_id",
-      "fieldtype": "Link",
-      "options": "Patient Registration",
-      "label": "Patient ID",
-      "reqd": 1,
-      "bold": 1,
-      "in_list_view": 1
-    },
-    {
-      "fieldname": "patient_name",
-      "fieldtype": "Data",
-      "label": "Patient Name",
-      "fetch_from": "patient_id.full_name",
-      "read_only": 1,
-      "in_list_view": 1
-    },
-    {
-      "fieldname": "col1",
-      "fieldtype": "Column Break"
-    },
-    {
-      "fieldname": "appointment_id",
-      "fieldtype": "Link",
-      "options": "Appointment",
-      "label": "Appointment"
-    },
-    {
-      "fieldname": "doctor",
-      "fieldtype": "Link",
-      "options": "User",
-      "label": "Consulting Doctor",
-      "reqd": 1,
-      "default": "__user",
-      "in_list_view": 1
-    },
-    {
-      "fieldname": "consultation_date",
-      "fieldtype": "Datetime",
-      "label": "Consultation Date",
-      "default": "now",
-      "reqd": 1
-    },
-    {
-      "fieldname": "section_complaint",
-      "fieldtype": "Section Break",
-      "label": "Chief Complaint & History"
-    },
-    {
-      "fieldname": "chief_complaint",
-      "fieldtype": "Text",
-      "label": "Chief Complaint",
-      "reqd": 1
-    },
-    {
-      "fieldname": "col2",
-      "fieldtype": "Column Break"
-    },
-    {
-      "fieldname": "history_of_present_illness",
-      "fieldtype": "Text",
-      "label": "History of Present Illness"
-    },
-    {
-      "fieldname": "past_medical_history",
-      "fieldtype": "Text",
-      "label": "Past Medical / Surgical History"
-    },
-    {
-      "fieldname": "family_history",
-      "fieldtype": "Text",
-      "label": "Family History"
-    },
-    {
-      "fieldname": "allergies",
-      "fieldtype": "Text",
-      "label": "Known Allergies"
-    },
-    {
-      "fieldname": "section_vitals",
-      "fieldtype": "Section Break",
-      "label": "Latest Vitals (from Nursing)"
-    },
-    {
-      "fieldname": "vital_signs_ref",
-      "fieldtype": "Link",
-      "options": "Vital Signs",
-      "label": "Vital Signs Record",
-      "read_only": 1
-    },
-    {
-      "fieldname": "bp",
-      "fieldtype": "Data",
-      "label": "Blood Pressure",
-      "read_only": 1
-    },
-    {
-      "fieldname": "col_vitals",
-      "fieldtype": "Column Break"
-    },
-    {
-      "fieldname": "temperature",
-      "fieldtype": "Float",
-      "label": "Temperature (°C)",
-      "read_only": 1
-    },
-    {
-      "fieldname": "pulse",
-      "fieldtype": "Int",
-      "label": "Pulse (bpm)",
-      "read_only": 1
-    },
-    {
-      "fieldname": "spo2",
-      "fieldtype": "Float",
-      "label": "SpO2 (%)",
-      "read_only": 1
-    },
-    {
-      "fieldname": "section_exam",
-      "fieldtype": "Section Break",
-      "label": "Examination & Diagnosis"
-    },
-    {
-      "fieldname": "examination_findings",
-      "fieldtype": "Text",
-      "label": "Physical Examination Findings",
-      "reqd": 1
-    },
-    {
-      "fieldname": "col3",
-      "fieldtype": "Column Break"
-    },
-    {
-      "fieldname": "provisional_diagnosis",
-      "fieldtype": "Text",
-      "label": "Provisional Diagnosis"
-    },
-    {
-      "fieldname": "final_diagnosis",
-      "fieldtype": "Text",
-      "label": "Final Diagnosis",
-      "bold": 1
-    },
-    {
-      "fieldname": "icd_code",
-      "fieldtype": "Data",
-      "label": "ICD-10 Code"
-    },
-    {
-      "fieldname": "section_plan",
-      "fieldtype": "Section Break",
-      "label": "Treatment Plan & Orders"
-    },
-    {
-      "fieldname": "treatment_plan",
-      "fieldtype": "Text",
-      "label": "Treatment Plan"
-    },
-    {
-      "fieldname": "col4",
-      "fieldtype": "Column Break"
-    },
-    {
-      "fieldname": "follow_up_date",
-      "fieldtype": "Date",
-      "label": "Follow-up Date"
-    },
-    {
-      "fieldname": "section_orders",
-      "fieldtype": "Section Break",
-      "label": "Orders"
-    },
-    {
-      "fieldname": "order_lab",
-      "fieldtype": "Check",
-      "label": "Order Lab Tests"
-    },
-    {
-      "fieldname": "order_radiology",
-      "fieldtype": "Check",
-      "label": "Order Radiology"
-    },
-    {
-      "fieldname": "order_prescription",
-      "fieldtype": "Check",
-      "label": "Write Prescription"
-    },
-    {
-      "fieldname": "order_nursing_task",
-      "fieldtype": "Check",
-      "label": "Nursing Task (Injection/IV)"
-    },
-    {
-      "fieldname": "admit_patient",
-      "fieldtype": "Check",
-      "label": "Admit to IPD"
-    },
-    {
-      "fieldname": "transfer_to_icu",
-      "fieldtype": "Check",
-      "label": "Transfer to ICU"
-    },
-    {
-      "fieldname": "status",
-      "fieldtype": "Select",
-      "label": "Status",
-      "options": "Open\nCompleted\nReferred\nAdmitted",
-      "default": "Open",
-      "in_list_view": 1,
-      "bold": 1
-    }
-  ],
-  "permissions": [
-    {"role": "Hospital Head", "read": 1, "write": 1, "create": 1, "submit": 1, "cancel": 1, "print": 1, "report": 1},
-    {"role": "Doctor",        "read": 1, "write": 1, "create": 1, "submit": 1, "print": 1},
-    {"role": "Nurse",         "read": 1},
-    {"role": "Lab Technician","read": 1},
-    {"role": "Pharmacist",    "read": 1}
-  ]
+ "doctype": "DocType",
+ "module": "Hospital Portal",
+ "track_changes": 1,
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "print": 1,
+   "report": 1,
+   "export": 1,
+   "import": 1
+  },
+  {
+   "role": "Administrator",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "print": 1,
+   "report": 1
+  }
+ ],
+ "name": "Consultation",
+ "autoname": "format:CONS-{YYYY}-{#####}",
+ "is_submittable": 1,
+ "title_field": "patient_name",
+ "fields": [
+  {
+   "fieldname": "patient_id",
+   "fieldtype": "Link",
+   "label": "Patient ID",
+   "options": "Patient Registration",
+   "reqd": 1,
+   "in_list_view": 1,
+   "bold": 1
+  },
+  {
+   "fieldname": "patient_name",
+   "fieldtype": "Data",
+   "label": "Patient Name",
+   "fetch_from": "patient_id.full_name",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "doctor",
+   "fieldtype": "Link",
+   "label": "Consulting Doctor",
+   "options": "User",
+   "reqd": 1,
+   "default": "__user"
+  },
+  {
+   "fieldname": "col1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "appointment_id",
+   "fieldtype": "Link",
+   "label": "Appointment",
+   "options": "Appointment"
+  },
+  {
+   "fieldname": "consultation_date",
+   "fieldtype": "Datetime",
+   "label": "Consultation Date",
+   "default": "now"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Open\nCompleted\nReferred\nAdmitted",
+   "default": "Open",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "sec1",
+   "fieldtype": "Section Break",
+   "label": "History & Complaints"
+  },
+  {
+   "fieldname": "chief_complaint",
+   "fieldtype": "Text",
+   "label": "Chief Complaint",
+   "reqd": 1
+  },
+  {
+   "fieldname": "history",
+   "fieldtype": "Text",
+   "label": "Medical History"
+  },
+  {
+   "fieldname": "col2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "allergies",
+   "fieldtype": "Text",
+   "label": "Known Allergies"
+  },
+  {
+   "fieldname": "sec2",
+   "fieldtype": "Section Break",
+   "label": "Examination & Diagnosis"
+  },
+  {
+   "fieldname": "examination_findings",
+   "fieldtype": "Text",
+   "label": "Physical Examination Findings"
+  },
+  {
+   "fieldname": "diagnosis",
+   "fieldtype": "Text",
+   "label": "Diagnosis",
+   "bold": 1
+  },
+  {
+   "fieldname": "col3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "treatment_plan",
+   "fieldtype": "Text",
+   "label": "Treatment Plan"
+  },
+  {
+   "fieldname": "follow_up_date",
+   "fieldtype": "Date",
+   "label": "Follow-up Date"
+  },
+  {
+   "fieldname": "sec3",
+   "fieldtype": "Section Break",
+   "label": "Orders"
+  },
+  {
+   "fieldname": "order_lab",
+   "fieldtype": "Check",
+   "label": "Order Lab Tests"
+  },
+  {
+   "fieldname": "order_radiology",
+   "fieldtype": "Check",
+   "label": "Order Radiology"
+  },
+  {
+   "fieldname": "order_prescription",
+   "fieldtype": "Check",
+   "label": "Write Prescription"
+  },
+  {
+   "fieldname": "order_nursing",
+   "fieldtype": "Check",
+   "label": "Nursing Task (Injection/IV)"
+  },
+  {
+   "fieldname": "col4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "admit_patient",
+   "fieldtype": "Check",
+   "label": "Admit to IPD"
+  },
+  {
+   "fieldname": "transfer_icu",
+   "fieldtype": "Check",
+   "label": "Transfer to ICU"
+  }
+ ]
 }

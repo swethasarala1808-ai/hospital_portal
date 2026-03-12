@@ -1,0 +1,132 @@
+{
+ "doctype": "DocType",
+ "module": "Hospital Portal",
+ "track_changes": 1,
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "print": 1,
+   "report": 1,
+   "export": 1,
+   "import": 1
+  },
+  {
+   "role": "Administrator",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "print": 1,
+   "report": 1
+  }
+ ],
+ "name": "IPD Admission",
+ "autoname": "format:IPD-{YYYY}-{#####}",
+ "title_field": "patient_name",
+ "fields": [
+  {
+   "fieldname": "patient_id",
+   "fieldtype": "Link",
+   "label": "Patient ID",
+   "options": "Patient Registration",
+   "reqd": 1,
+   "in_list_view": 1,
+   "bold": 1
+  },
+  {
+   "fieldname": "patient_name",
+   "fieldtype": "Data",
+   "label": "Patient Name",
+   "fetch_from": "patient_id.full_name",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "admitting_doctor",
+   "fieldtype": "Link",
+   "label": "Admitting Doctor",
+   "options": "User"
+  },
+  {
+   "fieldname": "consultation_id",
+   "fieldtype": "Link",
+   "label": "Consultation",
+   "options": "Consultation"
+  },
+  {
+   "fieldname": "col1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "admission_date",
+   "fieldtype": "Datetime",
+   "label": "Admission Date",
+   "default": "now"
+  },
+  {
+   "fieldname": "admission_type",
+   "fieldtype": "Select",
+   "label": "Admission Type",
+   "options": "Elective\nEmergency\nTransfer",
+   "default": "Elective"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Admitted\nTransferred\nDischarged\nLAMA",
+   "default": "Admitted",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "sec1",
+   "fieldtype": "Section Break",
+   "label": "Bed Allocation"
+  },
+  {
+   "fieldname": "ward",
+   "fieldtype": "Select",
+   "label": "Ward",
+   "options": "General Ward\nSemi-Private\nPrivate\nICU\nIsolation"
+  },
+  {
+   "fieldname": "bed_number",
+   "fieldtype": "Data",
+   "label": "Bed Number",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "col2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "floor",
+   "fieldtype": "Data",
+   "label": "Floor"
+  },
+  {
+   "fieldname": "diagnosis",
+   "fieldtype": "Text",
+   "label": "Admission Diagnosis"
+  },
+  {
+   "fieldname": "sec2",
+   "fieldtype": "Section Break",
+   "label": "Discharge"
+  },
+  {
+   "fieldname": "discharge_date",
+   "fieldtype": "Datetime",
+   "label": "Discharge Date"
+  },
+  {
+   "fieldname": "discharge_summary",
+   "fieldtype": "Text",
+   "label": "Discharge Summary"
+  }
+ ]
+}

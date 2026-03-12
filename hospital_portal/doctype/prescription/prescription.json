@@ -1,0 +1,109 @@
+{
+ "doctype": "DocType",
+ "module": "Hospital Portal",
+ "track_changes": 1,
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "print": 1,
+   "report": 1,
+   "export": 1,
+   "import": 1
+  },
+  {
+   "role": "Administrator",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "print": 1,
+   "report": 1
+  }
+ ],
+ "name": "Prescription",
+ "autoname": "format:RX-{YYYY}-{#####}",
+ "title_field": "patient_name",
+ "fields": [
+  {
+   "fieldname": "patient_id",
+   "fieldtype": "Link",
+   "label": "Patient ID",
+   "options": "Patient Registration",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "patient_name",
+   "fieldtype": "Data",
+   "label": "Patient Name",
+   "fetch_from": "patient_id.full_name",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "consultation_id",
+   "fieldtype": "Link",
+   "label": "Consultation",
+   "options": "Consultation"
+  },
+  {
+   "fieldname": "doctor",
+   "fieldtype": "Link",
+   "label": "Doctor",
+   "options": "User",
+   "default": "__user"
+  },
+  {
+   "fieldname": "col1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "prescription_date",
+   "fieldtype": "Datetime",
+   "label": "Date",
+   "default": "now"
+  },
+  {
+   "fieldname": "sec1",
+   "fieldtype": "Section Break",
+   "label": "Medicines"
+  },
+  {
+   "fieldname": "medicines",
+   "fieldtype": "Text",
+   "label": "Medicines (Name, Dose, Frequency, Duration)",
+   "reqd": 1
+  },
+  {
+   "fieldname": "instructions",
+   "fieldtype": "Text",
+   "label": "Instructions for Patient"
+  },
+  {
+   "fieldname": "col2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "forwarded_to_pharmacy",
+   "fieldtype": "Check",
+   "label": "Forwarded to Pharmacy"
+  },
+  {
+   "fieldname": "forwarded_to_nursing",
+   "fieldtype": "Check",
+   "label": "Forwarded to Nursing"
+  },
+  {
+   "fieldname": "pharmacy_status",
+   "fieldtype": "Select",
+   "label": "Pharmacy Status",
+   "options": "Pending\nDispensed",
+   "default": "Pending",
+   "in_list_view": 1
+  }
+ ]
+}
