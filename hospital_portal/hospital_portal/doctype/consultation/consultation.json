@@ -1,0 +1,230 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:CONS-{YYYY}-{#####}",
+ "creation": "2026-03-12 15:45:39.960434",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "patient_id",
+  "patient_name",
+  "doctor",
+  "col1",
+  "appointment_id",
+  "consultation_date",
+  "status",
+  "sec1",
+  "chief_complaint",
+  "history",
+  "col2",
+  "allergies",
+  "sec2",
+  "examination_findings",
+  "diagnosis",
+  "col3",
+  "treatment_plan",
+  "follow_up_date",
+  "sec3",
+  "order_lab",
+  "order_radiology",
+  "order_prescription",
+  "order_nursing",
+  "col4",
+  "admit_patient",
+  "transfer_icu",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "bold": 1,
+   "fieldname": "patient_id",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Patient ID",
+   "options": "Patient Registration",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "patient_id.full_name",
+   "fieldname": "patient_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Patient Name",
+   "read_only": 1
+  },
+  {
+   "default": "__user",
+   "fieldname": "doctor",
+   "fieldtype": "Link",
+   "label": "Consulting Doctor",
+   "options": "User",
+   "reqd": 1
+  },
+  {
+   "fieldname": "col1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "appointment_id",
+   "fieldtype": "Link",
+   "label": "Appointment",
+   "options": "Appointment"
+  },
+  {
+   "default": "now",
+   "fieldname": "consultation_date",
+   "fieldtype": "Datetime",
+   "label": "Consultation Date"
+  },
+  {
+   "default": "Open",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "Open\nCompleted\nReferred\nAdmitted"
+  },
+  {
+   "fieldname": "sec1",
+   "fieldtype": "Section Break",
+   "label": "History & Complaints"
+  },
+  {
+   "fieldname": "chief_complaint",
+   "fieldtype": "Text",
+   "label": "Chief Complaint",
+   "reqd": 1
+  },
+  {
+   "fieldname": "history",
+   "fieldtype": "Text",
+   "label": "Medical History"
+  },
+  {
+   "fieldname": "col2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "allergies",
+   "fieldtype": "Text",
+   "label": "Known Allergies"
+  },
+  {
+   "fieldname": "sec2",
+   "fieldtype": "Section Break",
+   "label": "Examination & Diagnosis"
+  },
+  {
+   "fieldname": "examination_findings",
+   "fieldtype": "Text",
+   "label": "Physical Examination Findings"
+  },
+  {
+   "bold": 1,
+   "fieldname": "diagnosis",
+   "fieldtype": "Text",
+   "label": "Diagnosis"
+  },
+  {
+   "fieldname": "col3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "treatment_plan",
+   "fieldtype": "Text",
+   "label": "Treatment Plan"
+  },
+  {
+   "fieldname": "follow_up_date",
+   "fieldtype": "Date",
+   "label": "Follow-up Date"
+  },
+  {
+   "fieldname": "sec3",
+   "fieldtype": "Section Break",
+   "label": "Orders"
+  },
+  {
+   "default": "0",
+   "fieldname": "order_lab",
+   "fieldtype": "Check",
+   "label": "Order Lab Tests"
+  },
+  {
+   "default": "0",
+   "fieldname": "order_radiology",
+   "fieldtype": "Check",
+   "label": "Order Radiology"
+  },
+  {
+   "default": "0",
+   "fieldname": "order_prescription",
+   "fieldtype": "Check",
+   "label": "Write Prescription"
+  },
+  {
+   "default": "0",
+   "fieldname": "order_nursing",
+   "fieldtype": "Check",
+   "label": "Nursing Task (Injection/IV)"
+  },
+  {
+   "fieldname": "col4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "admit_patient",
+   "fieldtype": "Check",
+   "label": "Admit to IPD"
+  },
+  {
+   "default": "0",
+   "fieldname": "transfer_icu",
+   "fieldtype": "Check",
+   "label": "Transfer to ICU"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Consultation",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2026-03-12 15:45:39.960434",
+ "modified_by": "Administrator",
+ "module": "Hospital Portal",
+ "name": "Consultation",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "patient_name",
+ "track_changes": 1
+}

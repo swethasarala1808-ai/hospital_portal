@@ -1,0 +1,203 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:ICU-{YYYY}-{#####}",
+ "creation": "2026-03-12 15:45:40.777614",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "patient_id",
+  "patient_name",
+  "recorded_by",
+  "recorded_at",
+  "sec1",
+  "heart_rate",
+  "bp_systolic",
+  "bp_diastolic",
+  "col1",
+  "spo2",
+  "temperature",
+  "respiratory_rate",
+  "gcs_score",
+  "sec2",
+  "ventilator_support",
+  "ventilator_mode",
+  "col2",
+  "fio2",
+  "peep",
+  "sec3",
+  "iv_fluids",
+  "vasopressors",
+  "col3",
+  "sedation",
+  "notes"
+ ],
+ "fields": [
+  {
+   "bold": 1,
+   "fieldname": "patient_id",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Patient ID",
+   "options": "Patient Registration",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "patient_id.full_name",
+   "fieldname": "patient_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Patient Name",
+   "read_only": 1
+  },
+  {
+   "default": "__user",
+   "fieldname": "recorded_by",
+   "fieldtype": "Link",
+   "label": "ICU Nurse",
+   "options": "User"
+  },
+  {
+   "default": "now",
+   "fieldname": "recorded_at",
+   "fieldtype": "Datetime",
+   "in_list_view": 1,
+   "label": "Time"
+  },
+  {
+   "fieldname": "sec1",
+   "fieldtype": "Section Break",
+   "label": "Vitals"
+  },
+  {
+   "fieldname": "heart_rate",
+   "fieldtype": "Int",
+   "label": "Heart Rate (bpm)"
+  },
+  {
+   "fieldname": "bp_systolic",
+   "fieldtype": "Int",
+   "label": "BP Systolic"
+  },
+  {
+   "fieldname": "bp_diastolic",
+   "fieldtype": "Int",
+   "label": "BP Diastolic"
+  },
+  {
+   "fieldname": "col1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "spo2",
+   "fieldtype": "Float",
+   "label": "SpO2 (%)"
+  },
+  {
+   "fieldname": "temperature",
+   "fieldtype": "Float",
+   "label": "Temperature (\u00b0C)"
+  },
+  {
+   "fieldname": "respiratory_rate",
+   "fieldtype": "Int",
+   "label": "Respiratory Rate"
+  },
+  {
+   "fieldname": "gcs_score",
+   "fieldtype": "Int",
+   "label": "GCS Score (3-15)"
+  },
+  {
+   "fieldname": "sec2",
+   "fieldtype": "Section Break",
+   "label": "Ventilator"
+  },
+  {
+   "default": "0",
+   "fieldname": "ventilator_support",
+   "fieldtype": "Check",
+   "label": "On Ventilator"
+  },
+  {
+   "fieldname": "ventilator_mode",
+   "fieldtype": "Select",
+   "label": "Mode",
+   "options": "None\nAC\nSIMV\nCPAP\nBiPAP"
+  },
+  {
+   "fieldname": "col2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "fio2",
+   "fieldtype": "Float",
+   "label": "FiO2 (%)"
+  },
+  {
+   "fieldname": "peep",
+   "fieldtype": "Float",
+   "label": "PEEP"
+  },
+  {
+   "fieldname": "sec3",
+   "fieldtype": "Section Break",
+   "label": "Treatment"
+  },
+  {
+   "fieldname": "iv_fluids",
+   "fieldtype": "Text",
+   "label": "IV Fluids"
+  },
+  {
+   "fieldname": "vasopressors",
+   "fieldtype": "Text",
+   "label": "Vasopressors"
+  },
+  {
+   "fieldname": "col3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "sedation",
+   "fieldtype": "Text",
+   "label": "Sedation"
+  },
+  {
+   "fieldname": "notes",
+   "fieldtype": "Text",
+   "label": "Clinical Notes"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-03-12 15:45:40.777614",
+ "modified_by": "Administrator",
+ "module": "Hospital Portal",
+ "name": "ICU Monitoring",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "patient_name",
+ "track_changes": 1
+}

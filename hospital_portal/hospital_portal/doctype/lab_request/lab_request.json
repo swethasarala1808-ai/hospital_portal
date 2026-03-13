@@ -1,0 +1,168 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:LR-{YYYY}-{#####}",
+ "creation": "2026-03-12 15:45:40.194976",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "patient_id",
+  "patient_name",
+  "requested_by",
+  "consultation_id",
+  "col1",
+  "request_date",
+  "priority",
+  "status",
+  "sec1",
+  "test_names",
+  "clinical_notes",
+  "col2",
+  "sample_collected",
+  "sample_collected_at",
+  "sec2",
+  "results",
+  "report_file",
+  "verified"
+ ],
+ "fields": [
+  {
+   "bold": 1,
+   "fieldname": "patient_id",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Patient ID",
+   "options": "Patient Registration",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "patient_id.full_name",
+   "fieldname": "patient_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Patient Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "requested_by",
+   "fieldtype": "Link",
+   "label": "Doctor",
+   "options": "User"
+  },
+  {
+   "fieldname": "consultation_id",
+   "fieldtype": "Link",
+   "label": "Consultation",
+   "options": "Consultation"
+  },
+  {
+   "fieldname": "col1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "now",
+   "fieldname": "request_date",
+   "fieldtype": "Datetime",
+   "label": "Request Date"
+  },
+  {
+   "default": "Routine",
+   "fieldname": "priority",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Priority",
+   "options": "Routine\nUrgent\nStat"
+  },
+  {
+   "default": "Requested",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "Requested\nSample Collected\nIn Process\nReported"
+  },
+  {
+   "fieldname": "sec1",
+   "fieldtype": "Section Break",
+   "label": "Tests Required"
+  },
+  {
+   "fieldname": "test_names",
+   "fieldtype": "Text",
+   "label": "Tests",
+   "reqd": 1
+  },
+  {
+   "fieldname": "clinical_notes",
+   "fieldtype": "Text",
+   "label": "Clinical Notes"
+  },
+  {
+   "fieldname": "col2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "sample_collected",
+   "fieldtype": "Check",
+   "label": "Sample Collected"
+  },
+  {
+   "fieldname": "sample_collected_at",
+   "fieldtype": "Datetime",
+   "label": "Sample Collection Time"
+  },
+  {
+   "fieldname": "sec2",
+   "fieldtype": "Section Break",
+   "label": "Results"
+  },
+  {
+   "fieldname": "results",
+   "fieldtype": "Text",
+   "label": "Test Results"
+  },
+  {
+   "fieldname": "report_file",
+   "fieldtype": "Attach",
+   "label": "Report File"
+  },
+  {
+   "default": "0",
+   "fieldname": "verified",
+   "fieldtype": "Check",
+   "label": "Verified by Pathologist"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-03-12 15:45:40.194976",
+ "modified_by": "Administrator",
+ "module": "Hospital Portal",
+ "name": "Lab Request",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "patient_name",
+ "track_changes": 1
+}

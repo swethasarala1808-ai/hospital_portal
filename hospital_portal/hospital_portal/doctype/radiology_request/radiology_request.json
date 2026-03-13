@@ -1,0 +1,155 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:RR-{YYYY}-{#####}",
+ "creation": "2026-03-12 15:45:40.303769",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "patient_id",
+  "patient_name",
+  "requested_by",
+  "col1",
+  "modality",
+  "body_part",
+  "urgency",
+  "request_date",
+  "status",
+  "sec1",
+  "clinical_indication",
+  "col2",
+  "findings",
+  "impression",
+  "report_images",
+  "verified"
+ ],
+ "fields": [
+  {
+   "bold": 1,
+   "fieldname": "patient_id",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Patient ID",
+   "options": "Patient Registration",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "patient_id.full_name",
+   "fieldname": "patient_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Patient Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "requested_by",
+   "fieldtype": "Link",
+   "label": "Doctor",
+   "options": "User"
+  },
+  {
+   "fieldname": "col1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "modality",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Modality",
+   "options": "X-Ray\nECG\nEcho\nCT Scan\nMRI\nUltrasound",
+   "reqd": 1
+  },
+  {
+   "fieldname": "body_part",
+   "fieldtype": "Data",
+   "label": "Body Part / Region"
+  },
+  {
+   "default": "Routine",
+   "fieldname": "urgency",
+   "fieldtype": "Select",
+   "label": "Urgency",
+   "options": "Routine\nUrgent\nEmergency"
+  },
+  {
+   "default": "now",
+   "fieldname": "request_date",
+   "fieldtype": "Datetime",
+   "label": "Request Date"
+  },
+  {
+   "default": "Requested",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "Requested\nScheduled\nIn Progress\nReported"
+  },
+  {
+   "fieldname": "sec1",
+   "fieldtype": "Section Break",
+   "label": "Clinical Details"
+  },
+  {
+   "fieldname": "clinical_indication",
+   "fieldtype": "Text",
+   "label": "Clinical Indication"
+  },
+  {
+   "fieldname": "col2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "findings",
+   "fieldtype": "Text",
+   "label": "Findings"
+  },
+  {
+   "fieldname": "impression",
+   "fieldtype": "Text",
+   "label": "Impression / Diagnosis"
+  },
+  {
+   "fieldname": "report_images",
+   "fieldtype": "Attach",
+   "label": "Report / Images"
+  },
+  {
+   "default": "0",
+   "fieldname": "verified",
+   "fieldtype": "Check",
+   "label": "Verified by Radiologist"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-03-12 15:45:40.303769",
+ "modified_by": "Administrator",
+ "module": "Hospital Portal",
+ "name": "Radiology Request",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "patient_name",
+ "track_changes": 1
+}

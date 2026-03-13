@@ -1,0 +1,160 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:IPD-{YYYY}-{#####}",
+ "creation": "2026-03-12 15:45:40.655113",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "patient_id",
+  "patient_name",
+  "admitting_doctor",
+  "consultation_id",
+  "col1",
+  "admission_date",
+  "admission_type",
+  "status",
+  "sec1",
+  "ward",
+  "bed_number",
+  "col2",
+  "floor",
+  "diagnosis",
+  "sec2",
+  "discharge_date",
+  "discharge_summary"
+ ],
+ "fields": [
+  {
+   "bold": 1,
+   "fieldname": "patient_id",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Patient ID",
+   "options": "Patient Registration",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "patient_id.full_name",
+   "fieldname": "patient_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Patient Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "admitting_doctor",
+   "fieldtype": "Link",
+   "label": "Admitting Doctor",
+   "options": "User"
+  },
+  {
+   "fieldname": "consultation_id",
+   "fieldtype": "Link",
+   "label": "Consultation",
+   "options": "Consultation"
+  },
+  {
+   "fieldname": "col1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "now",
+   "fieldname": "admission_date",
+   "fieldtype": "Datetime",
+   "label": "Admission Date"
+  },
+  {
+   "default": "Elective",
+   "fieldname": "admission_type",
+   "fieldtype": "Select",
+   "label": "Admission Type",
+   "options": "Elective\nEmergency\nTransfer"
+  },
+  {
+   "default": "Admitted",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "Admitted\nTransferred\nDischarged\nLAMA"
+  },
+  {
+   "fieldname": "sec1",
+   "fieldtype": "Section Break",
+   "label": "Bed Allocation"
+  },
+  {
+   "fieldname": "ward",
+   "fieldtype": "Select",
+   "label": "Ward",
+   "options": "General Ward\nSemi-Private\nPrivate\nICU\nIsolation"
+  },
+  {
+   "fieldname": "bed_number",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Bed Number"
+  },
+  {
+   "fieldname": "col2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "floor",
+   "fieldtype": "Data",
+   "label": "Floor"
+  },
+  {
+   "fieldname": "diagnosis",
+   "fieldtype": "Text",
+   "label": "Admission Diagnosis"
+  },
+  {
+   "fieldname": "sec2",
+   "fieldtype": "Section Break",
+   "label": "Discharge"
+  },
+  {
+   "fieldname": "discharge_date",
+   "fieldtype": "Datetime",
+   "label": "Discharge Date"
+  },
+  {
+   "fieldname": "discharge_summary",
+   "fieldtype": "Text",
+   "label": "Discharge Summary"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-03-12 15:45:40.655113",
+ "modified_by": "Administrator",
+ "module": "Hospital Portal",
+ "name": "IPD Admission",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "patient_name",
+ "track_changes": 1
+}

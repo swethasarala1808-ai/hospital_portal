@@ -1,0 +1,127 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:PD-{YYYY}-{#####}",
+ "creation": "2026-03-12 15:45:40.418383",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "patient_id",
+  "patient_name",
+  "prescription_id",
+  "pharmacist",
+  "col1",
+  "dispensed_at",
+  "payment_status",
+  "sec1",
+  "medicines_dispensed",
+  "col2",
+  "total_amount",
+  "notes"
+ ],
+ "fields": [
+  {
+   "fieldname": "patient_id",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Patient ID",
+   "options": "Patient Registration",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "patient_id.full_name",
+   "fieldname": "patient_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Patient Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "prescription_id",
+   "fieldtype": "Link",
+   "label": "Prescription",
+   "options": "Prescription"
+  },
+  {
+   "default": "__user",
+   "fieldname": "pharmacist",
+   "fieldtype": "Link",
+   "label": "Pharmacist",
+   "options": "User"
+  },
+  {
+   "fieldname": "col1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "now",
+   "fieldname": "dispensed_at",
+   "fieldtype": "Datetime",
+   "label": "Dispensed At"
+  },
+  {
+   "default": "Pending",
+   "fieldname": "payment_status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Payment",
+   "options": "Pending\nPaid\nWaived"
+  },
+  {
+   "fieldname": "sec1",
+   "fieldtype": "Section Break",
+   "label": "Medicines Dispensed"
+  },
+  {
+   "fieldname": "medicines_dispensed",
+   "fieldtype": "Text",
+   "label": "Medicines Dispensed",
+   "reqd": 1
+  },
+  {
+   "fieldname": "col2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total_amount",
+   "fieldtype": "Currency",
+   "label": "Total Amount"
+  },
+  {
+   "fieldname": "notes",
+   "fieldtype": "Text",
+   "label": "Notes"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-03-12 15:45:40.418383",
+ "modified_by": "Administrator",
+ "module": "Hospital Portal",
+ "name": "Pharmacy Dispensing",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "patient_name",
+ "track_changes": 1
+}

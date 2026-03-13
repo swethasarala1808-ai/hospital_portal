@@ -1,0 +1,177 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:PAT-{YYYY}-{#####}",
+ "creation": "2026-03-12 15:45:39.537663",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "full_name",
+  "phone",
+  "col1",
+  "gender",
+  "date_of_birth",
+  "blood_group",
+  "sec1",
+  "visit_type",
+  "chief_complaint",
+  "col2",
+  "referred_department",
+  "registration_date",
+  "status",
+  "sec2",
+  "payment_type",
+  "emergency_contact",
+  "col3",
+  "emergency_phone",
+  "address"
+ ],
+ "fields": [
+  {
+   "bold": 1,
+   "fieldname": "full_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Full Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "phone",
+   "fieldtype": "Phone",
+   "in_list_view": 1,
+   "label": "Phone Number",
+   "reqd": 1
+  },
+  {
+   "fieldname": "col1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "gender",
+   "fieldtype": "Select",
+   "label": "Gender",
+   "options": "\nMale\nFemale\nOther",
+   "reqd": 1
+  },
+  {
+   "fieldname": "date_of_birth",
+   "fieldtype": "Date",
+   "label": "Date of Birth"
+  },
+  {
+   "fieldname": "blood_group",
+   "fieldtype": "Select",
+   "label": "Blood Group",
+   "options": "\nA+\nA-\nB+\nB-\nO+\nO-\nAB+\nAB-"
+  },
+  {
+   "fieldname": "sec1",
+   "fieldtype": "Section Break",
+   "label": "Visit Details"
+  },
+  {
+   "default": "OPD",
+   "fieldname": "visit_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Visit Type",
+   "options": "OPD\nIPD\nEmergency\nDaycare",
+   "reqd": 1
+  },
+  {
+   "fieldname": "chief_complaint",
+   "fieldtype": "Text",
+   "label": "Chief Complaint / Problem",
+   "reqd": 1
+  },
+  {
+   "fieldname": "col2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "referred_department",
+   "fieldtype": "Select",
+   "label": "Referred Department",
+   "options": "Consultation / OPD\nEmergency\nLaboratory\nRadiology\nPharmacy\nIPD\nICU",
+   "reqd": 1
+  },
+  {
+   "default": "now",
+   "fieldname": "registration_date",
+   "fieldtype": "Datetime",
+   "label": "Registration Date",
+   "read_only": 1
+  },
+  {
+   "bold": 1,
+   "default": "Registered",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "Registered\nWaiting\nVitals Recorded\nIn Consultation\nIn Lab\nIn Radiology\nIn Pharmacy\nAdmitted\nDischarged"
+  },
+  {
+   "fieldname": "sec2",
+   "fieldtype": "Section Break",
+   "label": "Payment"
+  },
+  {
+   "default": "Cash",
+   "fieldname": "payment_type",
+   "fieldtype": "Select",
+   "label": "Payment Type",
+   "options": "Cash\nInsurance\nPanel\nGovernment Scheme\nFree"
+  },
+  {
+   "fieldname": "emergency_contact",
+   "fieldtype": "Data",
+   "label": "Emergency Contact Name"
+  },
+  {
+   "fieldname": "col3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "emergency_phone",
+   "fieldtype": "Phone",
+   "label": "Emergency Contact Phone"
+  },
+  {
+   "fieldname": "address",
+   "fieldtype": "Text",
+   "label": "Address"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-03-12 15:45:39.537663",
+ "modified_by": "Administrator",
+ "module": "Hospital Portal",
+ "name": "Patient Registration",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "full_name",
+ "track_changes": 1
+}
