@@ -12,11 +12,15 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--navy);min-
 .topbar{background:var(--navy);color:#fff;padding:.875rem 2rem;display:flex;align-items:center;gap:1rem;}
 .topbar h1{font-size:1rem;font-weight:700;}
 .badge{margin-left:auto;background:rgba(255,255,255,.1);padding:.25rem .75rem;border-radius:20px;font-size:.75rem;}
-.layout{display:grid;grid-template-columns:1fr 380px;gap:1.5rem;padding:1.5rem 2rem;max-width:1300px;margin:0 auto;}
+.wrap{padding:1.5rem 2rem;max-width:1300px;margin:0 auto;}
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem;}
+.stat{background:var(--white);border-radius:16px;padding:1.25rem;text-align:center;box-shadow:0 2px 12px rgba(0,0,0,.06);}
+.stat-val{font-size:2rem;font-weight:800;color:var(--blue);}
+.stat-lbl{font-size:.75rem;color:var(--gray);}
+.layout{display:grid;grid-template-columns:1fr 380px;gap:1.5rem;}
 @media(max-width:900px){.layout{grid-template-columns:1fr;}}
-.panel{background:var(--white);border-radius:20px;box-shadow:0 4px 24px rgba(0,0,0,.08);overflow:hidden;margin-bottom:1.5rem;}
-.panel-header{padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.75rem;}
-.panel-title{font-size:1rem;font-weight:700;}
+.panel{background:var(--white);border-radius:20px;box-shadow:0 4px 24px rgba(0,0,0,.08);overflow:hidden;}
+.panel-header{padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.75rem;font-weight:700;}
 .panel-body{padding:1.5rem;}
 .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
 .form-full{grid-column:1/-1;}
@@ -26,85 +30,80 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue);}
 textarea{resize:vertical;min-height:80px;}
 .btn{padding:.75rem 1.5rem;border:none;border-radius:12px;font-family:inherit;font-weight:600;font-size:.9rem;cursor:pointer;transition:.2s;}
 .btn-primary{background:linear-gradient(135deg,var(--blue),var(--cyan));color:#fff;width:100%;margin-top:1rem;}
-.btn-primary:hover{opacity:.9;}
-.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem;}
-.stat{background:var(--white);border-radius:16px;padding:1.25rem;text-align:center;box-shadow:0 2px 12px rgba(0,0,0,.06);}
-.stat-val{font-size:2rem;font-weight:800;color:var(--blue);}
-.stat-lbl{font-size:.75rem;color:var(--gray);}
+.btn-primary:disabled{opacity:.6;cursor:not-allowed;}
 .queue-item{display:flex;align-items:center;gap:.875rem;padding:.875rem;border-radius:12px;border:1.5px solid var(--border);margin-bottom:.6rem;}
-.token-badge{background:var(--navy);color:#fff;width:40px;height:40px;border-radius:10px;display:grid;place-items:center;font-weight:600;font-size:.85rem;flex-shrink:0;}
+.token-badge{background:var(--navy);color:#fff;width:40px;height:40px;border-radius:10px;display:grid;place-items:center;font-weight:600;flex-shrink:0;}
 .queue-name{font-weight:600;font-size:.875rem;}
 .queue-dept{font-size:.75rem;color:var(--gray);}
-.status-pill{font-size:.65rem;font-weight:700;padding:.2rem .6rem;border-radius:20px;text-transform:uppercase;margin-left:auto;}
-.s-waiting{background:#fff3cd;color:#856404;}
-.s-called{background:#cff4fc;color:#0c5460;}
-.s-done{background:#d1e7dd;color:#0a3622;}
-.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;place-items:center;}
+.spill{font-size:.65rem;font-weight:700;padding:.2rem .6rem;border-radius:20px;text-transform:uppercase;margin-left:auto;}
+.sw{background:#fff3cd;color:#856404;}.sc{background:#cff4fc;color:#0c5460;}.sd{background:#d1e7dd;color:#0a3622;}
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;place-items:center;}
 .modal-bg.show{display:grid;}
-.receipt{background:#fff;border-radius:20px;padding:2rem;width:320px;text-align:center;}
-.receipt-token{font-size:3rem;font-weight:800;color:var(--blue);margin:.5rem 0;}
-.receipt-row{display:flex;justify-content:space-between;padding:.4rem 0;border-bottom:1px dashed var(--border);font-size:.85rem;}
-.receipt-actions{display:flex;gap:.75rem;margin-top:1.25rem;}
-.receipt-actions .btn{flex:1;}
+.receipt{background:#fff;border-radius:20px;padding:2rem;width:320px;text-align:center;box-shadow:0 24px 80px rgba(0,0,0,.3);}
+.r-token{font-size:3rem;font-weight:800;color:var(--blue);margin:.5rem 0;}
+.r-row{display:flex;justify-content:space-between;padding:.4rem 0;border-bottom:1px dashed var(--border);font-size:.85rem;}
+.r-row:last-of-type{border:none;}
+.r-actions{display:flex;gap:.75rem;margin-top:1.25rem;}
+.r-actions .btn{flex:1;}
 .alert{padding:.75rem 1rem;border-radius:10px;margin-bottom:1rem;font-size:.875rem;}
-.alert-success{background:#d1e7dd;color:#0a3622;}
-.alert-error{background:#f8d7da;color:#842029;}
+.ae{background:#f8d7da;color:#842029;}
 </style>
 </head>
 <body>
 <div class="topbar">
   <span>📋</span><h1>Registration Desk Portal</h1>
-  <div class="badge" id="reg-count">Loading...</div>
+  <div class="badge" id="reg-badge">Loading...</div>
 </div>
 
-<div style="padding:1.5rem 2rem;max-width:1300px;margin:0 auto;">
+<div class="wrap">
   <div class="stats-row">
-    <div class="stat"><div class="stat-val" id="stat-reg">0</div><div class="stat-lbl">Registered Today</div></div>
-    <div class="stat"><div class="stat-val" id="stat-wait">0</div><div class="stat-lbl">Waiting</div></div>
-    <div class="stat"><div class="stat-val" id="stat-done">0</div><div class="stat-lbl">Completed</div></div>
+    <div class="stat"><div class="stat-val" id="s-reg">--</div><div class="stat-lbl">Registered Today</div></div>
+    <div class="stat"><div class="stat-val" id="s-wait">--</div><div class="stat-lbl">Waiting</div></div>
+    <div class="stat"><div class="stat-val" id="s-done">--</div><div class="stat-lbl">Completed</div></div>
   </div>
-</div>
 
-<div class="layout">
-  <div>
-    <div class="panel">
-      <div class="panel-header"><span>👤</span><span class="panel-title">New Patient Registration</span></div>
-      <div class="panel-body">
-        <div id="alert-area"></div>
-        <div class="form-grid">
-          <div><label>Full Name *</label><input type="text" id="fname" placeholder="Patient full name"/></div>
-          <div><label>Phone Number *</label><input type="tel" id="phone" placeholder="+91 XXXXXXXXXX"/></div>
-          <div><label>Date of Birth</label><input type="date" id="dob"/></div>
-          <div><label>Gender *</label>
-            <select id="gender"><option value="">-- Select --</option><option>Male</option><option>Female</option><option>Other</option></select>
+  <div class="layout">
+    <div>
+      <div class="panel">
+        <div class="panel-header">👤 New Patient Registration</div>
+        <div class="panel-body">
+          <div id="alerts"></div>
+          <div class="form-grid">
+            <div><label>Full Name *</label><input id="F_name" placeholder="Patient full name"/></div>
+            <div><label>Phone *</label><input id="F_phone" placeholder="+91 XXXXXXXXXX"/></div>
+            <div><label>Date of Birth</label><input type="date" id="F_dob"/></div>
+            <div><label>Gender *</label>
+              <select id="F_gender"><option value="">-- Select --</option><option>Male</option><option>Female</option><option>Other</option></select>
+            </div>
+            <div><label>Blood Group</label>
+              <select id="F_blood"><option value="">--</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>O+</option><option>O-</option><option>AB+</option><option>AB-</option></select>
+            </div>
+            <div><label>Visit Type *</label>
+              <select id="F_visit"><option>OPD</option><option>Emergency</option><option>IPD</option><option>Daycare</option></select>
+            </div>
+            <div class="form-full"><label>Chief Complaint *</label>
+              <textarea id="F_complaint" placeholder="Patient's main problem..."></textarea>
+            </div>
+            <div><label>Department *</label>
+              <select id="F_dept"><option>Consultation / OPD</option><option>Emergency</option><option>Laboratory</option><option>Radiology</option><option>Pharmacy</option><option>IPD</option><option>ICU</option></select>
+            </div>
+            <div><label>Payment Type</label>
+              <select id="F_pay"><option>Cash</option><option>Insurance</option><option>Panel</option><option>Government Scheme</option><option>Free</option></select>
+            </div>
+            <div><label>Emergency Contact</label><input id="F_ec" placeholder="Name"/></div>
+            <div><label>Emergency Phone</label><input id="F_ep" placeholder="+91 XXXXXXXXXX"/></div>
+            <div class="form-full"><label>Address</label><textarea id="F_addr" style="min-height:60px;" placeholder="Address..."></textarea></div>
           </div>
-          <div><label>Blood Group</label>
-            <select id="blood"><option value="">-- Select --</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>O+</option><option>O-</option><option>AB+</option><option>AB-</option></select>
-          </div>
-          <div><label>Visit Type *</label>
-            <select id="visit"><option>OPD</option><option>Emergency</option><option>IPD</option><option>Daycare</option></select>
-          </div>
-          <div class="form-full"><label>Chief Complaint / Problem *</label>
-            <textarea id="complaint" placeholder="Describe the patient's main problem..."></textarea>
-          </div>
-          <div><label>Department to Send *</label>
-            <select id="dept"><option>Consultation / OPD</option><option>Emergency</option><option>Laboratory</option><option>Radiology</option><option>Pharmacy</option><option>IPD</option><option>ICU</option></select>
-          </div>
-          <div><label>Payment Type</label>
-            <select id="payment"><option>Cash</option><option>Insurance</option><option>Panel</option><option>Government Scheme</option><option>Free</option></select>
-          </div>
-          <div><label>Emergency Contact</label><input type="text" id="emg-name" placeholder="Name"/></div>
-          <div><label>Emergency Phone</label><input type="tel" id="emg-phone" placeholder="+91 XXXXXXXXXX"/></div>
-          <div class="form-full"><label>Address</label><textarea id="address" style="min-height:60px;" placeholder="Patient address..."></textarea></div>
+          <button class="btn btn-primary" id="reg-btn" onclick="doRegister()">📋 Register Patient & Generate Token</button>
         </div>
-        <button class="btn btn-primary" id="reg-btn" onclick="registerPatient()">📋 Register Patient & Generate Token</button>
       </div>
     </div>
-  </div>
-  <div>
-    <div class="panel">
-      <div class="panel-header"><span>🎟️</span><span class="panel-title">Today's Queue</span></div>
-      <div class="panel-body" id="queue-list"><div style="text-align:center;color:var(--gray);padding:2rem;">Loading...</div></div>
+
+    <div>
+      <div class="panel">
+        <div class="panel-header">🎟️ Today's Queue</div>
+        <div class="panel-body" id="queue-list"><div style="text-align:center;color:var(--gray);padding:2rem;">Loading...</div></div>
+      </div>
     </div>
   </div>
 </div>
@@ -112,137 +111,127 @@ textarea{resize:vertical;min-height:80px;}
 <div class="modal-bg" id="modal">
   <div class="receipt">
     <div style="font-weight:800;font-size:1.1rem;">🏥 HOSPITAL PORTAL</div>
-    <div style="color:var(--gray);font-size:.8rem;margin-bottom:1.5rem;">APPOINTMENT RECEIPT</div>
-    <div style="font-size:.75rem;color:#64748b;">Patient ID</div>
-    <div style="font-weight:700;font-size:1rem;margin-bottom:.5rem;" id="r-pid">---</div>
-    <div style="font-size:.75rem;color:#64748b;">Token Number</div>
-    <div class="receipt-token" id="r-token">--</div>
-    <div class="receipt-row"><span>Patient</span><span id="r-name">--</span></div>
-    <div class="receipt-row"><span>Department</span><span id="r-dept">--</span></div>
-    <div class="receipt-row"><span>Date</span><span id="r-date">--</span></div>
-    <div class="receipt-row"><span>Visit Type</span><span id="r-visit">--</span></div>
-    <div class="receipt-actions">
-      <button class="btn" style="background:var(--border);" onclick="closeModal()">Close</button>
+    <div style="color:var(--gray);font-size:.8rem;margin-bottom:1rem;">APPOINTMENT RECEIPT</div>
+    <div style="font-size:.7rem;color:#64748b;">Patient ID</div>
+    <div style="font-weight:700;margin-bottom:.5rem;" id="R_pid"></div>
+    <div style="font-size:.7rem;color:#64748b;">Token</div>
+    <div class="r-token" id="R_tok"></div>
+    <div class="r-row"><span>Name</span><span id="R_name"></span></div>
+    <div class="r-row"><span>Department</span><span id="R_dept"></span></div>
+    <div class="r-row"><span>Date</span><span id="R_date"></span></div>
+    <div class="r-row"><span>Visit</span><span id="R_visit"></span></div>
+    <div class="r-actions">
+      <button class="btn" style="background:#e2e8f0;" onclick="closeModal()">Close</button>
       <button class="btn btn-primary" onclick="window.print()">🖨️ Print</button>
     </div>
   </div>
 </div>
 
 <script>
-function getCsrf() {
-    const cookies = document.cookie.split(';');
-    for (let c of cookies) {
-        const [k, v] = c.trim().split('=');
-        if (k === 'csrf_token') return decodeURIComponent(v);
-    }
-    return '';
-}
+// Use Frappe's REST API with proper auth
+const BASE = '/api/method/hospital_portal.www.registration-portal.';
 
-async function apiCall(method, args) {
-    const csrf = getCsrf();
-    const res = await fetch('/api/method/hospital_portal.www.registration-portal.' + method, {
+async function call(fn, args={}) {
+    // Get CSRF from meta tag (Frappe injects this)
+    const csrf = document.querySelector('meta[name=csrf-token]')?.content 
+              || document.cookie.match(/csrf_token=([^;]+)/)?.[1] 
+              || '';
+    
+    const fd = new FormData();
+    for (const [k,v] of Object.entries(args)) {
+        if (v !== null && v !== undefined && v !== '') fd.append(k, v);
+    }
+    
+    const r = await fetch(BASE + fn, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-Frappe-CSRF-Token': csrf
-        },
-        body: JSON.stringify(args)
+        headers: {'X-Frappe-CSRF-Token': csrf},
+        body: fd
     });
-    const data = await res.json();
-    if (data.exc) throw new Error(JSON.parse(data.exc)[0] || data.exc);
-    return data.message;
+    const d = await r.json();
+    if (d.exc) throw new Error(d._server_messages || d.exc);
+    return d.message;
 }
 
 async function loadStats() {
     try {
-        const s = await apiCall('get_today_stats', {});
-        document.getElementById('stat-reg').textContent = s.registered || 0;
-        document.getElementById('stat-wait').textContent = s.waiting || 0;
-        document.getElementById('stat-done').textContent = s.completed || 0;
-        document.getElementById('reg-count').textContent = (s.registered || 0) + ' registered today';
-    } catch(e) { console.log('Stats:', e.message); }
+        const s = await call('get_today_stats');
+        document.getElementById('s-reg').textContent = s.registered ?? 0;
+        document.getElementById('s-wait').textContent = s.waiting ?? 0;
+        document.getElementById('s-done').textContent = s.completed ?? 0;
+        document.getElementById('reg-badge').textContent = (s.registered ?? 0) + ' registered today';
+    } catch(e){ console.warn('stats',e); }
 }
 
 async function loadQueue() {
     try {
-        const q = await apiCall('get_today_queue', {});
+        const q = await call('get_today_queue');
         const el = document.getElementById('queue-list');
-        if (!q || q.length === 0) {
-            el.innerHTML = '<div style="text-align:center;color:var(--gray);padding:2rem;">No patients today</div>';
-            return;
-        }
-        el.innerHTML = q.map(p => `
-            <div class="queue-item">
-                <div class="token-badge">T${String(p.token_number||0).padStart(2,'0')}</div>
-                <div style="flex:1;">
-                    <div class="queue-name">${p.patient_name||p.patient_id}</div>
-                    <div class="queue-dept">${p.department||''}</div>
-                </div>
-                <span class="status-pill ${p.status==='Completed'?'s-done':p.status==='In Progress'?'s-called':'s-waiting'}">${p.status}</span>
-            </div>`).join('');
-    } catch(e) { console.log('Queue:', e.message); }
+        if (!q?.length) { el.innerHTML='<div style="text-align:center;padding:2rem;color:#64748b;">No patients today</div>'; return; }
+        el.innerHTML = q.map(p=>`
+          <div class="queue-item">
+            <div class="token-badge">T${String(p.token_number||0).padStart(2,'0')}</div>
+            <div style="flex:1">
+              <div class="queue-name">${p.patient_name||p.patient_id}</div>
+              <div class="queue-dept">${p.department||''}</div>
+            </div>
+            <span class="spill ${p.status==='Completed'?'sd':p.status==='In Progress'?'sc':'sw'}">${p.status}</span>
+          </div>`).join('');
+    } catch(e){ console.warn('queue',e); }
 }
 
-async function registerPatient() {
-    const fname = document.getElementById('fname').value.trim();
-    const phone = document.getElementById('phone').value.trim();
-    const gender = document.getElementById('gender').value;
-    const complaint = document.getElementById('complaint').value.trim();
-    const dept = document.getElementById('dept').value;
-    const alertArea = document.getElementById('alert-area');
-
-    if (!fname || !phone || !gender || !complaint) {
-        alertArea.innerHTML = '<div class="alert alert-error">⚠️ Please fill Name, Phone, Gender and Chief Complaint</div>';
+async function doRegister() {
+    const name = document.getElementById('F_name').value.trim();
+    const phone = document.getElementById('F_phone').value.trim();
+    const gender = document.getElementById('F_gender').value;
+    const complaint = document.getElementById('F_complaint').value.trim();
+    const dept = document.getElementById('F_dept').value;
+    const al = document.getElementById('alerts');
+    
+    if (!name||!phone||!gender||!complaint) {
+        al.innerHTML='<div class="alert ae">⚠️ Fill Name, Phone, Gender and Chief Complaint</div>';
         return;
     }
-
+    
     const btn = document.getElementById('reg-btn');
-    btn.disabled = true;
-    btn.textContent = 'Registering...';
-
+    btn.disabled=true; btn.textContent='Registering...';
+    al.innerHTML='';
+    
     try {
-        const result = await apiCall('register_patient', {
-            full_name: fname,
-            phone: phone,
-            gender: gender,
+        const r = await call('register_patient', {
+            full_name: name, phone, gender,
             chief_complaint: complaint,
             referred_department: dept,
-            visit_type: document.getElementById('visit').value,
-            payment_type: document.getElementById('payment').value,
-            date_of_birth: document.getElementById('dob').value || null,
-            blood_group: document.getElementById('blood').value || null,
-            emergency_contact: document.getElementById('emg-name').value || null,
-            emergency_phone: document.getElementById('emg-phone').value || null,
-            address: document.getElementById('address').value || null
+            visit_type: document.getElementById('F_visit').value,
+            payment_type: document.getElementById('F_pay').value,
+            date_of_birth: document.getElementById('F_dob').value,
+            blood_group: document.getElementById('F_blood').value,
+            emergency_contact: document.getElementById('F_ec').value,
+            emergency_phone: document.getElementById('F_ep').value,
+            address: document.getElementById('F_addr').value
         });
-
-        document.getElementById('r-pid').textContent = result.patient_id;
-        document.getElementById('r-token').textContent = 'T' + String(result.token_number).padStart(2,'0');
-        document.getElementById('r-name').textContent = result.full_name;
-        document.getElementById('r-dept').textContent = dept;
-        document.getElementById('r-date').textContent = new Date().toLocaleDateString('en-IN');
-        document.getElementById('r-visit').textContent = document.getElementById('visit').value;
+        
+        document.getElementById('R_pid').textContent = r.patient_id;
+        document.getElementById('R_tok').textContent = 'T'+String(r.token_number).padStart(2,'0');
+        document.getElementById('R_name').textContent = r.full_name;
+        document.getElementById('R_dept').textContent = dept;
+        document.getElementById('R_date').textContent = new Date().toLocaleDateString('en-IN');
+        document.getElementById('R_visit').textContent = document.getElementById('F_visit').value;
         document.getElementById('modal').classList.add('show');
-
-        ['fname','phone','complaint','emg-name','emg-phone','address','dob'].forEach(id => {
-            document.getElementById(id).value = '';
-        });
-        document.getElementById('gender').value = '';
-        document.getElementById('blood').value = '';
-        alertArea.innerHTML = '';
-
-        loadStats();
-        loadQueue();
+        
+        ['F_name','F_phone','F_complaint','F_ec','F_ep','F_addr','F_dob'].forEach(id=>document.getElementById(id).value='');
+        document.getElementById('F_gender').value='';
+        document.getElementById('F_blood').value='';
+        
+        loadStats(); loadQueue();
     } catch(e) {
-        alertArea.innerHTML = '<div class="alert alert-error">❌ ' + e.message + '</div>';
+        al.innerHTML='<div class="alert ae">❌ '+e.message+'</div>';
     }
-    btn.disabled = false;
-    btn.textContent = '📋 Register Patient & Generate Token';
+    btn.disabled=false; btn.textContent='📋 Register Patient & Generate Token';
 }
 
-function closeModal() { document.getElementById('modal').classList.remove('show'); }
+function closeModal(){ document.getElementById('modal').classList.remove('show'); }
 
-window.addEventListener('load', () => { loadStats(); loadQueue(); setInterval(loadQueue, 30000); });
+window.addEventListener('load', ()=>{ loadStats(); loadQueue(); setInterval(loadQueue,30000); });
 </script>
 </body>
 </html>

@@ -1,14 +1,19 @@
 import frappe
 from frappe import _
 
+no_cache = 1
+
 def get_context(context):
-    context.no_cache = 1
     if frappe.session.user == "Guest":
         frappe.throw(_("Please login"), frappe.PermissionError)
+    context.csrf_token = frappe.sessions.get_csrf_token()
     return context
 
 @frappe.whitelist()
-def register_patient(full_name, phone, gender, chief_complaint, referred_department, visit_type="OPD", payment_type="Cash", date_of_birth=None, blood_group=None, emergency_contact=None, emergency_phone=None, address=None):
+def register_patient(full_name, phone, gender, chief_complaint, referred_department,
+    visit_type="OPD", payment_type="Cash", date_of_birth=None,
+    blood_group=None, emergency_contact=None, emergency_phone=None, address=None):
+    
     doc = frappe.get_doc({
         "doctype": "Patient Registration",
         "full_name": full_name,
@@ -27,10 +32,8 @@ def register_patient(full_name, phone, gender, chief_complaint, referred_departm
     })
     doc.insert(ignore_permissions=True)
     
-    # Generate token number
     today_count = frappe.db.count("Appointment", {"appointment_date": frappe.utils.today()}) + 1
     
-    # Create appointment
     appt = frappe.get_doc({
         "doctype": "Appointment",
         "patient_id": doc.name,
@@ -51,19 +54,22 @@ def register_patient(full_name, phone, gender, chief_complaint, referred_departm
 
 @frappe.whitelist()
 def get_today_queue():
-    patients = frappe.get_all("Appointment",
+    return frappe.get_all("Appointment",
         filters={"appointment_date": frappe.utils.today()},
         fields=["name", "patient_id", "patient_name", "department", "token_number", "status"],
         order_by="token_number asc",
         limit=50
     )
-    return patients
 
-@frappe.whitelist()  
+@frappe.whitelist()
 def get_today_stats():
     today = frappe.utils.today()
+    today_start = today + " 00:00:00"
     return {
-        "registered": frappe.db.count("Patient Registration", {"registration_date": [">=", today + " 00:00:00"]}),
-        "waiting": frappe.db.count("Appointment", {"appointment_date": today, "status": "Scheduled"}),
-        "completed": frappe.db.count("Appointment", {"appointment_date": today, "status": "Completed"})
+        "registered": frappe.db.count("Patient Registration",
+            filters=[["registration_date", ">=", today_start]]),
+        "waiting": frappe.db.count("Appointment",
+            filters={"appointment_date": today, "status": "Scheduled"}),
+        "completed": frappe.db.count("Appointment",
+            filters={"appointment_date": today, "status": "Completed"})
     }
