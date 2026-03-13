@@ -1,33 +1,55 @@
 import frappe
 
-def get_context(context):
-    context.no_cache = 1
+no_cache = 1
 
-@frappe.whitelist()
+def get_context(context):
+    return context
+
+@frappe.whitelist(allow_guest=False)
 def get_live_stats():
     today = frappe.utils.today()
     today_start = today + " 00:00:00"
-    
+
+    def safe_count(sql, *args):
+        try:
+            return frappe.db.sql(sql, args, as_list=True)[0][0]
+        except:
+            return 0
+
+    opd = safe_count(
+        "SELECT COUNT(*) FROM `tabPatient Registration` WHERE creation >= %s",
+        today_start)
+
+    beds = safe_count(
+        "SELECT COUNT(*) FROM `tabIPD Admission` WHERE status = %s",
+        "Admitted")
+
+    lab = safe_count(
+        "SELECT COUNT(*) FROM `tabLab Request` WHERE status IN ('Requested','Sample Collected','In Process')")
+
+    radio = safe_count(
+        "SELECT COUNT(*) FROM `tabRadiology Request` WHERE status IN ('Requested','Scheduled','In Progress')")
+
+    consult = safe_count(
+        "SELECT COUNT(*) FROM `tabConsultation` WHERE creation >= %s",
+        today_start)
+
+    rx = safe_count(
+        "SELECT COUNT(*) FROM `tabPrescription` WHERE creation >= %s",
+        today_start)
+
+    icu = safe_count(
+        "SELECT COUNT(*) FROM `tabICU Monitoring` WHERE creation >= %s",
+        today_start)
+
     return {
-        "opd_today": frappe.db.count("Patient Registration", 
-            filters=[["registration_date", ">=", today_start]]),
-        "total_patients": frappe.db.count("Patient Registration"),
-        "beds_occupied": frappe.db.count("IPD Admission", 
-            filters={"status": "Admitted"}),
-        "pending_lab": frappe.db.count("Lab Request", 
-            filters={"status": ["in", ["Requested", "Sample Collected", "In Process"]]}),
-        "pending_radiology": frappe.db.count("Radiology Request", 
-            filters={"status": ["in", ["Requested", "Scheduled", "In Progress"]]}),
-        "icu_patients": frappe.db.count("ICU Monitoring",
-            filters=[["recorded_at", ">=", today_start]]),
-        "prescriptions_today": frappe.db.count("Prescription",
-            filters=[["prescription_date", ">=", today_start]]),
-        "consultations_today": frappe.db.count("Consultation",
-            filters=[["consultation_date", ">=", today_start]]),
-        "waiting": frappe.db.count("Appointment",
-            filters={"appointment_date": today, "status": "Scheduled"}),
-        "pending_orders": (
-            frappe.db.count("Lab Request", filters={"status": "Requested"}) +
-            frappe.db.count("Radiology Request", filters={"status": "Requested"})
-        )
+        "opd_today": opd,
+        "beds_occupied": beds,
+        "pending_lab": lab,
+        "pending_radiology": radio,
+        "consultations_today": consult,
+        "prescriptions_today": rx,
+        "icu_patients": icu,
+        "pending_orders": lab + radio,
+        "total_patients": frappe.db.count("Patient Registration")
     }
