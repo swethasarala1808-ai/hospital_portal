@@ -14,6 +14,12 @@ def register_patient(full_name, phone, gender, chief_complaint,
     date_of_birth=None, blood_group=None, emergency_contact=None,
     emergency_phone=None, address=None):
 
+    # Get token number for today
+    today_start = frappe.utils.today() + " 00:00:00"
+    token = frappe.db.sql(
+        "SELECT COUNT(*) FROM `tabPatient Registration` WHERE creation >= %s",
+        today_start)[0][0] + 1
+
     pat = frappe.get_doc({
         "doctype": "Patient Registration",
         "full_name": full_name,
@@ -31,71 +37,52 @@ def register_patient(full_name, phone, gender, chief_complaint,
         "status": "Registered"
     })
     pat.insert(ignore_permissions=True)
-
-    token = frappe.db.count("Appointment") + 1
-
-    appt = frappe.get_doc({
-        "doctype": "Appointment",
-        "patient_id": pat.name,
-        "department": referred_department,
-        "appointment_date": frappe.utils.today(),
-        "token_number": token,
-        "status": "Scheduled"
-    })
-    appt.insert(ignore_permissions=True)
     frappe.db.commit()
 
     return {
         "patient_id": pat.name,
         "token_number": token,
-        "appointment_id": appt.name,
         "full_name": full_name
     }
 
 @frappe.whitelist()
 def get_today_queue():
-    today = frappe.utils.today()
-    try:
-        return frappe.db.sql("""
-            SELECT name, patient_id, department, token_number, status
-            FROM `tabAppointment`
-            WHERE DATE(creation) = %s
-            ORDER BY token_number ASC
-            LIMIT 50
-        """, today, as_dict=True)
-    except Exception:
-        return frappe.get_all("Appointment",
-            fields=["name", "patient_id", "department", "token_number", "status"],
-            limit=50,
-            order_by="creation desc"
-        )
+    today_start = frappe.utils.today() + " 00:00:00"
+    patients = frappe.db.sql("""
+        SELECT name, full_name, phone, referred_department,
+               visit_type, status, creation
+        FROM `tabPatient Registration`
+        WHERE creation >= %s
+        ORDER BY creation ASC
+        LIMIT 50
+    """, today_start, as_dict=True)
+
+    # Add token numbers
+    for i, p in enumerate(patients):
+        p["token_number"] = i + 1
+        p["patient_name"] = p.get("full_name")
+        p["department"] = p.get("referred_department")
+
+    return patients
 
 @frappe.whitelist()
 def get_today_stats():
-    today = frappe.utils.today()
-    today_start = today + " 00:00:00"
+    today_start = frappe.utils.today() + " 00:00:00"
 
-    reg = frappe.db.sql("""
-        SELECT COUNT(*) FROM `tabPatient Registration`
-        WHERE creation >= %s
-    """, today_start)[0][0]
+    total = frappe.db.sql(
+        "SELECT COUNT(*) FROM `tabPatient Registration` WHERE creation >= %s",
+        today_start)[0][0]
 
-    try:
-        waiting = frappe.db.sql("""
-            SELECT COUNT(*) FROM `tabAppointment`
-            WHERE DATE(creation) = %s AND status = 'Scheduled'
-        """, today)[0][0]
+    waiting = frappe.db.sql(
+        "SELECT COUNT(*) FROM `tabPatient Registration` WHERE creation >= %s AND status = 'Registered'",
+        today_start)[0][0]
 
-        done = frappe.db.sql("""
-            SELECT COUNT(*) FROM `tabAppointment`
-            WHERE DATE(creation) = %s AND status = 'Completed'
-        """, today)[0][0]
-    except Exception:
-        waiting = 0
-        done = 0
+    completed = frappe.db.sql(
+        "SELECT COUNT(*) FROM `tabPatient Registration` WHERE creation >= %s AND status = 'Discharged'",
+        today_start)[0][0]
 
     return {
-        "registered": reg,
+        "registered": total,
         "waiting": waiting,
-        "completed": done
+        "completed": completed
     }

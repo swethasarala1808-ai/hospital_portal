@@ -498,45 +498,34 @@ async function loadActivity() {
 checkAuth();
 loadStats();
 loadActivity();
-setInterval(() => { loadStats(); loadActivity(); }, 30000); // refresh every 30s
-</script>
-</body>
-</html>
 <script>
-// Override demo data with real API data
-function getCsrf2() {
-    const cookies = document.cookie.split(';');
-    for (let c of cookies) {
-        const [k, v] = c.trim().split('=');
-        if (k === 'csrf_token') return decodeURIComponent(v);
-    }
-    return '';
-}
-
 async function loadRealStats() {
     try {
-        const res = await fetch('/api/method/hospital_portal.www.hospital-dashboard.get_live_stats', {
+        const fd = new FormData();
+        const r = await fetch('/api/method/hospital_portal.www.hospital-dashboard.get_live_stats', {
             method: 'POST',
-            headers: {'Content-Type': 'application/json', 'X-Frappe-CSRF-Token': getCsrf2()},
-            body: '{}'
+            body: fd
         });
-        const data = await res.json();
+        const data = await r.json();
         const s = data.message;
         if (!s) return;
-        
-        // Update stat cards
-        document.getElementById('stat-opd').textContent = s.opd_today || 0;
-        document.getElementById('stat-beds').textContent = s.beds_occupied || 0;
-        document.getElementById('stat-pending').textContent = s.pending_orders || 0;
-        document.getElementById('stat-icu').textContent = s.icu_patients || 0;
-        document.getElementById('stat-rx').textContent = s.prescriptions_today || 0;
-        
-        // Update department cards
-        document.getElementById('reg-today').textContent = s.opd_today || 0;
-        document.getElementById('reg-waiting').textContent = s.waiting || 0;
-    } catch(e) { console.log('Dashboard stats:', e); }
-}
 
+        const set = (id, val) => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = val ?? 0;
+        };
+
+        set('stat-opd', s.opd_today);
+        set('stat-beds', s.beds_occupied);
+        set('stat-pending', s.pending_orders);
+        set('stat-icu', s.icu_patients);
+        set('stat-rx', s.prescriptions_today);
+        set('reg-today', s.opd_today);
+        set('reg-waiting', s.waiting);
+    } catch(e) {
+        console.log('Dashboard stats:', e.message);
+    }
+}
 window.addEventListener('load', loadRealStats);
-setInterval(loadRealStats, 60000);
+setInterval(loadRealStats, 30000);
 </script>
