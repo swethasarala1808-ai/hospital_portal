@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Hospital Management System</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', sans-serif; background: #0f1117; color: #e2e8f0; min-height: 100vh; }
+    .header {
+      background: #1a1d27; border-bottom: 1px solid #2d3748;
+      padding: 16px 32px; display: flex; align-items: center; justify-content: space-between;
+    }
+    .header-left { display: flex; align-items: center; gap: 16px; }
+    .header-left h1 { font-size: 20px; font-weight: 700; color: #fff; }
+    .badge { background: #6c5ce7; color: #fff; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+    .header-right { display: flex; align-items: center; gap: 16px; }
+    .user-email { color: #94a3b8; font-size: 14px; }
+    .btn-signout {
+      background: #dc2626; color: #fff; border: none; padding: 8px 18px;
+      border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;
+    }
+    .container { max-width: 1200px; margin: 40px auto; padding: 0 24px; }
+    h2 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+    .subtitle { color: #94a3b8; margin-bottom: 36px; font-size: 15px; }
+    .portal-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
+    .portal-card {
+      background: #1a1d27; border: 1px solid #2d3748; border-radius: 16px;
+      padding: 32px; cursor: pointer; transition: all 0.2s; text-decoration: none; color: inherit; display: block;
+    }
+    .portal-card:hover { border-color: #6c5ce7; transform: translateY(-4px); box-shadow: 0 12px 40px rgba(108,92,231,0.15); }
+    .portal-icon { font-size: 48px; margin-bottom: 20px; }
+    .portal-card h3 { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+    .portal-card p { color: #94a3b8; font-size: 14px; line-height: 1.6; margin-bottom: 20px; }
+    .portal-features { list-style: none; }
+    .portal-features li { color: #64748b; font-size: 13px; padding: 4px 0; }
+    .portal-features li::before { content: "✓ "; color: #6c5ce7; font-weight: 700; }
+    .portal-badge {
+      display: inline-block; padding: 4px 10px; border-radius: 20px;
+      font-size: 11px; font-weight: 700; margin-top: 16px;
+    }
+    .badge-admin { background: #1e40af22; color: #60a5fa; border: 1px solid #1e40af; }
+    .badge-doctor { background: #14532d22; color: #4ade80; border: 1px solid #14532d; }
+    .badge-nurse { background: #7c2d1222; color: #fb923c; border: 1px solid #7c2d12; }
+    .badge-reception { background: #4c1d9522; color: #a78bfa; border: 1px solid #4c1d95; }
+    .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 36px; }
+    .stat-card { background: #1a1d27; border: 1px solid #2d3748; border-radius: 12px; padding: 20px; }
+    .stat-label { color: #64748b; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+    .stat-value { font-size: 32px; font-weight: 800; margin-top: 8px; }
+    .stat-blue { color: #60a5fa; }
+    .stat-green { color: #4ade80; }
+    .stat-orange { color: #fb923c; }
+    .stat-purple { color: #a78bfa; }
+    .loading { text-align: center; color: #64748b; padding: 20px; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-left">
+      <span style="font-size:32px">🏥</span>
+      <h1>Hospital Management System</h1>
+      <span class="badge">Admin</span>
+    </div>
+    <div class="header-right">
+      <span class="user-email" id="userEmail">Loading...</span>
+      <button class="btn-signout" onclick="signOut()">Sign Out</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <h2>Welcome to HMS Dashboard</h2>
+    <p class="subtitle">Select a portal to manage hospital operations</p>
+
+    <div class="stats-row" id="statsRow">
+      <div class="stat-card"><div class="stat-label">Today's Patients</div><div class="stat-value stat-blue" id="statPatients">—</div></div>
+      <div class="stat-card"><div class="stat-label">Pending Queue</div><div class="stat-value stat-orange" id="statQueue">—</div></div>
+      <div class="stat-card"><div class="stat-label">Completed Today</div><div class="stat-value stat-green" id="statCompleted">—</div></div>
+      <div class="stat-card"><div class="stat-label">Doctors Active</div><div class="stat-value stat-purple" id="statDoctors">—</div></div>
+    </div>
+
+    <div class="portal-grid">
+      <a href="/reception-portal" class="portal-card">
+        <div class="portal-icon">🏨</div>
+        <h3>Reception / OPD</h3>
+        <p>Patient registration, token generation and queue management for outpatient department.</p>
+        <ul class="portal-features">
+          <li>Patient Registration</li>
+          <li>Token Generation & Print</li>
+          <li>Queue Management</li>
+          <li>Triage Status</li>
+        </ul>
+        <span class="portal-badge badge-reception">Reception Staff</span>
+      </a>
+
+      <a href="/nurse-portal" class="portal-card">
+        <div class="portal-icon">👩‍⚕️</div>
+        <h3>Nurse Portal</h3>
+        <p>Vital signs recording, nursing tasks, patient reports and lab sample collection.</p>
+        <ul class="portal-features">
+          <li>Vital Signs Recording</li>
+          <li>Nursing Tasks</li>
+          <li>Patient Reports</li>
+          <li>Lab Sample Collection</li>
+        </ul>
+        <span class="portal-badge badge-nurse">Nursing Staff</span>
+      </a>
+
+      <a href="/doctor-portal" class="portal-card">
+        <div class="portal-icon">🩺</div>
+        <h3>Doctor / OPD Consultation</h3>
+        <p>Patient consultation, prescription, lab/radiology requests, and service orders.</p>
+        <ul class="portal-features">
+          <li>Patient Queue & Consultation</li>
+          <li>Lab & Radiology Requests</li>
+          <li>Prescription & Summary</li>
+          <li>Service Requests</li>
+        </ul>
+        <span class="portal-badge badge-doctor">Doctors</span>
+      </a>
+
+      <a href="/admin-portal" class="portal-card">
+        <div class="portal-icon">⚙️</div>
+        <h3>Admin Portal</h3>
+        <p>System configuration, user management, reports and hospital settings.</p>
+        <ul class="portal-features">
+          <li>User Management</li>
+          <li>System Reports</li>
+          <li>Configuration</li>
+          <li>Analytics</li>
+        </ul>
+        <span class="portal-badge badge-admin">Administrators</span>
+      </a>
+    </div>
+  </div>
+
+  <script>
+    const BASE_URL = window.location.origin;
+
+    function signOut() {
+      window.location.href = BASE_URL + '/logout';
+    }
+
+    async function safeFetch(url) {
+      try {
+        const res = await fetch(url, {
+          headers: { 'Accept': 'application/json', 'X-Frappe-CSRF-Token': getCsrf() }
+        });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const ct = res.headers.get('content-type') || '';
+        if (!ct.includes('application/json')) throw new Error('Not JSON');
+        return await res.json();
+      } catch (e) {
+        console.warn('safeFetch failed:', url, e.message);
+        return null;
+      }
+    }
+
+    function getCsrf() {
+      return (document.cookie.split(';').find(c => c.trim().startsWith('csrf_token=')) || '').split('=')[1] || '';
+    }
+
+    async function loadStats() {
+      const today = new Date().toISOString().split('T')[0] + ' 00:00:00';
+      const fields = JSON.stringify(['name','triage_status']);
+      const filters = JSON.stringify([['creation', '>=', today]]);
+      const data = await safeFetch(`${BASE_URL}/api/resource/Patient%20Registration?fields=${encodeURIComponent(fields)}&filters=${encodeURIComponent(filters)}&limit=500`);
+      if (data && data.data) {
+        const all = data.data;
+        document.getElementById('statPatients').textContent = all.length;
+        document.getElementById('statQueue').textContent = all.filter(p => ['Pending','Vitals Recorded'].includes(p.triage_status)).length;
+        document.getElementById('statCompleted').textContent = all.filter(p => p.triage_status === 'Completed').length;
+      }
+
+      const userData = await safeFetch(`${BASE_URL}/api/method/frappe.client.get_count?doctype=User&filters=${encodeURIComponent('[["role_profile_name","like","%Doctor%"]]')}`);
+      if (userData && userData.message !== undefined) {
+        document.getElementById('statDoctors').textContent = userData.message || '—';
+      }
+    }
+
+    async function loadUser() {
+      const data = await safeFetch(`${BASE_URL}/api/method/frappe.auth.get_logged_user`);
+      if (data && data.message) {
+        document.getElementById('userEmail').textContent = data.message;
+      }
+    }
+
+    loadUser();
+    loadStats();
+  </script>
+</body>
+</html>

@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Reception / OPD - Hospital</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Segoe UI',sans-serif; background:#0f1117; color:#e2e8f0; min-height:100vh; }
+    .header { background:#1a1d27; border-bottom:1px solid #2d3748; padding:14px 28px; display:flex; align-items:center; justify-content:space-between; }
+    .header-left { display:flex; align-items:center; gap:12px; }
+    .header-left h1 { font-size:18px; font-weight:700; color:#fff; }
+    .badge { background:#6c5ce7; color:#fff; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:700; }
+    .header-right { display:flex; align-items:center; gap:14px; }
+    .user-email { color:#94a3b8; font-size:13px; }
+    .btn { border:none; padding:8px 16px; border-radius:8px; cursor:pointer; font-size:13px; font-weight:600; transition:all 0.2s; }
+    .btn-red { background:#dc2626; color:#fff; }
+    .btn-purple { background:#6c5ce7; color:#fff; }
+    .btn-green { background:#059669; color:#fff; }
+    .btn-outline { background:transparent; border:1px solid #4b5563; color:#94a3b8; }
+    .btn:hover { opacity:0.85; }
+    .layout { display:grid; grid-template-columns:380px 1fr; height:calc(100vh - 60px); }
+    .sidebar { background:#1a1d27; border-right:1px solid #2d3748; overflow-y:auto; }
+    .main { overflow-y:auto; padding:24px; }
+    .panel-header { padding:20px; border-bottom:1px solid #2d3748; display:flex; align-items:center; justify-content:space-between; }
+    .panel-title { font-size:15px; font-weight:700; }
+    .count-badge { background:#6c5ce7; color:#fff; border-radius:50%; width:24px; height:24px; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; }
+    .queue-list { padding:12px; }
+    .queue-item {
+      background:#111420; border:1px solid #2d3748; border-radius:10px;
+      padding:14px; margin-bottom:8px; cursor:pointer; transition:all 0.2s;
+    }
+    .queue-item:hover, .queue-item.active { border-color:#6c5ce7; background:#1a1d2f; }
+    .queue-item-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; }
+    .token-num { background:#6c5ce7; color:#fff; padding:4px 10px; border-radius:20px; font-size:13px; font-weight:700; }
+    .patient-name { font-weight:600; font-size:14px; }
+    .patient-info { color:#64748b; font-size:12px; margin-top:4px; }
+    .status-badge {
+      display:inline-block; padding:3px 8px; border-radius:12px; font-size:11px; font-weight:700;
+    }
+    .status-Pending { background:#92400e22; color:#fbbf24; border:1px solid #92400e; }
+    .status-Vitals { background:#1e3a8a22; color:#60a5fa; border:1px solid #1e3a8a; }
+    .status-Consulting { background:#14532d22; color:#4ade80; border:1px solid #14532d; }
+    .status-Completed { background:#1f2937; color:#6b7280; border:1px solid #374151; }
+    .empty-state { text-align:center; padding:40px 20px; color:#4b5563; }
+    .empty-state .icon { font-size:40px; margin-bottom:12px; }
+    /* Form */
+    .form-card { background:#1a1d27; border:1px solid #2d3748; border-radius:16px; padding:28px; max-width:800px; }
+    .form-title { font-size:18px; font-weight:700; margin-bottom:24px; color:#fff; }
+    .form-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px; }
+    .form-group { margin-bottom:16px; }
+    .form-group label { display:block; font-size:13px; font-weight:600; color:#94a3b8; margin-bottom:6px; }
+    .form-group input, .form-group select, .form-group textarea {
+      width:100%; background:#111420; border:1px solid #374151; color:#e2e8f0;
+      padding:10px 14px; border-radius:8px; font-size:14px; outline:none; transition:border 0.2s;
+    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color:#6c5ce7; }
+    .form-group textarea { min-height:80px; resize:vertical; }
+    .form-group select option { background:#1a1d27; }
+    .form-actions { display:flex; gap:12px; margin-top:20px; }
+    /* Token Print */
+    .token-preview {
+      background:#1a1d27; border:1px solid #2d3748; border-radius:16px; padding:28px; max-width:800px;
+    }
+    .token-print-area {
+      background:#fff; color:#000; border-radius:12px; padding:32px; text-align:center;
+      max-width:400px; margin:0 auto;
+    }
+    .token-print-area h2 { font-size:16px; color:#333; margin-bottom:4px; }
+    .token-print-area .hosp-name { font-size:20px; font-weight:800; color:#1a1a2e; margin-bottom:16px; }
+    .token-print-area .token-big { font-size:96px; font-weight:900; color:#6c5ce7; line-height:1; margin:16px 0; }
+    .token-print-area .token-label { font-size:14px; color:#666; text-transform:uppercase; letter-spacing:2px; margin-bottom:20px; }
+    .token-print-area table { width:100%; text-align:left; border-collapse:collapse; margin-top:16px; }
+    .token-print-area table td { padding:6px 4px; font-size:13px; border-bottom:1px solid #eee; }
+    .token-print-area table td:first-child { color:#666; width:40%; }
+    .token-print-area table td:last-child { font-weight:600; }
+    .token-print-area .visit-type { background:#6c5ce7; color:#fff; padding:4px 14px; border-radius:20px; font-size:12px; margin-top:16px; display:inline-block; }
+    .token-print-area .footer { margin-top:20px; color:#999; font-size:11px; border-top:1px solid #eee; padding-top:12px; }
+    .tab-bar { display:flex; gap:4px; background:#111420; padding:6px; border-radius:10px; margin-bottom:24px; }
+    .tab { padding:8px 20px; border-radius:7px; cursor:pointer; font-size:14px; font-weight:600; color:#64748b; transition:all 0.2s; }
+    .tab.active { background:#6c5ce7; color:#fff; }
+    /* Today's queue table */
+    .queue-table { width:100%; border-collapse:collapse; }
+    .queue-table th { background:#111420; color:#64748b; font-size:12px; padding:10px 12px; text-align:left; font-weight:700; text-transform:uppercase; }
+    .queue-table td { padding:12px; border-bottom:1px solid #1e2433; font-size:13px; }
+    .queue-table tr:hover td { background:#111420; }
+    .action-btn { background:transparent; border:1px solid #374151; color:#94a3b8; padding:5px 10px; border-radius:6px; cursor:pointer; font-size:12px; margin-right:4px; }
+    .action-btn:hover { border-color:#6c5ce7; color:#6c5ce7; }
+    .editable { cursor:pointer; }
+    .editable:hover { color:#a78bfa; text-decoration:underline; }
+    select.inline-edit { background:#111420; border:1px solid #6c5ce7; color:#e2e8f0; padding:4px 8px; border-radius:6px; font-size:12px; }
+    .alert { padding:12px 16px; border-radius:8px; margin-bottom:16px; font-size:14px; }
+    .alert-success { background:#14532d22; border:1px solid #14532d; color:#4ade80; }
+    .alert-error { background:#7f1d1d22; border:1px solid #7f1d1d; color:#f87171; }
+    @media print {
+      body > *:not(.print-only) { display:none !important; }
+      .print-only { display:block !important; }
+      .token-print-area { box-shadow:none; border:none; }
+    }
+  </style>
+</head>
+<body>
+<div class="header">
+  <div class="header-left">
+    <span style="font-size:28px">🏨</span>
+    <h1>Reception / OPD</h1>
+    <span class="badge">Reception</span>
+  </div>
+  <div class="header-right">
+    <span class="user-email" id="userEmail"></span>
+    <button class="btn btn-outline" onclick="window.location.href='/'">🏠 Dashboard</button>
+    <button class="btn btn-red" onclick="window.location.href='/logout'">Sign Out</button>
+  </div>
+</div>
+
+<div class="layout">
+  <!-- Sidebar: Today's Queue -->
+  <div class="sidebar">
+    <div class="panel-header">
+      <span class="panel-title">Today's Queue</span>
+      <span class="count-badge" id="queueCount">0</span>
+    </div>
+    <div class="queue-list" id="queueList">
+      <div class="empty-state"><div class="icon">✅</div><p>No patients yet</p></div>
+    </div>
+  </div>
+
+  <!-- Main Panel -->
+  <div class="main">
+    <div class="tab-bar">
+      <div class="tab active" onclick="showTab('register')">➕ Register Patient</div>
+      <div class="tab" onclick="showTab('queue')">📋 Today's Queue</div>
+      <div class="tab" onclick="showTab('token')">🎫 Print Token</div>
+    </div>
+
+    <!-- Register Tab -->
+    <div id="tab-register">
+      <div id="alertBox"></div>
+      <div class="form-card">
+        <div class="form-title">Register New Patient</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Patient Full Name *</label>
+            <input id="patientName" type="text" placeholder="Enter full name"/>
+          </div>
+          <div class="form-group">
+            <label>Date of Birth *</label>
+            <input id="dob" type="date"/>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Gender *</label>
+            <select id="gender">
+              <option value="">Select Gender</option>
+              <option>Male</option><option>Female</option><option>Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Phone Number *</label>
+            <input id="phone" type="tel" placeholder="+91 9876543210"/>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Visit Type *</label>
+            <select id="visitType">
+              <option value="">Select Visit Type</option>
+              <option>OPD</option><option>Emergency</option><option>Follow-up</option><option>Lab Only</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Assigned Doctor</label>
+            <select id="doctor">
+              <option value="">Any Available Doctor</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Chief Complaint / Reason for Visit *</label>
+          <textarea id="complaint" placeholder="Describe main complaint or reason for visit..."></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Address</label>
+            <input id="address" type="text" placeholder="Patient address"/>
+          </div>
+          <div class="form-group">
+            <label>Emergency Contact</label>
+            <input id="emergencyContact" type="text" placeholder="Name & Phone"/>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-purple" onclick="registerPatient()">🎫 Register & Generate Token</button>
+          <button class="btn btn-outline" onclick="clearForm()">Clear</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Queue Tab -->
+    <div id="tab-queue" style="display:none">
+      <div class="form-card" style="max-width:100%">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
+          <div class="form-title" style="margin:0">Today's Registered Patients</div>
+          <button class="btn btn-purple" onclick="loadQueue()">🔄 Refresh</button>
+        </div>
+        <table class="queue-table">
+          <thead>
+            <tr>
+              <th>Token</th><th>Patient Name</th><th>Visit Type</th>
+              <th>Chief Complaint</th><th>Status</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="queueTableBody">
+            <tr><td colspan="6" style="text-align:center;color:#4b5563;padding:30px">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Token Tab -->
+    <div id="tab-token" style="display:none">
+      <div class="token-preview">
+        <div class="form-title">Token Slip Preview</div>
+        <div id="tokenDisplay">
+          <div class="empty-state"><div class="icon">🎫</div><p>Register a patient to generate token</p></div>
+        </div>
+        <div style="margin-top:20px; display:none" id="printBtn">
+          <button class="btn btn-purple" onclick="printToken()">🖨️ Print Token</button>
+          <button class="btn btn-green" onclick="showTab('register')" style="margin-left:8px">➕ New Patient</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const BASE = window.location.origin;
+let lastRegistered = null;
+let editingStatus = {};
+
+function getCsrf() {
+  return (document.cookie.split(';').find(c=>c.trim().startsWith('csrf_token='))||'').split('=')[1]||'';
+}
+
+async function apiFetch(url, options={}) {
+  try {
+    const res = await fetch(url, {
+      headers: { 'Accept':'application/json','Content-Type':'application/json','X-Frappe-CSRF-Token':getCsrf() },
+      ...options
+    });
+    const ct = res.headers.get('content-type')||'';
+    if (!ct.includes('application/json')) {
+      console.warn('Non-JSON response from', url);
+      return null;
+    }
+    const data = await res.json();
+    if (!res.ok) { console.warn('API error:', data); return null; }
+    return data;
+  } catch(e) { console.error('Fetch error:', e); return null; }
+}
+
+function showAlert(msg, type='success') {
+  const el = document.getElementById('alertBox');
+  el.innerHTML = `<div class="alert alert-${type}">${msg}</div>`;
+  setTimeout(()=>{ el.innerHTML=''; }, 5000);
+}
+
+function showTab(tab) {
+  ['register','queue','token'].forEach(t => {
+    document.getElementById('tab-'+t).style.display = t===tab ? 'block' : 'none';
+  });
+  document.querySelectorAll('.tab').forEach((el,i)=>{
+    el.classList.toggle('active', ['register','queue','token'][i]===tab);
+  });
+  if (tab === 'queue') loadQueue();
+}
+
+async function loadUser() {
+  const d = await apiFetch(`${BASE}/api/method/frappe.auth.get_logged_user`);
+  if (d && d.message) document.getElementById('userEmail').textContent = d.message;
+}
+
+async function loadDoctors() {
+  const fields = encodeURIComponent('["name","full_name"]');
+  const filters = encodeURIComponent('[["role_profile_name","like","%Doctor%"]]');
+  const d = await apiFetch(`${BASE}/api/resource/User?fields=${fields}&filters=${filters}&limit=50`);
+  const sel = document.getElementById('doctor');
+  if (d && d.data) {
+    d.data.forEach(doc => {
+      const opt = document.createElement('option');
+      opt.value = doc.name;
+      opt.textContent = doc.full_name || doc.name;
+      sel.appendChild(opt);
+    });
+  }
+}
+
+async function loadSidebarQueue() {
+  const today = new Date().toISOString().split('T')[0] + ' 00:00:00';
+  const fields = encodeURIComponent('["name","patient_name","token_number","triage_status","visit_type"]');
+  const filters = encodeURIComponent(`[["creation",">=","${today}"],["triage_status","in","Pending,Vitals Recorded,Consulting"]]`);
+  const d = await apiFetch(`${BASE}/api/resource/Patient%20Registration?fields=${fields}&filters=${filters}&order_by=token_number%20asc&limit=50`);
+  const list = document.getElementById('queueList');
+  const count = document.getElementById('queueCount');
+  if (d && d.data && d.data.length > 0) {
+    count.textContent = d.data.length;
+    list.innerHTML = d.data.map(p => `
+      <div class="queue-item">
+        <div class="queue-item-header">
+          <span class="token-num">T-${p.token_number||'?'}</span>
+          <span class="status-badge status-${(p.triage_status||'Pending').replace(' ','')}">${p.triage_status||'Pending'}</span>
+        </div>
+        <div class="patient-name">${p.patient_name||'—'}</div>
+        <div class="patient-info">${p.visit_type||'OPD'}</div>
+      </div>
+    `).join('');
+  } else {
+    count.textContent = '0';
+    list.innerHTML = '<div class="empty-state"><div class="icon">✅</div><p>No patients in queue</p></div>';
+  }
+}
+
+async function loadQueue() {
+  const today = new Date().toISOString().split('T')[0] + ' 00:00:00';
+  const fields = encodeURIComponent('["name","patient_name","token_number","triage_status","visit_type","chief_complaint","creation"]');
+  const filters = encodeURIComponent(`[["creation",">=","${today}"]]`);
+  const d = await apiFetch(`${BASE}/api/resource/Patient%20Registration?fields=${fields}&filters=${filters}&order_by=token_number%20asc&limit=100`);
+  const tbody = document.getElementById('queueTableBody');
+  if (d && d.data && d.data.length > 0) {
+    tbody.innerHTML = d.data.map(p => `
+      <tr id="row-${p.name}">
+        <td><span class="token-num">T-${p.token_number||'?'}</span></td>
+        <td>${p.patient_name||'—'}</td>
+        <td>${p.visit_type||'OPD'}</td>
+        <td>${(p.chief_complaint||'').substring(0,40)}${p.chief_complaint&&p.chief_complaint.length>40?'...':''}</td>
+        <td id="status-${p.name}">
+          <span class="status-badge status-${(p.triage_status||'Pending').replace(' ','')}">
+            ${p.triage_status||'Pending'}
+          </span>
+        </td>
+        <td>
+          <button class="action-btn" onclick="editStatus('${p.name}','${p.triage_status||'Pending'}')">✏️ Edit</button>
+          <button class="action-btn" onclick="printTokenFor('${p.name}','${p.patient_name}','${p.token_number}','${p.visit_type}','${p.chief_complaint||''}')">🖨️ Print</button>
+        </td>
+      </tr>
+    `).join('');
+  } else {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#4b5563;padding:30px">No patients today</td></tr>';
+  }
+}
+
+function editStatus(name, currentStatus) {
+  const cell = document.getElementById('status-'+name);
+  cell.innerHTML = `
+    <select class="inline-edit" onchange="updateStatus('${name}', this.value)">
+      <option ${currentStatus==='Pending'?'selected':''}>Pending</option>
+      <option ${currentStatus==='Vitals Recorded'?'selected':''}>Vitals Recorded</option>
+      <option ${currentStatus==='Consulting'?'selected':''}>Consulting</option>
+      <option ${currentStatus==='Completed'?'selected':''}>Completed</option>
+    </select>
+  `;
+}
+
+async function updateStatus(name, newStatus) {
+  const d = await apiFetch(`${BASE}/api/resource/Patient%20Registration/${name}`, {
+    method: 'PUT',
+    body: JSON.stringify({ triage_status: newStatus })
+  });
+  if (d) {
+    const cell = document.getElementById('status-'+name);
+    cell.innerHTML = `<span class="status-badge status-${newStatus.replace(' ','')}">${newStatus}</span>`;
+    loadSidebarQueue();
+  } else {
+    alert('Failed to update status. Please try again.');
+  }
+}
+
+async function registerPatient() {
+  const name = document.getElementById('patientName').value.trim();
+  const dob = document.getElementById('dob').value;
+  const gender = document.getElementById('gender').value;
+  const phone = document.getElementById('phone').value.trim();
+  const visitType = document.getElementById('visitType').value;
+  const complaint = document.getElementById('complaint').value.trim();
+  const doctor = document.getElementById('doctor').value;
+  const address = document.getElementById('address').value.trim();
+
+  if (!name || !dob || !gender || !phone || !visitType || !complaint) {
+    showAlert('Please fill in all required fields (*)','error');
+    return;
+  }
+
+  // Get today's token count
+  const today = new Date().toISOString().split('T')[0] + ' 00:00:00';
+  const filters = encodeURIComponent(`[["creation",">=","${today}"]]`);
+  const countData = await apiFetch(`${BASE}/api/resource/Patient%20Registration?fields=${encodeURIComponent('["token_number"]')}&filters=${filters}&order_by=token_number%20desc&limit=1`);
+  let nextToken = 1;
+  if (countData && countData.data && countData.data.length > 0) {
+    nextToken = (parseInt(countData.data[0].token_number) || 0) + 1;
+  }
+
+  const payload = {
+    patient_name: name,
+    date_of_birth: dob,
+    gender,
+    phone,
+    visit_type: visitType,
+    chief_complaint: complaint,
+    token_number: nextToken,
+    triage_status: 'Pending',
+    assigned_doctor: doctor || undefined,
+    address,
+    registration_date: new Date().toISOString().split('T')[0]
+  };
+
+  const d = await apiFetch(`${BASE}/api/resource/Patient%20Registration`, {
+    method: 'POST',
+    body: JSON.stringify(payload)
+  });
+
+  if (d && d.data) {
+    lastRegistered = { ...d.data, token_number: nextToken, patient_name: name, visit_type: visitType, chief_complaint: complaint, date_of_birth: dob, gender, phone };
+    showAlert(`✅ Patient registered successfully! Token: T-${nextToken}`);
+    clearForm();
+    loadSidebarQueue();
+    showTokenPreview(lastRegistered);
+    showTab('token');
+  } else {
+    showAlert('❌ Registration failed. Check your connection and try again.', 'error');
+  }
+}
+
+function showTokenPreview(patient) {
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString('en-IN', {hour:'2-digit',minute:'2-digit'});
+  const dateStr = now.toLocaleDateString('en-IN', {day:'2-digit',month:'short',year:'numeric'});
+  document.getElementById('tokenDisplay').innerHTML = `
+    <div class="token-print-area" id="tokenPrintArea">
+      <div class="hosp-name">🏥 City Hospital</div>
+      <div style="font-size:12px;color:#666;margin-bottom:8px">OPD Consultation Token</div>
+      <div class="token-label">Token Number</div>
+      <div class="token-big">${patient.token_number}</div>
+      <span class="visit-type">${patient.visit_type||'OPD'}</span>
+      <table>
+        <tr><td>Patient Name</td><td>${patient.patient_name}</td></tr>
+        <tr><td>Gender</td><td>${patient.gender||'—'}</td></tr>
+        <tr><td>Date of Birth</td><td>${patient.date_of_birth||'—'}</td></tr>
+        <tr><td>Phone</td><td>${patient.phone||'—'}</td></tr>
+        <tr><td>Complaint</td><td>${(patient.chief_complaint||'').substring(0,40)}</td></tr>
+        <tr><td>Date</td><td>${dateStr}</td></tr>
+        <tr><td>Time</td><td>${timeStr}</td></tr>
+        <tr><td>Status</td><td>⏳ Waiting</td></tr>
+      </table>
+      <div class="footer">Please wait for your token to be called • Keep this slip safe</div>
+    </div>
+  `;
+  document.getElementById('printBtn').style.display = 'flex';
+}
+
+function printTokenFor(name, patientName, token, visitType, complaint) {
+  lastRegistered = { name, patient_name: patientName, token_number: token, visit_type: visitType, chief_complaint: complaint };
+  showTokenPreview(lastRegistered);
+  showTab('token');
+  setTimeout(printToken, 300);
+}
+
+function printToken() {
+  const area = document.getElementById('tokenPrintArea');
+  if (!area) return;
+  const printWin = window.open('', '_blank', 'width=450,height=600');
+  printWin.document.write(`
+    <!DOCTYPE html><html><head><title>Token Slip</title>
+    <style>
+      body { font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; text-align: center; }
+      .hosp { font-size: 22px; font-weight: 800; color: #1a1a2e; margin-bottom: 4px; }
+      .sub { font-size: 12px; color: #666; }
+      .token-big { font-size: 100px; font-weight: 900; color: #6c5ce7; line-height: 1; margin: 12px 0; }
+      .token-label { font-size: 13px; color: #666; text-transform: uppercase; letter-spacing: 2px; }
+      .visit { background: #6c5ce7; color: #fff; padding: 4px 14px; border-radius: 20px; font-size: 12px; display: inline-block; margin: 8px 0; }
+      table { width: 100%; border-collapse: collapse; margin-top: 16px; text-align: left; }
+      td { padding: 7px 4px; font-size: 13px; border-bottom: 1px solid #eee; }
+      td:first-child { color: #666; width: 45%; }
+      td:last-child { font-weight: 600; }
+      .footer { margin-top: 16px; font-size: 11px; color: #999; border-top: 1px solid #eee; padding-top: 12px; }
+      @media print { @page { margin: 0.5cm; } }
+    </style></head><body>
+    <div class="hosp">🏥 City Hospital</div>
+    <div class="sub">OPD Consultation Token</div>
+    <div class="token-label">Token Number</div>
+    <div class="token-big">${lastRegistered.token_number}</div>
+    <div class="visit">${lastRegistered.visit_type||'OPD'}</div>
+    ${area.querySelector('table').outerHTML}
+    <div class="footer">Please wait for your token to be called • Keep this slip safe</div>
+    </body></html>
+  `);
+  printWin.document.close();
+  printWin.focus();
+  setTimeout(()=>{ printWin.print(); }, 300);
+}
+
+function clearForm() {
+  ['patientName','dob','phone','complaint','address','emergencyContact'].forEach(id=>{
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  ['gender','visitType','doctor'].forEach(id=>{
+    const el = document.getElementById(id);
+    if (el) el.selectedIndex = 0;
+  });
+}
+
+loadUser();
+loadDoctors();
+loadSidebarQueue();
+setInterval(loadSidebarQueue, 30000);
+</script>
+</body>
+</html>

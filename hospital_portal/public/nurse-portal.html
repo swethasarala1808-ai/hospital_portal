@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Nurse Portal - Hospital</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Segoe UI',sans-serif; background:#0f1117; color:#e2e8f0; min-height:100vh; }
+    .header { background:#1a1d27; border-bottom:1px solid #2d3748; padding:14px 28px; display:flex; align-items:center; justify-content:space-between; }
+    .header-left { display:flex; align-items:center; gap:12px; }
+    .header-left h1 { font-size:18px; font-weight:700; color:#fff; }
+    .badge { background:#f97316; color:#fff; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:700; }
+    .header-right { display:flex; align-items:center; gap:14px; }
+    .user-email { color:#94a3b8; font-size:13px; }
+    .btn { border:none; padding:8px 16px; border-radius:8px; cursor:pointer; font-size:13px; font-weight:600; transition:all 0.2s; }
+    .btn-red { background:#dc2626; color:#fff; }
+    .btn-orange { background:#f97316; color:#fff; }
+    .btn-outline { background:transparent; border:1px solid #4b5563; color:#94a3b8; }
+    .btn-green { background:#059669; color:#fff; }
+    .btn:hover { opacity:0.85; }
+    .layout { display:grid; grid-template-columns:300px 1fr; height:calc(100vh - 60px); }
+    .sidebar { background:#1a1d27; border-right:1px solid #2d3748; overflow-y:auto; }
+    .main { overflow-y:auto; padding:24px; }
+    .panel-header { padding:18px 16px; border-bottom:1px solid #2d3748; display:flex; align-items:center; justify-content:space-between; }
+    .panel-title { font-size:14px; font-weight:700; }
+    .count-badge { background:#f97316; color:#fff; border-radius:50%; width:24px; height:24px; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; }
+    .queue-item { padding:14px 16px; border-bottom:1px solid #1e2433; cursor:pointer; transition:background 0.15s; }
+    .queue-item:hover, .queue-item.selected { background:#1f2433; border-left:3px solid #f97316; }
+    .queue-item-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; }
+    .token-num { background:#f97316; color:#fff; padding:3px 9px; border-radius:20px; font-size:12px; font-weight:700; }
+    .patient-name { font-weight:600; font-size:14px; }
+    .patient-sub { color:#64748b; font-size:12px; margin-top:3px; }
+    .status-badge { display:inline-block; padding:2px 7px; border-radius:10px; font-size:11px; font-weight:700; }
+    .status-Pending { background:#92400e22; color:#fbbf24; border:1px solid #92400e; }
+    .status-VitalsRecorded { background:#1e3a8a22; color:#60a5fa; border:1px solid #1e3a8a; }
+    .status-Completed { background:#1f2937; color:#6b7280; border:1px solid #374151; }
+    .empty-state { text-align:center; padding:40px 16px; color:#4b5563; }
+    .empty-state .icon { font-size:36px; margin-bottom:10px; }
+    /* Tabs */
+    .tab-bar { display:flex; gap:4px; background:#111420; padding:6px; border-radius:10px; margin-bottom:24px; flex-wrap:wrap; }
+    .tab { padding:8px 16px; border-radius:7px; cursor:pointer; font-size:13px; font-weight:600; color:#64748b; transition:all 0.2s; white-space:nowrap; }
+    .tab.active { background:#f97316; color:#fff; }
+    /* Cards */
+    .card { background:#1a1d27; border:1px solid #2d3748; border-radius:14px; padding:24px; margin-bottom:20px; }
+    .card-title { font-size:16px; font-weight:700; margin-bottom:18px; color:#fff; display:flex; align-items:center; gap:8px; }
+    .form-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px; }
+    .form-row-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; margin-bottom:14px; }
+    .form-group label { display:block; font-size:12px; font-weight:600; color:#94a3b8; margin-bottom:5px; }
+    .form-group input, .form-group select, .form-group textarea {
+      width:100%; background:#111420; border:1px solid #374151; color:#e2e8f0;
+      padding:9px 12px; border-radius:8px; font-size:13px; outline:none; transition:border 0.2s;
+    }
+    .form-group input:focus, .form-group select:focus { border-color:#f97316; }
+    .form-group textarea { min-height:80px; resize:vertical; }
+    .vital-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(140px,1fr)); gap:12px; margin-bottom:20px; }
+    .vital-box { background:#111420; border:1px solid #2d3748; border-radius:10px; padding:14px; text-align:center; }
+    .vital-label { font-size:11px; color:#64748b; font-weight:600; text-transform:uppercase; margin-bottom:6px; }
+    .vital-input { width:100%; background:transparent; border:none; color:#e2e8f0; font-size:22px; font-weight:700; text-align:center; outline:none; }
+    .vital-unit { font-size:11px; color:#4b5563; margin-top:4px; }
+    .vital-normal { color:#4ade80; }
+    .vital-warning { color:#fbbf24; }
+    .vital-danger { color:#f87171; }
+    /* Patient header */
+    .patient-header { background:linear-gradient(135deg,#1a1d27,#1f2433); border:1px solid #2d3748; border-radius:14px; padding:20px; margin-bottom:20px; display:flex; align-items:center; justify-content:space-between; }
+    .patient-header-info h3 { font-size:18px; font-weight:700; }
+    .patient-header-info p { color:#64748b; font-size:13px; margin-top:4px; }
+    .patient-header-token { font-size:40px; font-weight:800; color:#f97316; }
+    .task-item { display:flex; align-items:center; gap:12px; padding:12px; background:#111420; border-radius:10px; margin-bottom:8px; }
+    .task-check { width:20px; height:20px; border-radius:5px; border:2px solid #374151; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:all 0.2s; }
+    .task-check.done { background:#059669; border-color:#059669; color:#fff; }
+    .task-label { flex:1; font-size:14px; }
+    .task-label.done { color:#4b5563; text-decoration:line-through; }
+    .task-time { font-size:11px; color:#4b5563; }
+    .btn-sm { padding:5px 12px; font-size:12px; border-radius:6px; border:none; cursor:pointer; font-weight:600; }
+    .btn-sm-orange { background:#f9731622; color:#f97316; border:1px solid #f97316; }
+    .btn-sm-orange:hover { background:#f97316; color:#fff; }
+    .lab-type { background:#111420; border:1px solid #2d3748; border-radius:10px; padding:14px; margin-bottom:8px; display:flex; align-items:center; justify-content:space-between; }
+    .lab-type-name { font-weight:600; font-size:14px; }
+    .lab-type-sub { font-size:12px; color:#64748b; margin-top:2px; }
+    .select-btn { background:#f97316; color:#fff; border:none; padding:5px 14px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:600; }
+    .select-btn.selected { background:#059669; }
+    .alert { padding:10px 14px; border-radius:8px; margin-bottom:14px; font-size:13px; }
+    .alert-success { background:#14532d22; border:1px solid #14532d; color:#4ade80; }
+    .alert-error { background:#7f1d1d22; border:1px solid #7f1d1d; color:#f87171; }
+    .no-patient { text-align:center; padding:60px 20px; }
+    .no-patient .icon { font-size:60px; margin-bottom:16px; }
+    .no-patient p { color:#4b5563; font-size:16px; }
+    .history-item { background:#111420; border-radius:10px; padding:14px; margin-bottom:8px; }
+    .history-meta { font-size:11px; color:#4b5563; margin-bottom:6px; }
+    .history-value { font-size:14px; font-weight:600; }
+  </style>
+</head>
+<body>
+<div class="header">
+  <div class="header-left">
+    <span style="font-size:28px">👩‍⚕️</span>
+    <h1>Nurse Portal</h1>
+    <span class="badge">Nurse</span>
+  </div>
+  <div class="header-right">
+    <span class="user-email" id="userEmail"></span>
+    <button class="btn btn-outline" onclick="window.location.href='/'">🏠 Dashboard</button>
+    <button class="btn btn-red" onclick="window.location.href='/logout'">Sign Out</button>
+  </div>
+</div>
+
+<div class="layout">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="panel-header">
+      <span class="panel-title">Patient Queue</span>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="count-badge" id="queueCount">0</span>
+        <button class="btn-sm btn-sm-orange" onclick="loadQueue()">↻</button>
+      </div>
+    </div>
+    <div id="queueList">
+      <div class="empty-state"><div class="icon">👥</div><p>No patients</p></div>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+    <div id="noPatient" class="no-patient">
+      <div class="icon">👩‍⚕️</div>
+      <p>Select a patient from the queue to begin</p>
+    </div>
+
+    <div id="patientPanel" style="display:none">
+      <div class="patient-header">
+        <div class="patient-header-info">
+          <h3 id="pName">—</h3>
+          <p id="pInfo">—</p>
+          <div id="pStatus" style="margin-top:8px"></div>
+        </div>
+        <div class="patient-header-token" id="pToken">—</div>
+      </div>
+
+      <div id="alertBox"></div>
+
+      <div class="tab-bar">
+        <div class="tab active" onclick="showTab('vitals')">❤️ Vital Signs</div>
+        <div class="tab" onclick="showTab('report')">📋 Patient Report</div>
+        <div class="tab" onclick="showTab('tasks')">✅ Nursing Tasks</div>
+        <div class="tab" onclick="showTab('lab')">🧪 Lab Collection</div>
+      </div>
+
+      <!-- Vital Signs -->
+      <div id="tab-vitals">
+        <div class="card">
+          <div class="card-title">❤️ Record Vital Signs</div>
+          <div class="vital-grid">
+            <div class="vital-box">
+              <div class="vital-label">Temperature</div>
+              <input class="vital-input" id="vTemp" type="number" step="0.1" placeholder="98.6"/>
+              <div class="vital-unit">°F</div>
+            </div>
+            <div class="vital-box">
+              <div class="vital-label">Blood Pressure</div>
+              <input class="vital-input" id="vBP" type="text" placeholder="120/80" style="font-size:16px"/>
+              <div class="vital-unit">mmHg</div>
+            </div>
+            <div class="vital-box">
+              <div class="vital-label">Pulse Rate</div>
+              <input class="vital-input" id="vPulse" type="number" placeholder="72"/>
+              <div class="vital-unit">bpm</div>
+            </div>
+            <div class="vital-box">
+              <div class="vital-label">SpO2</div>
+              <input class="vital-input" id="vSpo2" type="number" placeholder="98"/>
+              <div class="vital-unit">%</div>
+            </div>
+            <div class="vital-box">
+              <div class="vital-label">Resp. Rate</div>
+              <input class="vital-input" id="vResp" type="number" placeholder="16"/>
+              <div class="vital-unit">breaths/min</div>
+            </div>
+            <div class="vital-box">
+              <div class="vital-label">Weight</div>
+              <input class="vital-input" id="vWeight" type="number" step="0.1" placeholder="70"/>
+              <div class="vital-unit">kg</div>
+            </div>
+            <div class="vital-box">
+              <div class="vital-label">Height</div>
+              <input class="vital-input" id="vHeight" type="number" placeholder="170"/>
+              <div class="vital-unit">cm</div>
+            </div>
+            <div class="vital-box">
+              <div class="vital-label">Blood Sugar</div>
+              <input class="vital-input" id="vSugar" type="number" placeholder="100"/>
+              <div class="vital-unit">mg/dL</div>
+            </div>
+          </div>
+          <div class="form-group" style="margin-bottom:14px">
+            <label>Notes / Observations</label>
+            <textarea id="vNotes" placeholder="Any observations about the patient's condition..."></textarea>
+          </div>
+          <div style="display:flex;gap:10px">
+            <button class="btn btn-orange" onclick="saveVitals()">💾 Save Vitals & Update Status</button>
+            <button class="btn btn-outline" onclick="clearVitals()">Clear</button>
+          </div>
+        </div>
+
+        <div class="card" id="vitalsHistory" style="display:none">
+          <div class="card-title">📊 Previous Vitals</div>
+          <div id="vitalsHistoryContent"></div>
+        </div>
+      </div>
+
+      <!-- Patient Report -->
+      <div id="tab-report" style="display:none">
+        <div class="card">
+          <div class="card-title">📋 Patient Report & Triage</div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Patient Name</label>
+              <input id="rName" type="text" readonly style="opacity:0.7"/>
+            </div>
+            <div class="form-group">
+              <label>Visit Type</label>
+              <input id="rVisit" type="text" readonly style="opacity:0.7"/>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Gender</label>
+              <input id="rGender" type="text" readonly style="opacity:0.7"/>
+            </div>
+            <div class="form-group">
+              <label>Date of Birth</label>
+              <input id="rDob" type="text" readonly style="opacity:0.7"/>
+            </div>
+          </div>
+          <div class="form-group" style="margin-bottom:14px">
+            <label>Chief Complaint</label>
+            <textarea id="rComplaint" readonly style="opacity:0.7;min-height:60px"></textarea>
+          </div>
+          <div class="form-group" style="margin-bottom:14px">
+            <label>Nurse Notes / Preliminary Assessment</label>
+            <textarea id="rNurseNotes" placeholder="Add your preliminary assessment, observations..."></textarea>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Pain Scale (0-10)</label>
+              <input id="rPain" type="number" min="0" max="10" placeholder="0"/>
+            </div>
+            <div class="form-group">
+              <label>Triage Priority</label>
+              <select id="rPriority">
+                <option value="">Select Priority</option>
+                <option>Low</option><option>Medium</option><option>High</option><option>Critical</option>
+              </select>
+            </div>
+          </div>
+          <div style="display:flex;gap:10px">
+            <button class="btn btn-orange" onclick="saveReport()">💾 Save Report</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Nursing Tasks -->
+      <div id="tab-tasks" style="display:none">
+        <div class="card">
+          <div class="card-title">✅ Nursing Tasks Checklist</div>
+          <div id="taskList"></div>
+          <div style="margin-top:16px;padding-top:16px;border-top:1px solid #2d3748">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Add Custom Task</label>
+                <input id="newTask" type="text" placeholder="Enter task description..."/>
+              </div>
+              <div class="form-group" style="display:flex;align-items:flex-end">
+                <button class="btn btn-orange" onclick="addTask()">+ Add Task</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lab Collection -->
+      <div id="tab-lab" style="display:none">
+        <div class="card">
+          <div class="card-title">🧪 Lab Sample Collection</div>
+          <p style="color:#64748b;font-size:13px;margin-bottom:16px">Select lab tests to collect samples for this patient:</p>
+          <div id="labTypes"></div>
+          <div style="margin-top:16px;border-top:1px solid #2d3748;padding-top:16px">
+            <div class="form-group" style="margin-bottom:14px">
+              <label>Collection Notes</label>
+              <textarea id="labNotes" placeholder="Sample condition, time collected, any special notes..."></textarea>
+            </div>
+            <div style="display:flex;gap:10px;align-items:center">
+              <button class="btn btn-orange" onclick="saveLabCollection()">💾 Save Lab Collection</button>
+              <span id="selectedCount" style="color:#64748b;font-size:13px"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+const BASE = window.location.origin;
+let currentPatient = null;
+let tasks = [];
+let selectedLabs = new Set();
+
+const LAB_TYPES = [
+  { id:'cbc', name:'Complete Blood Count (CBC)', tube:'Purple/EDTA', notes:'Fasting not required' },
+  { id:'rft', name:'Renal Function Test (RFT)', tube:'Red/Plain', notes:'4-6 hrs fasting' },
+  { id:'lft', name:'Liver Function Test (LFT)', tube:'Red/Plain', notes:'8-12 hrs fasting' },
+  { id:'fbs', name:'Fasting Blood Sugar (FBS)', tube:'Grey/Fluoride', notes:'8-12 hrs fasting required' },
+  { id:'ppbs', name:'Post Prandial Blood Sugar (PPBS)', tube:'Grey/Fluoride', notes:'2hrs after meal' },
+  { id:'lipid', name:'Lipid Profile', tube:'Red/Plain', notes:'12 hrs fasting required' },
+  { id:'thyroid', name:'Thyroid Function Test (T3/T4/TSH)', tube:'Red/Plain', notes:'Morning, fasting' },
+  { id:'urine', name:'Urine Routine & Microscopy', tube:'Sterile Container', notes:'Midstream sample' },
+  { id:'culture', name:'Blood Culture', tube:'Blood Culture Bottle', notes:'Before antibiotics' },
+  { id:'hba1c', name:'HbA1c', tube:'Purple/EDTA', notes:'No fasting required' },
+  { id:'ecg', name:'ECG / EKG', tube:'N/A', notes:'Remove metal accessories' },
+  { id:'xray', name:'Chest X-Ray', tube:'N/A', notes:'Remove jewellery' },
+];
+
+const DEFAULT_TASKS = [
+  'Check patient identification wristband',
+  'Record patient weight and height',
+  'Take and record vital signs',
+  'Explain procedures to patient',
+  'Ensure patient consent forms signed',
+  'Prepare patient for doctor consultation',
+];
+
+function getCsrf() {
+  return (document.cookie.split(';').find(c=>c.trim().startsWith('csrf_token='))||'').split('=')[1]||'';
+}
+
+async function apiFetch(url, opts={}) {
+  try {
+    const res = await fetch(url, {
+      headers: { 'Accept':'application/json','Content-Type':'application/json','X-Frappe-CSRF-Token':getCsrf() },
+      ...opts
+    });
+    const ct = res.headers.get('content-type')||'';
+    if (!ct.includes('application/json')) return null;
+    const data = await res.json();
+    if (!res.ok) return null;
+    return data;
+  } catch(e) { return null; }
+}
+
+function showAlert(msg, type='success') {
+  const el = document.getElementById('alertBox');
+  el.innerHTML = `<div class="alert alert-${type}">${msg}</div>`;
+  setTimeout(()=>{ el.innerHTML=''; }, 4000);
+}
+
+function showTab(tab) {
+  ['vitals','report','tasks','lab'].forEach(t => {
+    document.getElementById('tab-'+t).style.display = t===tab?'block':'none';
+  });
+  document.querySelectorAll('.tab').forEach((el,i)=>{
+    el.classList.toggle('active', ['vitals','report','tasks','lab'][i]===tab);
+  });
+}
+
+async function loadQueue() {
+  const today = new Date().toISOString().split('T')[0] + ' 00:00:00';
+  const fields = encodeURIComponent('["name","patient_name","token_number","triage_status","visit_type","chief_complaint","date_of_birth","gender","phone"]');
+  const filters = encodeURIComponent(`[["creation",">=","${today}"],["triage_status","in","Pending,Vitals Recorded"]]`);
+  const d = await apiFetch(`${BASE}/api/resource/Patient%20Registration?fields=${fields}&filters=${filters}&order_by=token_number%20asc&limit=50`);
+  const list = document.getElementById('queueList');
+  const count = document.getElementById('queueCount');
+  if (d && d.data && d.data.length > 0) {
+    count.textContent = d.data.length;
+    list.innerHTML = d.data.map(p => `
+      <div class="queue-item ${currentPatient&&currentPatient.name===p.name?'selected':''}" onclick="selectPatient(${JSON.stringify(p).replace(/"/g,"&quot;")})">
+        <div class="queue-item-top">
+          <span class="token-num">T-${p.token_number||'?'}</span>
+          <span class="status-badge status-${(p.triage_status||'Pending').replace(' ','')}">${p.triage_status||'Pending'}</span>
+        </div>
+        <div class="patient-name">${p.patient_name||'—'}</div>
+        <div class="patient-sub">${p.visit_type||'OPD'} • ${p.gender||''}</div>
+      </div>
+    `).join('');
+  } else {
+    count.textContent = '0';
+    list.innerHTML = '<div class="empty-state"><div class="icon">✅</div><p>No patients in queue</p></div>';
+  }
+}
+
+function selectPatient(p) {
+  currentPatient = p;
+  document.getElementById('noPatient').style.display = 'none';
+  document.getElementById('patientPanel').style.display = 'block';
+  document.getElementById('pName').textContent = p.patient_name || '—';
+  document.getElementById('pInfo').textContent = `${p.gender||''} • ${p.date_of_birth||''} • ${p.visit_type||'OPD'}`;
+  document.getElementById('pToken').textContent = 'T-' + (p.token_number||'?');
+  document.getElementById('pStatus').innerHTML = `<span class="status-badge status-${(p.triage_status||'Pending').replace(' ','')}">${p.triage_status||'Pending'}</span>`;
+  // Fill report
+  document.getElementById('rName').value = p.patient_name||'';
+  document.getElementById('rVisit').value = p.visit_type||'';
+  document.getElementById('rGender').value = p.gender||'';
+  document.getElementById('rDob').value = p.date_of_birth||'';
+  document.getElementById('rComplaint').value = p.chief_complaint||'';
+  // Tasks
+  tasks = DEFAULT_TASKS.map((t,i) => ({ id:i, label:t, done:false }));
+  renderTasks();
+  // Labs
+  renderLabs();
+  // Sidebar highlight
+  loadQueue();
+  showTab('vitals');
+}
+
+function renderTasks() {
+  document.getElementById('taskList').innerHTML = tasks.map(t => `
+    <div class="task-item">
+      <div class="task-check ${t.done?'done':''}" onclick="toggleTask(${t.id})">${t.done?'✓':''}</div>
+      <div class="task-label ${t.done?'done':''}">${t.label}</div>
+      <div class="task-time">${t.time||''}</div>
+    </div>
+  `).join('');
+}
+
+function toggleTask(id) {
+  const t = tasks.find(t=>t.id===id);
+  if (t) { t.done = !t.done; t.time = t.done ? new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}) : ''; }
+  renderTasks();
+}
+
+function addTask() {
+  const inp = document.getElementById('newTask');
+  const val = inp.value.trim();
+  if (!val) return;
+  tasks.push({ id: Date.now(), label: val, done: false });
+  renderTasks();
+  inp.value = '';
+}
+
+function renderLabs() {
+  selectedLabs = new Set();
+  document.getElementById('labTypes').innerHTML = LAB_TYPES.map(l => `
+    <div class="lab-type" id="lab-${l.id}">
+      <div>
+        <div class="lab-type-name">${l.name}</div>
+        <div class="lab-type-sub">🧪 ${l.tube} &nbsp;|&nbsp; ${l.notes}</div>
+      </div>
+      <button class="select-btn" id="lbtn-${l.id}" onclick="toggleLab('${l.id}')">Select</button>
+    </div>
+  `).join('');
+}
+
+function toggleLab(id) {
+  const btn = document.getElementById('lbtn-'+id);
+  if (selectedLabs.has(id)) {
+    selectedLabs.delete(id);
+    btn.textContent = 'Select';
+    btn.classList.remove('selected');
+  } else {
+    selectedLabs.add(id);
+    btn.textContent = '✓ Selected';
+    btn.classList.add('selected');
+  }
+  document.getElementById('selectedCount').textContent = selectedLabs.size > 0 ? `${selectedLabs.size} test(s) selected` : '';
+}
+
+async function saveVitals() {
+  if (!currentPatient) return;
+  const vitals = {
+    temperature: document.getElementById('vTemp').value,
+    blood_pressure: document.getElementById('vBP').value,
+    pulse_rate: document.getElementById('vPulse').value,
+    spo2: document.getElementById('vSpo2').value,
+    respiratory_rate: document.getElementById('vResp').value,
+    weight: document.getElementById('vWeight').value,
+    height: document.getElementById('vHeight').value,
+    blood_sugar: document.getElementById('vSugar').value,
+    notes: document.getElementById('vNotes').value,
+  };
+
+  // Save vitals to patient record
+  const payload = {
+    triage_status: 'Vitals Recorded',
+    vitals_json: JSON.stringify(vitals),
+    vital_temperature: vitals.temperature,
+    vital_bp: vitals.blood_pressure,
+    vital_pulse: vitals.pulse_rate,
+    vital_spo2: vitals.spo2,
+    vital_weight: vitals.weight,
+  };
+
+  const d = await apiFetch(`${BASE}/api/resource/Patient%20Registration/${currentPatient.name}`, {
+    method: 'PUT',
+    body: JSON.stringify(payload)
+  });
+
+  if (d) {
+    showAlert('✅ Vitals saved! Patient status updated to "Vitals Recorded".');
+    currentPatient.triage_status = 'Vitals Recorded';
+    document.getElementById('pStatus').innerHTML = `<span class="status-badge status-VitalsRecorded">Vitals Recorded</span>`;
+    loadQueue();
+
+    // Show vitals summary
+    document.getElementById('vitalsHistory').style.display = 'block';
+    document.getElementById('vitalsHistoryContent').innerHTML = `
+      <div class="history-item">
+        <div class="history-meta">Recorded at ${new Date().toLocaleTimeString('en-IN')}</div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:8px">
+          ${Object.entries(vitals).filter(([k,v])=>v&&k!=='notes').map(([k,v])=>`
+            <div style="background:#1a1d27;border-radius:8px;padding:10px;text-align:center">
+              <div style="font-size:11px;color:#64748b;text-transform:uppercase;margin-bottom:4px">${k.replace(/_/g,' ')}</div>
+              <div style="font-size:18px;font-weight:700;color:#f97316">${v}</div>
+            </div>
+          `).join('')}
+        </div>
+        ${vitals.notes ? `<div style="margin-top:10px;font-size:13px;color:#94a3b8">📝 ${vitals.notes}</div>` : ''}
+      </div>
+    `;
+  } else {
+    showAlert('❌ Failed to save vitals. Please try again.', 'error');
+  }
+}
+
+function clearVitals() {
+  ['vTemp','vBP','vPulse','vSpo2','vResp','vWeight','vHeight','vSugar','vNotes'].forEach(id=>{
+    document.getElementById(id).value='';
+  });
+}
+
+async function saveReport() {
+  if (!currentPatient) return;
+  const d = await apiFetch(`${BASE}/api/resource/Patient%20Registration/${currentPatient.name}`, {
+    method: 'PUT',
+    body: JSON.stringify({
+      nurse_notes: document.getElementById('rNurseNotes').value,
+      pain_scale: document.getElementById('rPain').value,
+      triage_priority: document.getElementById('rPriority').value,
+    })
+  });
+  if (d) { showAlert('✅ Patient report saved successfully!'); }
+  else { showAlert('❌ Failed to save report.', 'error'); }
+}
+
+async function saveLabCollection() {
+  if (!currentPatient) return;
+  if (selectedLabs.size === 0) { showAlert('Please select at least one lab test.', 'error'); return; }
+  const selected = LAB_TYPES.filter(l=>selectedLabs.has(l.id));
+  const d = await apiFetch(`${BASE}/api/resource/Patient%20Registration/${currentPatient.name}`, {
+    method: 'PUT',
+    body: JSON.stringify({
+      lab_samples: JSON.stringify(selected.map(l=>l.name)),
+      lab_notes: document.getElementById('labNotes').value,
+      lab_collection_time: new Date().toISOString(),
+    })
+  });
+  if (d) {
+    showAlert(`✅ Lab collection recorded for ${selected.length} test(s): ${selected.map(l=>l.name).join(', ')}`);
+    selectedLabs.clear();
+    renderLabs();
+    document.getElementById('labNotes').value = '';
+    document.getElementById('selectedCount').textContent = '';
+  } else {
+    showAlert('❌ Failed to save lab collection.', 'error');
+  }
+}
+
+async function loadUser() {
+  const d = await apiFetch(`${BASE}/api/method/frappe.auth.get_logged_user`);
+  if (d && d.message) document.getElementById('userEmail').textContent = d.message;
+}
+
+loadUser();
+loadQueue();
+setInterval(loadQueue, 30000);
+</script>
+</body>
+</html>
