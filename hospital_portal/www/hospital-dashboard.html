@@ -502,3 +502,41 @@ setInterval(() => { loadStats(); loadActivity(); }, 30000); // refresh every 30s
 </script>
 </body>
 </html>
+<script>
+// Override demo data with real API data
+function getCsrf2() {
+    const cookies = document.cookie.split(';');
+    for (let c of cookies) {
+        const [k, v] = c.trim().split('=');
+        if (k === 'csrf_token') return decodeURIComponent(v);
+    }
+    return '';
+}
+
+async function loadRealStats() {
+    try {
+        const res = await fetch('/api/method/hospital_portal.www.hospital-dashboard.get_live_stats', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', 'X-Frappe-CSRF-Token': getCsrf2()},
+            body: '{}'
+        });
+        const data = await res.json();
+        const s = data.message;
+        if (!s) return;
+        
+        // Update stat cards
+        document.getElementById('stat-opd').textContent = s.opd_today || 0;
+        document.getElementById('stat-beds').textContent = s.beds_occupied || 0;
+        document.getElementById('stat-pending').textContent = s.pending_orders || 0;
+        document.getElementById('stat-icu').textContent = s.icu_patients || 0;
+        document.getElementById('stat-rx').textContent = s.prescriptions_today || 0;
+        
+        // Update department cards
+        document.getElementById('reg-today').textContent = s.opd_today || 0;
+        document.getElementById('reg-waiting').textContent = s.waiting || 0;
+    } catch(e) { console.log('Dashboard stats:', e); }
+}
+
+window.addEventListener('load', loadRealStats);
+setInterval(loadRealStats, 60000);
+</script>
