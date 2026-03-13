@@ -2,7 +2,7 @@
  "actions": [],
  "allow_rename": 1,
  "autoname": "format:PAT-{YYYY}-{#####}",
- "creation": "2026-03-12 15:45:39.537663",
+ "creation": "2026-03-13 10:26:42.004069",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
@@ -25,7 +25,9 @@
   "emergency_contact",
   "col3",
   "emergency_phone",
-  "address"
+  "address",
+  "token_number",
+  "triage_status"
  ],
  "fields": [
   {
@@ -142,12 +144,25 @@
    "fieldname": "address",
    "fieldtype": "Text",
    "label": "Address"
+  },
+  {
+   "fieldname": "token_number",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Token Number"
+  },
+  {
+   "default": "Waiting",
+   "fieldname": "triage_status",
+   "fieldtype": "Select",
+   "label": "Triage Status",
+   "options": "Waiting\nVitals Recorded\nWith Doctor\nIn Lab\nIn Radiology\nIn Pharmacy\nAdmitted\nDischarged"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-03-12 15:45:39.537663",
+ "modified": "2026-03-13 10:50:27.642015",
  "modified_by": "Administrator",
  "module": "Hospital Portal",
  "name": "Patient Registration",

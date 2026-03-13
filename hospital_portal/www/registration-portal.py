@@ -14,7 +14,6 @@ def register_patient(full_name, phone, gender, chief_complaint,
     date_of_birth=None, blood_group=None, emergency_contact=None,
     emergency_phone=None, address=None):
 
-    # Get token number for today
     today_start = frappe.utils.today() + " 00:00:00"
     token = frappe.db.sql(
         "SELECT COUNT(*) FROM `tabPatient Registration` WHERE creation >= %s",
@@ -34,7 +33,9 @@ def register_patient(full_name, phone, gender, chief_complaint,
         "emergency_contact": emergency_contact or None,
         "emergency_phone": emergency_phone or None,
         "address": address or None,
-        "status": "Registered"
+        "status": "Registered",
+        "token_number": token,
+        "triage_status": "Waiting"
     })
     pat.insert(ignore_permissions=True)
     frappe.db.commit()
@@ -42,47 +43,34 @@ def register_patient(full_name, phone, gender, chief_complaint,
     return {
         "patient_id": pat.name,
         "token_number": token,
-        "full_name": full_name
+        "full_name": full_name,
+        "department": referred_department,
+        "visit_type": visit_type,
+        "phone": phone
     }
 
 @frappe.whitelist()
 def get_today_queue():
     today_start = frappe.utils.today() + " 00:00:00"
-    patients = frappe.db.sql("""
+    return frappe.db.sql("""
         SELECT name, full_name, phone, referred_department,
-               visit_type, status, creation
+               visit_type, status, token_number, triage_status, creation
         FROM `tabPatient Registration`
         WHERE creation >= %s
-        ORDER BY creation ASC
+        ORDER BY token_number ASC
         LIMIT 50
     """, today_start, as_dict=True)
-
-    # Add token numbers
-    for i, p in enumerate(patients):
-        p["token_number"] = i + 1
-        p["patient_name"] = p.get("full_name")
-        p["department"] = p.get("referred_department")
-
-    return patients
 
 @frappe.whitelist()
 def get_today_stats():
     today_start = frappe.utils.today() + " 00:00:00"
+    total    = frappe.db.sql("SELECT COUNT(*) FROM `tabPatient Registration` WHERE creation >= %s", today_start)[0][0]
+    waiting  = frappe.db.sql("SELECT COUNT(*) FROM `tabPatient Registration` WHERE creation >= %s AND triage_status='Waiting'", today_start)[0][0]
+    completed= frappe.db.sql("SELECT COUNT(*) FROM `tabPatient Registration` WHERE creation >= %s AND triage_status='Discharged'", today_start)[0][0]
+    return {"registered": total, "waiting": waiting, "completed": completed}
 
-    total = frappe.db.sql(
-        "SELECT COUNT(*) FROM `tabPatient Registration` WHERE creation >= %s",
-        today_start)[0][0]
-
-    waiting = frappe.db.sql(
-        "SELECT COUNT(*) FROM `tabPatient Registration` WHERE creation >= %s AND status = 'Registered'",
-        today_start)[0][0]
-
-    completed = frappe.db.sql(
-        "SELECT COUNT(*) FROM `tabPatient Registration` WHERE creation >= %s AND status = 'Discharged'",
-        today_start)[0][0]
-
-    return {
-        "registered": total,
-        "waiting": waiting,
-        "completed": completed
-    }
+@frappe.whitelist()
+def update_patient_status(patient_id, status):
+    frappe.db.set_value("Patient Registration", patient_id, "triage_status", status)
+    frappe.db.commit()
+    return "ok"
